@@ -1,5 +1,8 @@
 # actionnews
 
+npm install @pnp/sp
+npm install @pnp/spfx-controls-react
+
 ## Summary
 
 Short summary on functionality and used technologies.

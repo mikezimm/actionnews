@@ -5,23 +5,106 @@ import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
+
+import { sp } from '@pnp/sp';
+
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+
+import { PageContext } from '@microsoft/sp-page-context';
 
 import * as strings from 'ActionnewsWebPartStrings';
 import Actionnews from './components/Actionnews';
-import { IActionnewsProps } from './components/IActionnewsProps';
+import { IActionnewsProps, INewsScope } from './components/IActionnewsProps';
 
 export interface IActionnewsWebPartProps {
   description: string;
+
+  // 0 - Context
+  pageContext: PageContext;
+
+  scope: INewsScope;
+  listWeb: string;
+  listName: string;
+
 }
 
 export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnewsWebPartProps> {
 
+
+
+
+/***
+ *          .d88b.  d8b   db d888888b d8b   db d888888b d888888b 
+ *         .8P  Y8. 888o  88   `88'   888o  88   `88'   `~~88~~' 
+ *         88    88 88V8o 88    88    88V8o 88    88       88    
+ *         88    88 88 V8o88    88    88 V8o88    88       88    
+ *         `8b  d8' 88  V888   .88.   88  V888   .88.      88    
+ *          `Y88P'  VP   V8P Y888888P VP   V8P Y888888P    YP    
+ *                                                               
+ *                                                               
+ */
+
+    //Added for Get List Data:  https://www.youtube.com/watch?v=b9Ymnicb1kc
+    public onInit():Promise<void> {
+      return super.onInit().then(_ => {
+
+        //https://stackoverflow.com/questions/52010321/sharepoint-online-full-width-page
+        if ( window.location.href &&  
+          window.location.href.toLowerCase().indexOf("layouts/15/workbench.aspx") > 0 ) {
+            
+          if (document.getElementById("workbenchPageContent")) {
+            document.getElementById("workbenchPageContent").style.maxWidth = "none";
+          }
+        } 
+
+        //console.log('window.location',window.location);
+        sp.setup({
+          spfxContext: this.context
+        });
+      });
+    }
+
+    public getUrlVars(): {} {
+      var vars = {};
+      vars = location.search
+      .slice(1)
+      .split('&')
+      .map(p => p.split('='))
+      .reduce((obj, pair) => {
+        const [key, value] = pair.map(decodeURIComponent);
+        return ({ ...obj, [key]: value }) ;
+      }, {});
+      return vars;
+    }
+
+
   public render(): void {
+
+    //Be sure to always pass down an actual URL if the webpart prop is empty at this point.
+    //If it's undefined, null or '', get current page context value
+    let tenant = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,"");
+
+    let scope : INewsScope = this.properties.scope ? this.properties.scope : 'Site';
+    let listWeb = this.properties.listWeb ? this.properties.listWeb : '/sites/ActionNews/';
+    let listName = this.properties.listName ? this.properties.listName : 'TheNewsPosts';
+
     const element: React.ReactElement<IActionnewsProps> = React.createElement(
       Actionnews,
       {
-        description: this.properties.description
+        description: this.properties.description,
+
+          // 0 - Context
+        pageContext: this.context.pageContext,
+        wpContext: this.context,
+        tenant: tenant,
+
+        //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+        WebpartElement: this.domElement,
+
+        scope: scope,
+        listWeb: listWeb,
+        listName: listName,
+
       }
     );
 

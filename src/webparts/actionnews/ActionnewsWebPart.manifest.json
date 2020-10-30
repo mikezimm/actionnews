@@ -17,11 +17,11 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "actionnews" },
-    "description": { "default": "actionnews description" },
-    "officeFabricIconFontName": "Page",
+    "title": { "default": "Action News webpart" },
+    "description": { "default": "Tag, Followup, Assign reminders based on site pages and news." },
+    "officeFabricIconFontName": "CommentActive",
     "properties": {
-      "description": "actionnews"
+      "description": "Action News"
     }
   }]
 }
