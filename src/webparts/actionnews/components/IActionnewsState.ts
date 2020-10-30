@@ -28,8 +28,11 @@ export interface INewsService {
     listWeb: string;
     listName: string;
 
+    pageUrl: string;
+
     currentUser?: IUser;  //Current user information on save location
 
+    webServerRelativeUrl: string;
     pageID: string;
     
 }

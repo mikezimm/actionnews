@@ -1,5 +1,7 @@
 import { Web, IList, IItem } from "@pnp/sp/presets/all";
 
+import { sp } from '@pnp/sp';
+
 import { makeSmallTimeObject, makeTheTimeObject,ITheTime, getAge, getBestTimeDelta, isStringValidDate, monthStr3} from '../../../services/dateServices';
 
 import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist, sortKeysByOtherKey } from '../../../services/arrayServices';
@@ -20,6 +22,13 @@ export async function allAvailableActions(   newsService: INewsService, addThese
     let selColumns = getSelectColumns(allColumns);
 
     let allItems : IActionItem[] = null;
+
+    let currentPage : any = await sp.web.getFileByServerRelativePath(newsService.pageUrl);
+    console.log('CurrentPage:', currentPage);
+
+//    let legacyPageContext = await currentPage.legacyPageContext()//.pageItemId;
+//    console.log('UniqueId:', legacyPageContext.pageItemId);
+//    newsService.pageID = legacyPageContext.pageItemId;
 
     let thisListWeb = Web(newsService.tenant + newsService.listWeb);
     let scope = newsService.scope;

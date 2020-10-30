@@ -28,7 +28,7 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
 public constructor(props:IActionnewsProps){
   super(props);
 
-  let pageID = null; //this.props.pageID;
+  let pageID = this.props.pageId;
 
   this.state = {
 
@@ -49,6 +49,9 @@ public constructor(props:IActionnewsProps){
           currentUser: null,  //Current user information on save location
       
           pageID: pageID,
+          pageUrl: this.props.pageUrl,
+          webServerRelativeUrl: this.props.webServerRelativeUrl,
+
         },
 
         allItems: [],

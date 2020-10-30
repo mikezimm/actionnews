@@ -80,6 +80,7 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
 
   public render(): void {
 
+    console.log('Page Context:', this.context.pageContext );
     //Be sure to always pass down an actual URL if the webpart prop is empty at this point.
     //If it's undefined, null or '', get current page context value
     let tenant = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,"");
@@ -87,6 +88,9 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
     let scope : INewsScope = this.properties.scope ? this.properties.scope : 'Site';
     let listWeb = this.properties.listWeb ? this.properties.listWeb : '/sites/ActionNews/';
     let listName = this.properties.listName ? this.properties.listName : 'TheNewsPosts';
+    let pageUrl = this.context.pageContext.legacyPageContext.webAbsoluteUrl + this.context.pageContext.legacyPageContext.serverRequestPath;
+    let pageId = this.context.pageContext.legacyPageContext.pageItemId;
+    let webServerRelativeUrl = this.context.pageContext.legacyPageContext.webServerRelativeUrl;
 
     const element: React.ReactElement<IActionnewsProps> = React.createElement(
       Actionnews,
@@ -104,6 +108,10 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
         scope: scope,
         listWeb: listWeb,
         listName: listName,
+
+        pageUrl: pageUrl,
+        pageId: pageId,
+        webServerRelativeUrl: webServerRelativeUrl,
 
       }
     );
