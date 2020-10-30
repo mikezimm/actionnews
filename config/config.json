@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "actionnews-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/actionnews/ActionnewsWebPart.js",
+          "manifest": "./src/webparts/actionnews/ActionnewsWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "ActionnewsWebPartStrings": "lib/webparts/actionnews/loc/{locale}.js"
+  }
+}
