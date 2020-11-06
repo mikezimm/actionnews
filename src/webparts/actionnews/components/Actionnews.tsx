@@ -181,7 +181,7 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
       } else { quickCommands.successBanner = quickCommands.successBanner * 1000; }
   }
 
-  let quickFields : IQuickField[][] = ActionNewsQuickFields;
+  let quickFields : IQuickField[][] = ActionNewsQuickFields ;
 
   this.state = {
 
@@ -303,11 +303,13 @@ public componentDidUpdate(prevProps){
           isLightDismiss={ true }
           isFooterAtBottom={ true }
       >
+        
         <ThisEditPane 
-            fields = { ActionNewsQuickFields }
+            fields = { this.state.quickFields }
             contextUserInfo = { this.state.newsService.contextUserInfo }
             sourceUserInfo = { this.state.newsService.sourceUserInfo }
-            onChange = { null }
+            onChange = { this._editFieldUpdate.bind(this) }
+
         ></ThisEditPane>
       
     </Panel>;
@@ -352,6 +354,10 @@ public componentDidUpdate(prevProps){
           includeAttach= { false }
           includeListLink = { true }
           quickCommands={ this.state.quickCommands }
+
+          //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+          WebpartHeight={ this.props.WebpartElement.getBoundingClientRect().height }
+          WebpartWidth={ this.props.WebpartElement.getBoundingClientRect().width - 50 }
       
       ></ReactListItems>;
 
@@ -390,8 +396,8 @@ public componentDidUpdate(prevProps){
     <div style={{ marginBottom: '15px'}}><EarlyAccess 
             image = { "https://autoliv.sharepoint.com/sites/crs/PublishingImages/Early%20Access%20Image.png" }
             messages = { messages }
-            links = { [ this.state.WebpartWidth > 450 ? links.gitRepoDrilldown7WebPart.wiki : null, 
-                this.state.WebpartWidth > 600 ? links.gitRepoDrilldown7WebPart.issues : null ]}
+            links = { [ this.state.WebpartWidth > 450 ? links.gitRepoActionNews.wiki : null, 
+                this.state.WebpartWidth > 600 ? links.gitRepoActionNews.issues : null ]}
             email = { 'mailto:General - WebPart Dev <0313a49d.Autoliv.onmicrosoft.com@amer.teams.ms>?subject=Drilldown Webpart Feedback&body=Enter your message here :)  \nScreenshots help!' }
             farRightIcons = { [ toggleTipsButton ] }
         ></EarlyAccess>
@@ -584,5 +590,24 @@ public componentDidUpdate(prevProps){
     });
 
   } //End toggleTips  
+
+  private _editFieldUpdate = ( prop: string, value: any ): void => {
+
+    let quickFields = this.state.quickFields;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === prop ) { field.value = value ;}
+      });
+    });
+    //Then update the quickFields
+
+    console.log('HERE IS Current QuickFields:', quickFields );
+
+    this.setState({
+      quickFields: quickFields,
+    });
+  }
 
 }

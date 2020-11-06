@@ -2,9 +2,13 @@ import * as React from 'react';
 import { DefaultButton, PrimaryButton, CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import styles from '../createButtons/CreateButtons.module.scss';
 
+import stylesF from '../fields/Fields.module.scss';
+
 import { IQuickCommands, ICustViewDef,IQuickField, IUser } from '../IReUsableInterfaces';
 
 import { ISingleButtonProps } from '../createButtons/ICreateButtons';
+
+import { _createDropdownField } from '../fields/dropdownFieldBuilder';
 
 export interface IEditPaneProps {
   // These are set based on the toggles shown above the s (not needed in real code)
@@ -33,7 +37,6 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
     this.state = {
       width: null
     };
-
   }
 
 
@@ -43,7 +46,7 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
 
       let thisRow: any[] = fieldRow.map( thisFieldObject => {
         let thisField: any = null;
-        return <div> { thisFieldObject.name } </div>;
+        return <div> { thisFieldObject.name } - { thisFieldObject.value }</div>;
       });
 
       return <div>
@@ -55,12 +58,12 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
     }) ;
 
     return (
-    <div className={styles.floatRight}>
+    <div className={[styles.floatRight, stylesF.editFields ].join(' ')}>
         <Stack horizontal={ false } tokens={stackTokens}>
             { fields }
         </Stack>
     </div>
     );
   }
-  
+
 }

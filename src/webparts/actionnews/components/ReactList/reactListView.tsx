@@ -50,6 +50,9 @@ export interface IReactListItemsProps {
     maxChars?: number;
     items: IActionItem[];
 
+    WebpartHeight:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+    WebpartWidth:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+
     webURL: string; //Used for attachments
     listName: string; //Used for attachments
     parentListURL: string;
@@ -290,6 +293,8 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
         if ( prevProps.items.length !== this.props.items.length ) { redraw = true; }
         if ( prevProps.parentListURL !== this.props.parentListURL ) { redraw = true; }
 
+        if ( prevProps.WebpartHeight !== this.props.WebpartHeight ) { redraw = true; }
+        if ( prevProps.WebpartWidth !== this.props.WebpartWidth ) { redraw = true; }
 
         this._updateStateOnPropsChange();
     }
@@ -466,8 +471,8 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
 
 
     private _updateStateOnPropsChange(): void {
-//        this.setState({
-//        });
+        this.setState({
+        });
     }
 
 /***
