@@ -2,6 +2,8 @@ import * as React from 'react';
 import styles from './Actionnews.module.scss';
 import stylesC from './CommonStyles.module.scss';
 
+import stylesContents from './Contents/contents.module.scss';
+
 import { IActionnewsProps } from './IActionnewsProps';
 
 import { IActionnewsState, ActionStatus, IActionItem, IActionStatus, IPlannerTask, ActionSearchCols, INewsService,  } from './IActionnewsState';
@@ -262,6 +264,32 @@ public componentDidUpdate(prevProps){
     ></InfoPage>
     </div>;
 
+    /***
+     *    db      d888888b .d8888. d888888b      d888888b d888888b d88888b .88b  d88. .d8888. 
+     *    88        `88'   88'  YP `~~88~~'        `88'   `~~88~~' 88'     88'YbdP`88 88'  YP 
+     *    88         88    `8bo.      88            88       88    88ooooo 88  88  88 `8bo.   
+     *    88         88      `Y8b.    88            88       88    88~~~~~ 88  88  88   `Y8b. 
+     *    88booo.   .88.   db   8D    88           .88.      88    88.     88  88  88 db   8D 
+     *    Y88888P Y888888P `8888Y'    YP         Y888888P    YP    Y88888P YP  YP  YP `8888Y' 
+     *                                                                                        
+     *                                                                                        
+     */
+
+    let actionNewsHeader = null;
+    let actionNewsItems = null;
+
+
+    /***
+     *    .d8888. db    db .88b  d88. .88b  d88.  .d8b.  d8888b. db    db 
+     *    88'  YP 88    88 88'YbdP`88 88'YbdP`88 d8' `8b 88  `8D `8b  d8' 
+     *    `8bo.   88    88 88  88  88 88  88  88 88ooo88 88oobY'  `8bd8'  
+     *      `Y8b. 88    88 88  88  88 88  88  88 88~~~88 88`8b      88    
+     *    db   8D 88b  d88 88  88  88 88  88  88 88   88 88 `88.    88    
+     *    `8888Y' ~Y8888P' YP  YP  YP YP  YP  YP YP   YP 88   YD    YP    
+     *                                                                    
+     *                                                                    
+     */
+
     let errMessage = this.state.errMessage === '' ? null : <div>
       { this.state.errMessage }
     </div>;
@@ -299,17 +327,34 @@ public componentDidUpdate(prevProps){
         { this.state.bannerMessage }
     </div>;
 
-  /***
-   *    d888888b db   db d888888b .d8888.      d8888b.  .d8b.   d888b  d88888b 
-   *    `~~88~~' 88   88   `88'   88'  YP      88  `8D d8' `8b 88' Y8b 88'     
-   *       88    88ooo88    88    `8bo.        88oodD' 88ooo88 88      88ooooo 
-   *       88    88~~~88    88      `Y8b.      88~~~   88~~~88 88  ooo 88~~~~~ 
-   *       88    88   88   .88.   db   8D      88      88   88 88. ~8~ 88.     
-   *       YP    YP   YP Y888888P `8888Y'      88      YP   YP  Y888P  Y88888P 
-   *                                                                           
-   *                                                                           
-   */
 
+    /***
+     *    d888888b db   db d888888b .d8888.      d8888b.  .d8b.   d888b  d88888b 
+     *    `~~88~~' 88   88   `88'   88'  YP      88  `8D d8' `8b 88' Y8b 88'     
+     *       88    88ooo88    88    `8bo.        88oodD' 88ooo88 88      88ooooo 
+     *       88    88~~~88    88      `Y8b.      88~~~   88~~~88 88  ooo 88~~~~~ 
+     *       88    88   88   .88.   db   8D      88      88   88 88. ~8~ 88.     
+     *       YP    YP   YP Y888888P `8888Y'      88      YP   YP  Y888P  Y88888P 
+     *                                                                           
+     *                                                                           
+     */
+        
+    let thisPage = <div className={stylesContents.contents}>
+        <div className={styles.actionnews}>
+            { earlyAccess }
+            { bannerMessage }
+            {  /* <div className={styles.floatRight}>{ toggleTipsButton }</div> */ }
+            <div className={ this.state.errMessage === '' ? stylesContents.hideMe : stylesContents.showErrorMessage  }>{ this.state.errMessage } </div>
+            {  /* <p><mark>Check why picking Assists does not show Help as a chapter even though it's the only chapter...</mark></p> */ }
+            <div className={( this.state.showTips ? '' : stylesContents.hideMe )}>
+                { infoPage }
+            </div>
+            <div>
+              { actionNewsHeader }
+              { actionNewsItems }
+            </div>
+        </div>
+    </div>;
 
     /***
      *              d8888b. d88888b d888888b db    db d8888b. d8b   db 
@@ -323,30 +368,13 @@ public componentDidUpdate(prevProps){
      */
 
     return (
-      <div className={ styles.actionnews }>
+        <div className={ stylesContents.contents }>
         <div className={ styles.container }>
-          <div className={ styles.row }>
-            <div className={ styles.column }>
-              <span className={ styles.title }>Welcome to SharePoint!</span>
-              <p className={ styles.subTitle }>Customize SharePoint experiences using Web Parts.</p>
-              <p className={ styles.description }>{escape(this.props.description)}</p>
-              <a href="/sites/ActionNews/Lists/TheNewsPosts/" className={ styles.button }>
-                <span className={ styles.label }>TheNewsPosts</span>
-              </a>
-              <div>
-                {
-                    this.state.allItems.map( i => {
-                      return <li> { i.Id } { i.Title } { i.PageID } </li>;
-                    })
-
-                }
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <div className={ '' }>
+                { thisPage }
+        </div></div></div>
     );
+
   }
 
   private getAllItemsCall() {
