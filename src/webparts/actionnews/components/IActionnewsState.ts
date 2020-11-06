@@ -1,4 +1,6 @@
-import { IUser, } from  './IReUsableInterfaces';
+import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
+
+import { IUser, IQuickCommands, ICustViewDef } from  './IReUsableInterfaces';
 
 import { INewsScope } from './IActionnewsProps';
 
@@ -7,15 +9,22 @@ import { ITheTime, weekday3, monthStr3 } from '../../../services/dateServices';
 export const ActionSearchCols = [
 
     'Title',
-    'Primary',
-    'Secondary',
+    'Primary/Title',
+    'Primary/Id',
+
+    'Secondary/Title',
+    'Secondary/Id',
+
     'FollowupDate',
     'Notified',
+
     'FollowupComments',
     'Status',
     'WebURL',
+
     'LibraryName',
     'PageID',
+    
     'PlannerTasks',
 
 ];
@@ -27,15 +36,30 @@ export interface INewsService {
     scope: INewsScope;
     listWeb: string;
     listName: string;
+    listTitle?: string;
+    listGuid?: string;
 
     pageUrl: string;
+
+    contextUserInfo?: IUser;  //For site you are on ( aka current page context )
+    sourceUserInfo?: IUser;   //For site where the list is stored
 
     currentUser?: IUser;  //Current user information on save location
 
     webServerRelativeUrl: string;
     pageID: string;
+
+    viewDefs: ICustViewDef[];
+    staticColumns: string[];
+    selectColumns: string[];
+    expandColumns: string[];
+    staticColumnsStr: string;
+    selectColumnsStr: string;
+    expandColumnsStr: string;
+    removeFromSelect: string[];
     
 }
+
 
 export interface IActionnewsState {
     description: string;
@@ -43,11 +67,20 @@ export interface IActionnewsState {
     WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
     WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
     
-    newsService: INewsService; 
+    newsService: INewsService;
+
+    quickCommands: IQuickCommands;
 
     allItems: IActionItem[];
 
+    bannerMessage: any;
+
+    showTips: boolean;
+
     errMessage: string;
+
+    groupByFields: IGrouping[];
+
   }
 
 export type IActionStatus = '1. Created' | '3. Reviewing' | '5. Complete' ;
@@ -90,5 +123,7 @@ export interface IActionItem {  //extends Partial<any>
 
     author: IUser;
     editor: IUser;
+
+    Attachments?: boolean; //Added for compatibility and reusability with ReactList
 
 }

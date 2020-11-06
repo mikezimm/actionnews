@@ -86,7 +86,7 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
     let tenant = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,"");
 
     let scope : INewsScope = this.properties.scope ? this.properties.scope : 'Site';
-    let listWeb = this.properties.listWeb ? this.properties.listWeb : '/sites/ActionNews/';
+    let listWeb = this.properties.listWeb ? this.properties.listWeb : '/sites/ActionNewsSourceTTP/';
     let listName = this.properties.listName ? this.properties.listName : 'TheNewsPosts';
     let pageUrl = this.context.pageContext.legacyPageContext.webAbsoluteUrl + this.context.pageContext.legacyPageContext.serverRequestPath;
     let pageId = this.context.pageContext.legacyPageContext.pageItemId;

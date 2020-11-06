@@ -1,0 +1,30 @@
+@import '~office-ui-fabric-react/dist/sass/References.scss';
+
+ .commonStyles {
+
+    .bannerStyles {
+        text-align: center;
+        font-size: larger;
+        font-weight: 600;
+      }
+
+      .bannerShow {
+        height: 90px;
+        opacity: 1;
+        background: 'GreenYellow';
+        transition: all 0.6s ease;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        text-align: center;
+      }
+
+      .bannerHide {
+        height: 0px;
+        background: transparent;
+        opacity: 0;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        transition:all 0.6s ease;
+      }
+
+ }
