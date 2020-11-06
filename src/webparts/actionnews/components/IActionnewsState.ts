@@ -1,6 +1,8 @@
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
 
-import { IUser, IQuickCommands, ICustViewDef } from  './IReUsableInterfaces';
+import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
+
+import { IUser, IQuickCommands, ICustViewDef, IQuickField } from  './IReUsableInterfaces';
 
 import { INewsScope } from './IActionnewsProps';
 
@@ -24,7 +26,7 @@ export const ActionSearchCols = [
 
     'LibraryName',
     'PageID',
-    
+
     'PlannerTasks',
 
 ];
@@ -71,6 +73,8 @@ export interface IActionnewsState {
 
     quickCommands: IQuickCommands;
 
+    quickFields: IQuickField[][];
+
     allItems: IActionItem[];
 
     bannerMessage: any;
@@ -80,6 +84,9 @@ export interface IActionnewsState {
     errMessage: string;
 
     groupByFields: IGrouping[];
+
+    showNewItem: boolean;
+    panelWidth: PanelType;
 
   }
 

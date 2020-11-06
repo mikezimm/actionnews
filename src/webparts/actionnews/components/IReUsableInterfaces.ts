@@ -202,10 +202,10 @@ export interface IQuickCommands {
     listName?: string;
     styleRow?: any; //Valid react JSON object for style
     showWhenEvalTrue?: string;  //This is on all commands or individual buttons.  if eval resolves to true, button or commands are visible, else they are false.
-    fields: IQuickFields[][];
+    fields: IQuickField[][];
 }
 
-export interface IQuickFields extends Partial<IFieldDef> {
+export interface IQuickField extends Partial<IFieldDef> {
 
   // name: string;
   // title: string;

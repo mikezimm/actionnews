@@ -1,6 +1,18 @@
 @import '~office-ui-fabric-react/dist/sass/References.scss';
 
 .actionnews {
+
+  //  This affects all the commandButtons
+  .actionButtons *[type="button"]  {
+    //width: 200px;
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+
+  }
+
   .container {
     max-width: 700px;
     margin: 0px auto;

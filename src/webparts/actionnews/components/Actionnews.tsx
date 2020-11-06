@@ -2,13 +2,19 @@ import * as React from 'react';
 import styles from './Actionnews.module.scss';
 import stylesC from './CommonStyles.module.scss';
 
+import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { CompoundButton, Stack, IStackTokens, elementContains, initializeIcons } from 'office-ui-fabric-react';
+import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
+
+
 import stylesContents from './Contents/contents.module.scss';
 
 import { IActionnewsProps } from './IActionnewsProps';
 
 import { IActionnewsState, ActionStatus, IActionItem, IActionStatus, IPlannerTask, ActionSearchCols, INewsService,  } from './IActionnewsState';
 
-import { IQuickCommands, ICustViewDef } from './IReUsableInterfaces';
+import { IQuickCommands, ICustViewDef, IQuickField } from './IReUsableInterfaces';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
@@ -27,9 +33,16 @@ import { createIconButton , defCommandIconStyles} from "./createButtons/IconButt
 
 import  EarlyAccess from './HelpInfo/EarlyAccess';
 
+import ThisEditPane from './Panel/ThisEditPane';
+
 import { ActionQuickCommands } from './const_ActionCommands';
 
 import { ActionNewsViewDefs } from './const_ActionViewDefs';
+
+import { ActionNewsQuickFields } from './const_ActionQuickFields';
+
+
+import { getAppropriateViewFields, getAppropriateViewGroups, } from './ReactList/listFunctions';
 
 export default class Actionnews extends React.Component<IActionnewsProps, IActionnewsState> {
 
@@ -168,6 +181,8 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
       } else { quickCommands.successBanner = quickCommands.successBanner * 1000; }
   }
 
+  let quickFields : IQuickField[][] = ActionNewsQuickFields;
+
   this.state = {
 
         // 0 - Context
@@ -184,11 +199,17 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
 
         quickCommands: null,
 
+        quickFields: quickFields,
+
         bannerMessage: null,
     
         showTips: false,
+
+        showNewItem: false,
     
         groupByFields: [],
+
+        panelWidth: PanelType.medium,
   
   };
 
@@ -240,9 +261,15 @@ public componentDidUpdate(prevProps){
 
   public render(): React.ReactElement<IActionnewsProps> {
 
+    const stackPageTokens: IStackTokens = { childrenGap: 10 };
     let tipsStyles = defCommandIconStyles;
+    tipsStyles.root.padding = '2px';
+    tipsStyles.icon.fontSize = 24;
     let toggleTipsButton = <div style={{marginRight: "20px", background: 'white', opacity: '.7', borderRadius: '10px' }}>
     { createIconButton('Help','Toggle Tips',this.toggleTips.bind(this), null, tipsStyles ) } </div>;
+
+    let toggleNewItemPane = createIconButton('CirclePlus','Create Item',this._onShowPanelNewItem.bind(this), null, tipsStyles );
+    //let toggleTipsButton = createIconButton('Help','Toggle Tips',this.toggleTips.bind(this), null, null );
 
     /***
     *    d888888b d8b   db d88888b  .d88b.       d8888b.  .d8b.   d888b  d88888b 
@@ -256,13 +283,34 @@ public componentDidUpdate(prevProps){
     */
 
     const infoPage = <div>
-    <InfoPage 
-      allLoaded={ true }
-      showInfo={ true }
-      parentProps= { this.props }
-      parentState= { this.state }
-    ></InfoPage>
+      <InfoPage 
+        allLoaded={ true }
+        showInfo={ true }
+        parentProps= { this.props }
+        parentState= { this.state }
+      ></InfoPage>
     </div>;
+
+
+    let newPanel = this.state.showNewItem !== true ? null : 
+    <Panel
+          isOpen={this.state.showNewItem}
+          type={ this.state.panelWidth }
+          onDismiss={this._onClosePanelNewItem}
+          headerText={ 'Create New Item' }
+          closeButtonAriaLabel="Close"
+          onRenderFooterContent={this._onRenderFooterContent}
+          isLightDismiss={ true }
+          isFooterAtBottom={ true }
+      >
+        <ThisEditPane 
+            fields = { ActionNewsQuickFields }
+            contextUserInfo = { this.state.newsService.contextUserInfo }
+            sourceUserInfo = { this.state.newsService.sourceUserInfo }
+            onChange = { null }
+        ></ThisEditPane>
+      
+    </Panel>;
 
     /***
      *    db      d888888b .d8888. d888888b      d888888b d888888b d88888b .88b  d88. .d8888. 
@@ -274,9 +322,38 @@ public componentDidUpdate(prevProps){
      *                                                                                        
      *                                                                                        
      */
+ 
+    let actionNewsHeader = <div style={{ float: 'right' }}>
+        <Stack horizontal={true} wrap={true} horizontalAlign={"end"} verticalAlign= {"center"} tokens={stackPageTokens}>{}
+          { toggleNewItemPane }
+        </Stack>  
+      </div>;
 
-    let actionNewsHeader = null;
-    let actionNewsItems = null;
+    let currentViewFields: any[] = [];
+    if ( ActionNewsViewDefs.length > 0 )  { currentViewFields = getAppropriateViewFields( ActionNewsViewDefs, this.state.WebpartWidth ); }
+
+    let currentViewGroups : IGrouping[] =  getAppropriateViewGroups( ActionNewsViewDefs , this.state.WebpartWidth );
+
+    let  actionNewsItems  = this.state.allItems.length === 0 ? <div>NO ITEMS FOUND</div> : 
+      <ReactListItems 
+          parentListFieldTitles={ ActionNewsViewDefs.length > 0 ? null : null }
+
+          webURL = { this.state.newsService.listWeb }
+          parentListURL = { this.state.newsService.listWeb + '/lists/' + this.state.newsService.listName }
+          listName = { this.state.newsService.listName }
+
+          contextUserInfo = { this.state.newsService.contextUserInfo }
+          sourceUserInfo = { this.state.newsService.sourceUserInfo }
+
+          viewFields={ currentViewFields }
+          groupByFields={ currentViewGroups }
+          items={ this.state.allItems }
+          includeDetails= { true }
+          includeAttach= { false }
+          includeListLink = { true }
+          quickCommands={ this.state.quickCommands }
+      
+      ></ReactListItems>;
 
 
     /***
@@ -293,7 +370,6 @@ public componentDidUpdate(prevProps){
     let errMessage = this.state.errMessage === '' ? null : <div>
       { this.state.errMessage }
     </div>;
-
     
     let messages : any[] = [];
     if ( this.state.WebpartWidth > 800 ) { 
@@ -338,7 +414,8 @@ public componentDidUpdate(prevProps){
      *                                                                           
      *                                                                           
      */
-        
+
+
     let thisPage = <div className={stylesContents.contents}>
         <div className={styles.actionnews}>
             { earlyAccess }
@@ -350,8 +427,12 @@ public componentDidUpdate(prevProps){
                 { infoPage }
             </div>
             <div>
-              { actionNewsHeader }
-              { actionNewsItems }
+            <Stack horizontal={false} wrap={true} horizontalAlign={"stretch"} tokens={stackPageTokens} className={ styles.actionButtons }>{/* Stack for Buttons and Webs */}
+
+                { newPanel } 
+                { actionNewsHeader }
+                { actionNewsItems }
+            </Stack>
             </div>
         </div>
     </div>;
@@ -435,6 +516,65 @@ public componentDidUpdate(prevProps){
   private _updateStateOnPropsChange(): void {
     this.getAllItemsCall();
   }
+
+  
+/***
+ *    d8888b.  .d8b.  d8b   db d88888b db           d88888b  .d88b.   .d88b.  d888888b d88888b d8888b. 
+ *    88  `8D d8' `8b 888o  88 88'     88           88'     .8P  Y8. .8P  Y8. `~~88~~' 88'     88  `8D 
+ *    88oodD' 88ooo88 88V8o 88 88ooooo 88           88ooo   88    88 88    88    88    88ooooo 88oobY' 
+ *    88~~~   88~~~88 88 V8o88 88~~~~~ 88           88~~~   88    88 88    88    88    88~~~~~ 88`8b   
+ *    88      88   88 88  V888 88.     88booo.      88      `8b  d8' `8b  d8'    88    88.     88 `88. 
+ *    88      YP   YP VP   V8P Y88888P Y88888P      YP       `Y88P'   `Y88P'     YP    Y88888P 88   YD 
+ *                                                                                                     
+ *                                                                                                     
+ */
+
+      /**
+       * This was copied from codepen example code to render a footer with buttons:
+       * https://fabricweb.z5.web.core.windows.net/oufr/6.50.2/#/examples/panel
+       * 
+       */
+      private _onRenderFooterContent = (): JSX.Element => {
+        return null;
+
+        return (
+        <div>
+            <PrimaryButton onClick={this._onClosePanelNewItem} style={{ marginRight: '8px' }}>
+            Save
+            </PrimaryButton>
+            <DefaultButton onClick={this._onClosePanelNewItem}>Cancel</DefaultButton>
+        </div>
+        );
+    }
+
+
+/***
+ *    .d8888. db   db  .d88b.  db   d8b   db      d8888b.  .d8b.  d8b   db d88888b db      
+ *    88'  YP 88   88 .8P  Y8. 88   I8I   88      88  `8D d8' `8b 888o  88 88'     88      
+ *    `8bo.   88ooo88 88    88 88   I8I   88      88oodD' 88ooo88 88V8o 88 88ooooo 88      
+ *      `Y8b. 88~~~88 88    88 Y8   I8I   88      88~~~   88~~~88 88 V8o88 88~~~~~ 88      
+ *    db   8D 88   88 `8b  d8' `8b d8'8b d8'      88      88   88 88  V888 88.     88booo. 
+ *    `8888Y' YP   YP  `Y88P'   `8b8' `8d8'       88      YP   YP VP   V8P Y88888P Y88888P 
+ *                                                                                         
+ *                                                                                         
+ */
+
+  private _onClosePanelNewItem = (item): void => {
+    
+      this.setState({ 
+          showNewItem: false,
+
+      });
+  }
+
+  public _onShowPanelNewItem = ( item: any ): void => {
+    //This sends back the correct pivot category which matches the category on the tile.
+
+    this.setState({
+      showNewItem: true,
+    });
+
+  } //End toggleNewItem  
 
   public toggleTips = (item: any): void => {
     //This sends back the correct pivot category which matches the category on the tile.
