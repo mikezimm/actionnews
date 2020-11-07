@@ -12,7 +12,7 @@ import { IUser } from '../IReUsableInterfaces';
 
 import { createIconButton } from '../createButtons/IconButton';
 
-import stylesF from './Fields.module.scss';
+import stylesF from './StylesField.module.scss';
 
 const fieldWidth = 200;
 

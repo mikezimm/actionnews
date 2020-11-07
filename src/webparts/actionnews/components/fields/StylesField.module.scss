@@ -1,28 +1,23 @@
+@import '~office-ui-fabric-react/dist/sass/References.scss';
 
-@import '../../../../../node_modules/office-ui-fabric-react/dist/sass/_References';
+ .commonStyles {
 
-//2020-05-19:  Copied from Socialiis7/Master CommandBar.tsx
+    
+    .textFieldX {
+        display: table-cell;
+        width: 100%;
+    
+        label {
+          font-weight: bold;
+        }
+    
+        input {
+          //height: 32px;
+          min-width: 80px;
+        }
+      }
 
-.editFields {
-
-  // 2020-06-22:  Added per https://github.com/pnp/sp-dev-fx-controls-react/issues/568
-  // Makes label of dateTimePickers bold.
-  // See https://www.w3schools.com/cssref/css_selectors.asp for additional filters/selectors
-
-  .textField {
-    display: table-cell;
-    width: 100%;
-
-    label {
-      font-weight: bold;
-    }
-
-    input {
-      //height: 32px;
-      min-width: 80px;
-    }
-  }
-
+      
   .peopleFields {
     font-size: inherit
   }
@@ -169,4 +164,4 @@
     }
   }
 
-}
+ }

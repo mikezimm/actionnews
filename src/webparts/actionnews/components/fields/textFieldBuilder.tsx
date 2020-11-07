@@ -6,7 +6,7 @@ import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/Choi
 
 import { IFormFields, IProjectFormFields, IFieldDef } from '../fields/fieldDefinitions';
 
-import stylesF from './Fields.module.scss';
+import styles from '../Panel/EditPaneStyles.module.scss';
 
 const defaultWidth = 200;
 const emptyString = (value: string | Date) : string => { return "";};
@@ -25,8 +25,8 @@ const emptyString = (value: string | Date) : string => { return "";};
 export function createTextField(field: IFieldDef, _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
     let defaultValue = null;
 
-    let thisField = <div id={ field.name }><TextField
-        className={ stylesF.textField }
+    let thisField = <div id={ field.name } className={ styles.fields }><TextField
+        className={ styles.TextField }
         styles={ getStyles  } //this.getReportingStyles
         defaultValue={ defaultValue }
         label={ field.title }
