@@ -38,7 +38,6 @@ const Status = createEntryField("Status", "Status", "Status", "Choice", false );
 
 const Notified = createEntryField("Notified", "Notified", "Notified", "Choice", false );
 
-
 export const ActionNewsQuickFields : IQuickField[][] = [
   
   [ TitleField ], //Row 1 fields

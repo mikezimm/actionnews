@@ -41,6 +41,8 @@ import { ActionNewsViewDefs } from './const_ActionViewDefs';
 
 import { ActionNewsQuickFields } from './const_ActionQuickFields';
 
+import { findParentElementPropLikeThis } from '../../../services/basicElements';
+
 
 import { getAppropriateViewFields, getAppropriateViewGroups, } from './ReactList/listFunctions';
 
@@ -241,6 +243,8 @@ public componentDidUpdate(prevProps){
 
     rebuildPart = true ;
   }
+
+  console.log('componentDidUpdate: Actionnews.tsx');
 
   if (rebuildPart === true) {
     this._updateStateOnPropsChange();
@@ -593,12 +597,16 @@ public componentDidUpdate(prevProps){
 
   private _editFieldUpdate = ( prop: string, value: any ): void => {
 
+    let e: any = event;
+    let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 5, 'begins');
+    thisID = thisID.replace('EditFieldID','');
+
     let quickFields = this.state.quickFields;
 
     //Search through each row and field for name:
     quickFields.map( fieldRow => {
       fieldRow.map ( field => {
-        if ( field.name === prop ) { field.value = value ;}
+        if ( field.name === thisID ) { field.value = prop ;}
       });
     });
     //Then update the quickFields

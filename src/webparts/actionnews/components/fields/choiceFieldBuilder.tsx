@@ -125,6 +125,8 @@ export function creatInfoChoices( selectedKey: string, _onChange){
   );
 }
 
+
+
 /*
 function _onChange(ev: React.FormEvent<HTMLInputElement>, option: IChoiceGroupOption): void {
   console.dir(option);

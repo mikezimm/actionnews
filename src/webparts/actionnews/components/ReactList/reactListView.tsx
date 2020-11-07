@@ -293,10 +293,15 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
         if ( prevProps.items.length !== this.props.items.length ) { redraw = true; }
         if ( prevProps.parentListURL !== this.props.parentListURL ) { redraw = true; }
 
-        if ( prevProps.WebpartHeight !== this.props.WebpartHeight ) { redraw = true; }
-        if ( prevProps.WebpartWidth !== this.props.WebpartWidth ) { redraw = true; }
+        //checking this does not redraw the component
+//        if ( prevProps.WebpartHeight !== this.props.WebpartHeight ) { redraw = true; }
+//        if ( prevProps.WebpartWidth !== this.props.WebpartWidth ) { redraw = true; }
 
-        this._updateStateOnPropsChange();
+        console.log('componentDidUpdate: reactListView.tsx');
+        if ( redraw === true ) {
+            this._updateStateOnPropsChange();
+        }
+
     }
 
 /***

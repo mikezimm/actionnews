@@ -1,86 +1,174 @@
+
 @import '~office-ui-fabric-react/dist/sass/References.scss';
 
-.actionnews {
+//2020-05-19:  Copied from Socialiis7/Master CommandBar.tsx
 
-  //  This affects all the commandButtons
-  .actionButtons *[type="button"]  {
-    //width: 200px;
-    background: transparent;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
 
+.editFields {
+
+  // 2020-06-22:  Added per https://github.com/pnp/sp-dev-fx-controls-react/issues/568
+  // Makes label of dateTimePickers bold.
+  // See https://www.w3schools.com/cssref/css_selectors.asp for additional filters/selectors
+
+    
+  .textFieldX {
+    display: table-cell;
+    width: 100%;
+
+    label {
+      font-weight: bold;
+    }
+
+    input {
+      //height: 32px;
+      min-width: 80px;
+    }
+  }
+
+  .peopleFields {
+    font-size: inherit
+  }
+
+  :global {
+      [class^=dateTimePicker_] > .ms-Label {
+      font-weight: 700
+    }
+
+    [class^=ms-Dropdown-container] > .ms-Label {
+      font-weight: 700
+    }
+
+    [class^=ms-Toggle] > .ms-Label {
+      font-weight: 700
+    }
+
+    [class*=fieldWithIconButton_] > .ms-Label {
+      font-weight: 700
+    }
+
+    [class*=peopleFields] .ms-Label {
+      color: darkred
+    }
+
+    [style*=lavender] .ms-Label {
+      color: purple
+    }
+
+    [style*=lightgreen] .ms-Label {
+      color: darkgreen
+    }
+
+    [style*=wheat] .ms-Label {
+      color: #663500
+    }
+
+    [style*=powderblue] .ms-Label {
+      color: blue
+    }
+
+  }
+
+  .peopleBlock {
+    display: inline-block;
+  }
+
+  .dateBlock {
+    display: inline-block;
+  }
+  
+  .addMeButton {
+    width: 32px;
+    height: 32px;
+    position: relative;
+    float: right;
+    z-index: 10;
+  }
+
+  .fieldWithIconButton{
+    position: relative;
+  }
+
+  .hoverCard {
+    margin: 10px;
+    width: 200;
+    height: '100%';
+    display: 'flex';
+    align-items: 'center';
+    justify-content: 'center';
+    
+    .assignedTo {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  }
+
+  .toggleRow {
+    label {
+      font-weight: bold;
+    }
+  }
+
+  .nowWrapping {
+    white-space: 'nowrap',
+  }
+  
+  .icon {
+    height: 18px;
+    line-height: 18px;
+  }
+
+  .dateTimePicker {
+
+    label {
+      font-weight: bold;
+    }
+
+    .root {
+      font-weight: bold;
+    }
+
+    input {
+      //height: 32px;
+      min-width: 80px;
+    }
   }
 
   .container {
-    max-width: 700px;
-    margin: 0px auto;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    //padding-left: 0px;
+    //background-color: white;
+    //display:inline-block;
+    //float: right;
+    //display:flex;
+    //align-items: center;
+    //top:  -50px;
+
+    //margin: 0px auto;
+    //box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
   }
 
-  .row {
-    @include ms-Grid-row;
-    @include ms-fontColor-white;
-    background-color: $ms-color-themeDark;
-    padding: 20px;
-  }
-
-  .column {
-    @include ms-Grid-col;
-    @include ms-lg10;
-    @include ms-xl8;
-    @include ms-xlPush2;
-    @include ms-lgPush1;
-  }
-
-  .title {
-    @include ms-font-xl;
-    @include ms-fontColor-white;
-  }
-
-  .subTitle {
-    @include ms-font-l;
-    @include ms-fontColor-white;
-  }
-
-  .description {
-    @include ms-font-l;
-    @include ms-fontColor-white;
-  }
-
-  .button {
-    // Our button
-    text-decoration: none;
-    height: 32px;
-
-    // Primary Button
-    min-width: 80px;
-    background-color: $ms-color-themePrimary;
-    border-color: $ms-color-themePrimary;
-    color: $ms-color-white;
-
-    // Basic Button
-    outline: transparent;
-    position: relative;
-    font-family: "Segoe UI WestEuropean","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif;
-    -webkit-font-smoothing: antialiased;
-    font-size: $ms-font-size-m;
-    font-weight: $ms-font-weight-regular;
-    border-width: 0;
-    text-align: center;
-    cursor: pointer;
-    display: inline-block;
-    padding: 0 16px;
-
-    .label {
-      font-weight: $ms-font-weight-semibold;
-      font-size: $ms-font-size-m;
-      height: 32px;
-      line-height: 32px;
-      margin: 0 4px;
-      vertical-align: top;
-      display: inline-block;
+  .projectField {
+    label {
+      font-weight: bold;
     }
   }
+  
+  .reportField {
+    display: table-cell;
+    width: 100%;
+
+    .fieldGroup {
+      border-color: red;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input {
+      //height: 32px;
+      min-width: 80px;
+    }
+  }
+
 }
