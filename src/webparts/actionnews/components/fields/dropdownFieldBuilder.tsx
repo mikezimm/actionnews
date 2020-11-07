@@ -7,13 +7,16 @@ import { TextField,  IStyleFunctionOrObject, ITextFieldStyleProps, ITextFieldSty
 import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
 import { IFormFields, IProjectFormFields, IFieldDef } from '../fields/fieldDefinitions';
+import { IQuickField } from '../../components/IReUsableInterfaces';
 
-const defaultWidth = 200;
 
-export function _createDropdownField(field: IFieldDef, choices: string[], _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+export function _createDropdownField(field: IQuickField, choices: string[], _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+
+  let fieldWidth = field.width ? field.width : 200;
   const dropdownStyles: Partial<IDropdownStyles> = {
-      dropdown: { width: defaultWidth }
+      dropdown: { width: fieldWidth }
     };
+
 
     let sOptions: IDropdownOption[] = choices == null ? null : 
       choices.map(val => {

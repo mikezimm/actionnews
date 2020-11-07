@@ -26,13 +26,14 @@ export interface IEditPaneProps {
   onChange: any; //Callback to update the parent data
   _clearDateField: any; //Callback to clear the date
   _addYouToField: any;
+  _addWeekToDate: any;
   wpContext: WebPartContext;
   webAbsoluteUrl: string;
 
 }
 
 export interface IEditPaneState {
-
+  width: number;
 }
 //  formatting
 const stackTokens: IStackTokens = { childrenGap: 40 };
@@ -45,12 +46,13 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
 
   constructor(props: IEditPaneProps) {
     super(props);
+    let currentRef = React.createRef();
+    console.log( 'currentRef', currentRef );
 
     this.state = {
       width: null
     };
   }
-
 
   public render(): React.ReactElement<IEditPaneProps> {
 
@@ -61,7 +63,7 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
         if ( thisFieldObject.type === 'Text') {
           thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, null );
         } else if ( thisFieldObject.type === 'Time' || thisFieldObject.type === 'Date' ) {
-          thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, thisFieldObject.required, null );
+          thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null );
         } else if ( thisFieldObject.type === 'User' || thisFieldObject.type === 'MultiUser' ) {
           thisField = createPeopleField( thisFieldObject, 3, this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null );
         }

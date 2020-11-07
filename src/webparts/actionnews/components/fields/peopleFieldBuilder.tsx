@@ -15,8 +15,6 @@ import { createIconButton } from '../createButtons/IconButton';
 
 import stylesF from './StylesField.module.scss';
 
-const fieldWidth = 200;
-
 
 /**
  * 
@@ -27,8 +25,8 @@ const fieldWidth = 200;
  * @param pageIDPref Added to function instead of being constant in project so it's more reusable
  * @param getStyles 
  */
-export function createPeopleField(field: IFieldDef | IQuickField, maxCount: number, _onChange: any, addYouToField: any, pageIDPref: string , wpContext: WebPartContext, webAbsoluteUrl: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
-
+export function createPeopleField(field: IQuickField , maxCount: number, _onChange: any, addYouToField: any, pageIDPref: string , wpContext: WebPartContext, webAbsoluteUrl: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+    
     let users: IUser[] = maxCount === 1 ? [field.value] : field.value;
 
     let emails: string[] = users == null ? [] : users.map( u => {
@@ -37,7 +35,7 @@ export function createPeopleField(field: IFieldDef | IQuickField, maxCount: numb
         return null;
       }
 
-      let uName = u.Name;
+      let uName = u.Name ? u.Name : u.loginName ? u.loginName : u.LoginName ? u.LoginName :u.email;
 
       if ( uName == undefined ) { // Added because when you remove the person in react comp, the user still is there, the name just gets removed.
         console.log('createPeopleField - did you remove a person from the array?', users, u);
@@ -59,12 +57,14 @@ export function createPeopleField(field: IFieldDef | IQuickField, maxCount: numb
       return null;
     });
 
-    let addUserButton = createIconButton('FollowUser','Add you',addYouToField, null, null );
+    let addUserButton = field.disabled === true ? null : createIconButton('FollowUser','Add you',addYouToField, null, null );
+
+    let fieldWidth = field.width ? field.width : 200;
 
       return (
           // Uncontrolled
           <div id={ pageIDPref + field.column } style={{ width: fieldWidth }} className={ stylesF.peopleBlock}>
-            <div className={stylesF.addMeButton}>{ addUserButton } </div>
+            <div className={ field.disabled !== true ? stylesF.addMeButton : null }>{ addUserButton } </div>
               <PeoplePicker
                   context={wpContext}
                   webAbsoluteUrl={ webAbsoluteUrl }
@@ -73,8 +73,8 @@ export function createPeopleField(field: IFieldDef | IQuickField, maxCount: numb
                   personSelectionLimit={maxCount}
                   //groupName={"Team Site Owners"} // Leave this blank in case you want to filter from all users
                   showtooltip={false}
-                  required={false} // isRequired in v1.16
-                  disabled={false}
+                  required={field.required} // isRequired in v1.16
+                  disabled={field.disabled}
                   onChange={(person: any) => {  // selectedItems in v1.16
                     _onChange(field.column, person);
                   }}

@@ -26,17 +26,35 @@ export const ActionSearchCols = [
 
 ];
 
-const TitleField = createEntryField("Title", "Title", "Title", "Text", false );
-const FollowupDate = createEntryField("FollowupDate","FollowupDate", "FollowupDate","Time", false);
+export function makeIQuickField ( name: string, title: string, column: string, type: string, blinkOnProject: boolean, typeProperty: any, disabled: boolean ) {
 
-const Primary = createEntryField("Primary","Primary", "Primary","User", false);
-const Secondary = createEntryField("Secondary","Secondary", "Secondary","MultiUser", false);
+  const newField : IQuickField = createEntryField( name, title, column, type, false  );
 
-const FollowupComments = createEntryField("FollowupComments", "FollowupComments", "FollowupComments", "Text", false );
+  if ( type.toLowerCase() === 'choice' ) {
+    if ( typeProperty ) { newField.choices = typeProperty ; }
 
-const Status = createEntryField("Status", "Status", "Status", "Choice", false );
+  }
+  if ( disabled === true ) { newField.disabled = true ; }
 
-const Notified = createEntryField("Notified", "Notified", "Notified", "Choice", false );
+  return newField ;
+
+}
+
+const TitleField : IQuickField = makeIQuickField("Title", "Title", "Title", "Text", false, null, false  );
+const FollowupDate : IQuickField = makeIQuickField("FollowupDate","FollowupDate", "FollowupDate", "Time", false, null, false );
+
+const Primary : IQuickField = makeIQuickField("Primary","Primary", "Primary","User", false, null, false );
+const Secondary : IQuickField = makeIQuickField("Secondary","Secondary", "Secondary","MultiUser", false, null, false );
+
+const FollowupComments : IQuickField = makeIQuickField("FollowupComments", "FollowupComments", "FollowupComments", "Text", false, null, false );
+
+const statusChoices: string[] = [ '0. Created', '2. Notified', '4. Reviewing', '6. Working', '8. Complete', '8. Cancelled' ] ;
+const Status : IQuickField = makeIQuickField("Status", "Status", "Status", "Choice", false, statusChoices, false );
+
+const Notified : IQuickField = makeIQuickField("Notified", "Notified", "Notified", "Time", false, null, true );
+
+const NotifyCount : IQuickField = makeIQuickField("NotifyCount", "NotifyCount", "NotifyCount", "Number", false, null, true );
+const NotifyHistory : IQuickField = makeIQuickField("NotifyHistory", "NotifyHistory", "NotifyHistory", "MultiLine", false, null, true );
 
 export const ActionNewsQuickFields : IQuickField[][] = [
   
@@ -45,8 +63,8 @@ export const ActionNewsQuickFields : IQuickField[][] = [
   [ FollowupComments ],
   [ FollowupDate ],
   [ Notified ],
-  [ Status ], //Row 3 fields
-  [  ], //Row 4 fields
+  [ Status, NotifyCount ], //Row 3 fields
+  [ NotifyHistory ], //Row 4 fields
 
 ];
 

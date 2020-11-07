@@ -43,6 +43,8 @@ import { ActionNewsQuickFields } from './const_ActionQuickFields';
 
 import { findParentElementPropLikeThis } from '../../../services/basicElements';
 
+import { msPerWk, msPerDay } from '../../../services/dateServices';
+
 
 import { getAppropriateViewFields, getAppropriateViewGroups, } from './ReactList/listFunctions';
 
@@ -117,7 +119,7 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
 
 
 private updateMainListColumns( list: INewsService ) {
-       
+
   let selectCols: string = "*";
   let expandThese = "";
 
@@ -145,7 +147,7 @@ private updateMainListColumns( list: INewsService ) {
   list.staticColumns = allColumns;
   list.expandColumns = expColumns;
 
-  list.selectColumnsStr = selColumns.join(',') ;
+  list.selectColumnsStr = selColumns.join(',');
   list.staticColumnsStr = allColumns.join(',');
   list.expandColumnsStr = expColumns.join(',');
 
@@ -317,6 +319,7 @@ public componentDidUpdate(prevProps){
             onChange = { this._editFieldUpdate.bind(this) }
             _clearDateField = { this._clearDateField.bind(this) }
             _addYouToField = { this._addUserToField.bind(this) }
+            _addWeekToDate = { this._addWeekToDate.bind(this) }
 
         ></ThisEditPane>
 
@@ -653,6 +656,32 @@ public componentDidUpdate(prevProps){
 
     /*
   */
+
+  private _addWeekToDate = (prop: string, value: any ): void => {
+
+    let e: any = event;
+    let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 15, 'begins');
+    thisID = thisID.replace('EditFieldID','');
+
+    let quickFields = this.state.quickFields;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === thisID ) { 
+
+          //Based on https://www.sitepoint.com/community/t/how-do-i-add-one-week-to-a-date/47817/2
+          let start = field.value ? field.value: new Date();
+
+          field.value = new Date( start.getTime() + msPerDay * value );
+        }
+      });
+    });
+    //Then update the quickFields
+
+    this.setState({ quickFields: quickFields, });
+
+  }
 
   private _clearDateField = (prop: string, value: any ): void => {
 

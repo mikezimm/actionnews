@@ -24,10 +24,16 @@ const emptyString = (value: string | Date) : string => { return "";};
  *                                                                                                    
  */
 
-export function createTextField(field: IFieldDef | IQuickField, pageIDPref: string,   _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+export function createTextField(field: IQuickField, pageIDPref: string, _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
     let defaultValue = null;
 
-    let thisField = <div id={ pageIDPref + field.name }><TextField
+    let fieldWidth = field.width ? field.width : 200;
+
+    if ( getStyles === null ) { 
+        getStyles = { root: { width: fieldWidth } };
+    }
+
+    let thisField = <div id={ pageIDPref + field.name } style={{ width: fieldWidth }}><TextField
         className={ epStyles.textField }
         styles={ getStyles  } //this.getReportingStyles
         defaultValue={ defaultValue }

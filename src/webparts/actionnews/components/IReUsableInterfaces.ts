@@ -216,6 +216,7 @@ export interface IQuickField extends Partial<IFieldDef> {
   disabled?: boolean;
   hidden?: boolean;
   blinkOnProject?: boolean;
+  choices?: string[];
 
   value?: any;
   width?: number; //Added for Drilldown7 webpart
