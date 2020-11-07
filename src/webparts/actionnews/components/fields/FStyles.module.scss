@@ -1,0 +1,21 @@
+@import '~office-ui-fabric-react/dist/sass/References.scss';
+
+.fields {
+
+    font-size: large;
+
+    .textField {
+        display: table-cell;
+        width: 100%;
+    
+        label {
+          font-weight: bold;
+        }
+    
+        input {
+          //height: 32px;
+          min-width: 80px;
+        }
+      }
+
+}

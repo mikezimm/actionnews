@@ -58,6 +58,7 @@ export const gitRepoGenericWebpart = createRepoLinks( baseMyRepos + 'generic-sol
 
 export const gitRepoDrilldown7WebPart = createRepoLinks( baseMyRepos + 'drilldown7','_blank', 'DrillDown' );
 
+export const gitRepoActionNews = createRepoLinks( baseMyRepos + 'actionnews','_blank', 'ActionNews' );
 
 /**
  * Track My Time links

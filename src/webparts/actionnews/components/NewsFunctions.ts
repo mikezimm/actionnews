@@ -36,7 +36,6 @@ export async function allAvailableActions(   newsService: INewsService, addThese
     
     let thisListObject = thisListWeb.lists.getByTitle(newsService.listName);
     let expandThese = expColumns.join(',');
-    let actionNewsCols = ',' + ActionSearchCols.join(',');
     let selectCols = '*,' + selColumns.join(',');
 
     /**
