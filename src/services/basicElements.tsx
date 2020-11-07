@@ -26,11 +26,14 @@ export function convertTextToListItems ( value: string, delim: string, leftPad: 
     let checkElement: any = e['parentElement'];
     let found = false;
 
+
     for (let i = 0; i < maxHops ; i++) {
 
       if ( found === false ) {
 
         if ( checkElement[prop] ) {
+          
+          console.log('findParentElementPropLikeThis -- ' + i , checkElement[prop] );
 
           let parentProp = checkElement[prop];
 

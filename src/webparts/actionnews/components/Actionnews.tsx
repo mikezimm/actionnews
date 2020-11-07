@@ -307,15 +307,19 @@ public componentDidUpdate(prevProps){
           isLightDismiss={ true }
           isFooterAtBottom={ true }
       >
-        
+
         <ThisEditPane 
+            wpContext={ this.props.wpContext }
+            webAbsoluteUrl={ this.state.newsService.listWeb }
             fields = { this.state.quickFields }
             contextUserInfo = { this.state.newsService.contextUserInfo }
             sourceUserInfo = { this.state.newsService.sourceUserInfo }
             onChange = { this._editFieldUpdate.bind(this) }
+            _clearDateField = { this._clearDateField.bind(this) }
+            _addYouToField = { this._addUserToField.bind(this) }
 
         ></ThisEditPane>
-      
+
     </Panel>;
 
     /***
@@ -332,7 +336,7 @@ public componentDidUpdate(prevProps){
     let actionNewsHeader = <div style={{ float: 'right' }}>
         <Stack horizontal={true} wrap={true} horizontalAlign={"end"} verticalAlign= {"center"} tokens={stackPageTokens}>{}
           { toggleNewItemPane }
-        </Stack>  
+        </Stack>
       </div>;
 
     let currentViewFields: any[] = [];
@@ -340,8 +344,8 @@ public componentDidUpdate(prevProps){
 
     let currentViewGroups : IGrouping[] =  getAppropriateViewGroups( ActionNewsViewDefs , this.state.WebpartWidth );
 
-    let  actionNewsItems  = this.state.allItems.length === 0 ? <div>NO ITEMS FOUND</div> : 
-      <ReactListItems 
+    let  actionNewsItems  = this.state.allItems.length === 0 ? <div>NO ITEMS FOUND</div> :
+      <ReactListItems
           parentListFieldTitles={ ActionNewsViewDefs.length > 0 ? null : null }
 
           webURL = { this.state.newsService.listWeb }
@@ -595,10 +599,65 @@ public componentDidUpdate(prevProps){
 
   } //End toggleTips  
 
-  private _editFieldUpdate = ( prop: string, value: any ): void => {
+
+  private _addUserToField = (prop: string, value: any ): void => {
+    let e: any = event;
+    let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 15, 'begins');
+    thisID = thisID.replace('EditFieldID','');
+    /*
+    var element2 = event.target as HTMLElement;
+    var element3 = event.currentTarget as HTMLElement;
+    let fieldID = this._findNamedElementID(element2);
+    //alert(`Adding you to ${fieldID}`);
+    let projObjectName = this.props.projectFields[fieldID].name;
+    let projObjectType = this.props.projectFields[fieldID].type;
+    let okToUpdateUser: boolean = true;
+    let stateProject = this.state.selectedProject;
+    if ( projObjectType === 'User') {
+      stateProject[projObjectName + 'Id'] = this.props.currentUser.id;
+      stateProject[projObjectName] = this.props.currentUser;
+
+    } else if ( projObjectType === 'MultiUser'){
+
+      if (stateProject[projObjectName + 'Ids'] == null ) {
+        stateProject[projObjectName + 'Ids'] = [this.props.currentUser.id];
+        stateProject[projObjectName] = [this.props.currentUser];
+
+      } else if (stateProject[projObjectName + 'Ids'].indexOf(this.props.currentUser.id) < 0 ) { 
+        stateProject[projObjectName + 'Ids'].push(this.props.currentUser.id);
+        stateProject[projObjectName].push(this.props.currentUser);
+
+      } else { alert('You are already here :)'); okToUpdateUser = false; }
+
+    } else {
+      okToUpdateUser = false;
+      alert ('Encountered strange error in _addUserToField... unexpected field type!');
+    }
+    if (  okToUpdateUser === true) {
+      this.setState({ selectedProject: stateProject });
+    } 
+*/
+    
+    let quickFields = this.state.quickFields;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === thisID ) { field.value = null ;}
+      });
+    });
+    //Then update the quickFields
+
+    this.setState({ quickFields: quickFields, });
+  }
+
+    /*
+  */
+
+  private _clearDateField = (prop: string, value: any ): void => {
 
     let e: any = event;
-    let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 5, 'begins');
+    let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 15, 'begins');
     thisID = thisID.replace('EditFieldID','');
 
     let quickFields = this.state.quickFields;
@@ -606,12 +665,33 @@ public componentDidUpdate(prevProps){
     //Search through each row and field for name:
     quickFields.map( fieldRow => {
       fieldRow.map ( field => {
-        if ( field.name === thisID ) { field.value = prop ;}
+        if ( field.name === thisID ) { field.value = null ;}
       });
     });
     //Then update the quickFields
 
-    console.log('HERE IS Current QuickFields:', quickFields );
+    this.setState({ quickFields: quickFields, });
+
+  }
+
+  private _editFieldUpdate = ( prop: string, value: any ): void => {
+
+    let e: any = event;
+
+    let quickFields = this.state.quickFields;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === prop ) { 
+          field.value = value ;
+          console.log('found this item to update: ' , prop, value );
+        }
+      });
+    });
+    //Then update the quickFields
+
+    // console.log('HERE IS Current QuickFields:', quickFields );
 
     this.setState({
       quickFields: quickFields,

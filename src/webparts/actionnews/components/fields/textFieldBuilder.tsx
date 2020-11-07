@@ -24,16 +24,18 @@ const emptyString = (value: string | Date) : string => { return "";};
  *                                                                                                    
  */
 
-export function createTextField(field: IFieldDef | IQuickField,  _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+export function createTextField(field: IFieldDef | IQuickField, pageIDPref: string,   _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
     let defaultValue = null;
 
-    let thisField = <div id={ 'EditFieldID' + field.name }><TextField
+    let thisField = <div id={ pageIDPref + field.name }><TextField
         className={ epStyles.textField }
         styles={ getStyles  } //this.getReportingStyles
         defaultValue={ defaultValue }
         label={ field.title }
         autoComplete='off'
-        onChanged={ _onChange }
+        onChanged={(value: string) => {
+            _onChange(field.column, value);
+          }}
         validateOnFocusIn
         validateOnFocusOut
         multiline= { field.name === "activity" ? true : false }

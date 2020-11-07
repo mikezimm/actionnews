@@ -297,7 +297,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
 //        if ( prevProps.WebpartHeight !== this.props.WebpartHeight ) { redraw = true; }
 //        if ( prevProps.WebpartWidth !== this.props.WebpartWidth ) { redraw = true; }
 
-        console.log('componentDidUpdate: reactListView.tsx');
+        // console.log('componentDidUpdate: reactListView.tsx');
         if ( redraw === true ) {
             this._updateStateOnPropsChange();
         }
