@@ -32,8 +32,8 @@ export function _createDropdownField(field: IQuickField, _onChange: any, pageIDP
         <Dropdown
         label={ field.title }
         selectedKey={ getChoiceKey(field.name) }
-        onChange={(choice: any) => {
-          _onChange(field.column, choice);
+        onChange={(choice: any, index: any) => {
+          _onChange(field.column, choice, index);
         }}
         options={ sOptions } 
         styles={ dropdownStyles }

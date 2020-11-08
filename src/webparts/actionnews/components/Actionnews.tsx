@@ -246,7 +246,7 @@ public componentDidUpdate(prevProps){
     rebuildPart = true ;
   }
 
-  console.log('componentDidUpdate: Actionnews.tsx');
+  //console.log('componentDidUpdate: Actionnews.tsx');
 
   if (rebuildPart === true) {
     this._updateStateOnPropsChange();

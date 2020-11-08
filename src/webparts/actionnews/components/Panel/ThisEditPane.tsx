@@ -74,7 +74,7 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
         return thisField;
       });
 
-      return  <div>
+      return  <div style={{ marginTop: 10 }}>
         <Stack horizontal={ true } tokens={stackTokens}>
               { thisRow }
           </Stack>
