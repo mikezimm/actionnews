@@ -66,6 +66,8 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
           thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null );
         } else if ( thisFieldObject.type === 'User' || thisFieldObject.type === 'MultiUser' ) {
           thisField = createPeopleField( thisFieldObject, 3, this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null );
+        } else if ( thisFieldObject.type === 'Choice' || thisFieldObject.type === 'Dropdown' ) {
+          thisField = _createDropdownField( thisFieldObject, this.props.onChange, 'EditFieldID', null );
         }
 
         //createDateField

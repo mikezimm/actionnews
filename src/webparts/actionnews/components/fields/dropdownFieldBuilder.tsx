@@ -10,32 +10,35 @@ import { IFormFields, IProjectFormFields, IFieldDef } from '../fields/fieldDefin
 import { IQuickField } from '../../components/IReUsableInterfaces';
 
 
-export function _createDropdownField(field: IQuickField, choices: string[], _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+export function _createDropdownField(field: IQuickField, _onChange: any, pageIDPref: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
 
+  let choices : string[] = field.choices && field.choices.length > 0 ? field.choices : [];
   let fieldWidth = field.width ? field.width : 200;
+
   const dropdownStyles: Partial<IDropdownStyles> = {
       dropdown: { width: fieldWidth }
     };
 
+  let sOptions: IDropdownOption[] = choices == null ? null : 
+    choices.map(val => {
+          return {
+              key: getChoiceKey(val),
+              text: val,
+          };
+      });
 
-    let sOptions: IDropdownOption[] = choices == null ? null : 
-      choices.map(val => {
-            return {
-                key: getChoiceKey(val),
-                text: val,
-            };
-        });
-
-    let thisDropdown = sOptions == null ? null : <div
-        id={ field.name }
-          ><Dropdown 
-          label={ field.title }
-          selectedKey={ getChoiceKey(field.name) }
-          onChange={ _onChange }
-          options={ sOptions } 
-          styles={ dropdownStyles }
-        />
-      </div>;
+  let thisDropdown = sOptions == null ? null : 
+    <div id={ pageIDPref + field.column } style={{ width: fieldWidth }}  className={ [ ].join(' ') }>
+        <Dropdown
+        label={ field.title }
+        selectedKey={ getChoiceKey(field.name) }
+        onChange={(choice: any) => {
+          _onChange(field.column, choice);
+        }}
+        options={ sOptions } 
+        styles={ dropdownStyles }
+      />
+    </div>;
 
   return thisDropdown;
 
