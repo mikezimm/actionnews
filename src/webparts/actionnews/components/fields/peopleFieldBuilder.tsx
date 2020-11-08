@@ -7,7 +7,9 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 import { IFormFields, IProjectFormFields, IFieldDef } from '../fields/fieldDefinitions';
 
-import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import { PeoplePicker, PrincipalType, } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+
+import { IPersonaProps } from "office-ui-fabric-react/lib/components/Persona/Persona.types";
 
 import { IUser, IQuickField } from '../IReUsableInterfaces';
 
@@ -77,8 +79,8 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
                   showtooltip={false}
                   required={ isRequired } // isRequired in v1.16
                   disabled={ field.disabled }
-                  onChange={(person: any) => {  // selectedItems in v1.16
-                    _onChange(field.column, person);
+                  onChange={(items: IPersonaProps[]) => {  // selectedItems in v1.16
+                    _onChange(field.column, items);
                   }}
                   showHiddenInUI={false}
                   principalTypes={[PrincipalType.User]}

@@ -70,7 +70,7 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
         } else if ( thisFieldObject.type === 'Time' || thisFieldObject.type === 'Date' ) {
           thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null, fieldWidth );
         } else if ( thisFieldObject.type === 'User' || thisFieldObject.type === 'MultiUser' ) {
-          thisField = createPeopleField( thisFieldObject, 3, this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
+          thisField = createPeopleField( thisFieldObject, thisFieldObject.type === 'User' ? 1 : 4 , this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
         } else if ( thisFieldObject.type === 'Choice' || thisFieldObject.type === 'Dropdown' ) {
           thisField = _createDropdownField( thisFieldObject, this.props._updateDropdown, 'EditFieldID', null, fieldWidth );
         }
