@@ -222,7 +222,7 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
 
 public componentDidMount() {
   this._updateStateOnPropsChange();
-  console.log('Mounted!');
+//  console.log('Mounted!');
 }
 
 
@@ -322,6 +322,9 @@ public componentDidUpdate(prevProps){
             _addYouToField = { this._addUserToField.bind(this) }
             _addWeekToDate = { this._addWeekToDate.bind(this) }
             _updateDropdown = { this._updateDropdown.bind(this) }
+            _saveItem= { this._saveItem.bind(this) }
+            _cancelItem= { this._onClosePanelNewItem.bind(this) }
+            
 
         ></ThisEditPane>
 
@@ -648,7 +651,17 @@ public componentDidUpdate(prevProps){
     //Search through each row and field for name:
     quickFields.map( fieldRow => {
       fieldRow.map ( field => {
-        if ( field.name === thisID ) { field.value = null ;}
+        if ( field.name === thisID ) { 
+
+          if (field.type === "MultiUser" ) {
+            field.value = value;
+  
+          } else if (field.type === "User" ) { //Single User, can't be an array
+            let saveUser = value ? value.results[0] : null;
+            field.value = saveUser;
+          }
+        
+        }
       });
     });
     //Then update the quickFields
@@ -751,5 +764,13 @@ public componentDidUpdate(prevProps){
       quickFields: quickFields,
     });
   }
+
+  private _saveItem ( ) {
+
+    return null;
+
+  }
+ 
+
 
 }

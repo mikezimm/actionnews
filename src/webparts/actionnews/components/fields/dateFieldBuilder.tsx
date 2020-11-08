@@ -84,6 +84,7 @@ export function createDateField(field: IQuickField, pageIDPref: string, _onChang
             onChange={(date: Date) => {
               _onChange(field.column, date);
             }}
+
             disabled={field.disabled}
             key={ pageIDPref + field.column }
             dateConvention={DateConvention.Date} showMonthPickerAsOverlay={showMonthPickerAsOverlay}

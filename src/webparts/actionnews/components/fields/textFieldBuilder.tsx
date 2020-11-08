@@ -25,7 +25,7 @@ const emptyString = (value: string | Date) : string => { return "";};
  */
 
 export function createTextField(field: IQuickField, pageIDPref: string, _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth: number) {
-    let defaultValue = null;
+    let defaultValue = field.value ? field.value : null ;
 
 //    let fieldWidth = field.width ? field.width : 200;
 
@@ -33,11 +33,15 @@ export function createTextField(field: IQuickField, pageIDPref: string, _onChang
         getStyles = { wrapper: { width: fieldWidth } };
     }
 
+    let isRequired = field.required ? field.required : false ;
+    if ( field.value && field.value.length > 0 ) { isRequired = false ; }
+
     let thisField = <div id={ pageIDPref + field.name } style={{ width: fieldWidth }}><TextField
         className={ epStyles.textField }
         styles={ getStyles  } //this.getReportingStyles
         defaultValue={ defaultValue }
         label={ field.title }
+        required={ isRequired }
         autoComplete='off'
         disabled={field.disabled}
         onChanged={(value: string) => {

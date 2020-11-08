@@ -354,7 +354,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
                 >
                     { toggles }
                     { attachments }
-                    { createPanelButtons( this.props.quickCommands, this.state.panelItem, this.props.sourceUserInfo ) }
+                    { createPanelButtons( this.props.quickCommands, this.state.panelItem, this._panelButtonClicked.bind(this), this.props.sourceUserInfo ) }
                     { autoDetailsList(this.state.panelItem, ["Title","refiners"],["search","meta","searchString"],true) }
                 </Panel>;
 

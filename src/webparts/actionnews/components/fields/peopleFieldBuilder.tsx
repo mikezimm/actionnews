@@ -59,6 +59,9 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
 
     let addUserButton = field.disabled === true ? null : createIconButton('FollowUser','Add you',addYouToField, null, null );
 
+    
+    let isRequired = field.required ? field.required : false ;
+    if ( field.value && field.value.length > 0 ) { isRequired = false ; }
 
       return (
           // Uncontrolled
@@ -72,8 +75,8 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
                   personSelectionLimit={maxCount}
                   //groupName={"Team Site Owners"} // Leave this blank in case you want to filter from all users
                   showtooltip={false}
-                  required={field.required} // isRequired in v1.16
-                  disabled={field.disabled}
+                  required={ isRequired } // isRequired in v1.16
+                  disabled={ field.disabled }
                   onChange={(person: any) => {  // selectedItems in v1.16
                     _onChange(field.column, person);
                   }}
