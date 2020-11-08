@@ -90,8 +90,8 @@
   .fieldWithIconButton{
     position: relative;
 
-    *[class^="container"]  {
-      width: '100%';
+    label {
+      padding-top: 10px;
     }
 
   }

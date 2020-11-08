@@ -27,6 +27,8 @@ export interface IEditPaneProps {
   _clearDateField: any; //Callback to clear the date
   _addYouToField: any;
   _addWeekToDate: any;
+  _updateDropdown: any;
+  _saveItem: any;
   wpContext: WebPartContext;
   webAbsoluteUrl: string;
 
@@ -36,7 +38,7 @@ export interface IEditPaneState {
   width: number;
 }
 //  formatting
-const stackTokens: IStackTokens = { childrenGap: 40 };
+const stackTokens: IStackTokens = { childrenGap: 20 };
 
 export default class ThisEditPane extends React.Component<IEditPaneProps, IEditPaneState> {
 
@@ -58,23 +60,25 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
 
     let fields = this.props.fields.map( fieldRow => {
 
+      let rowFields = fieldRow.length;
+      let fieldWidth = ( 500 / rowFields ) - ( fieldRow.length - 1 ) * 10 ; //Accounts for 30 padding between cells on same row
       let thisRow: any[] = fieldRow.map( thisFieldObject => {
         let thisField: any = <div> { thisFieldObject.name } - { thisFieldObject.value }</div>;
-        if ( thisFieldObject.type === 'Text') {
-          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, null );
+        if ( thisFieldObject.type === 'Text' || thisFieldObject.type === 'MultiLine') {
+          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, null, fieldWidth );
         } else if ( thisFieldObject.type === 'Time' || thisFieldObject.type === 'Date' ) {
-          thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null );
+          thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null, fieldWidth );
         } else if ( thisFieldObject.type === 'User' || thisFieldObject.type === 'MultiUser' ) {
-          thisField = createPeopleField( thisFieldObject, 3, this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null );
+          thisField = createPeopleField( thisFieldObject, 3, this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
         } else if ( thisFieldObject.type === 'Choice' || thisFieldObject.type === 'Dropdown' ) {
-          thisField = _createDropdownField( thisFieldObject, this.props.onChange, 'EditFieldID', null );
+          thisField = _createDropdownField( thisFieldObject, this.props._updateDropdown, 'EditFieldID', null, fieldWidth );
         }
 
         //createDateField
         return thisField;
       });
 
-      return  <div style={{ marginTop: 10 }}>
+      return  <div style={{  }}>
         <Stack horizontal={ true } tokens={stackTokens}>
               { thisRow }
           </Stack>

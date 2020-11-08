@@ -24,13 +24,13 @@ const emptyString = (value: string | Date) : string => { return "";};
  *                                                                                                    
  */
 
-export function createTextField(field: IQuickField, pageIDPref: string, _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+export function createTextField(field: IQuickField, pageIDPref: string, _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth: number) {
     let defaultValue = null;
 
-    let fieldWidth = field.width ? field.width : 200;
+//    let fieldWidth = field.width ? field.width : 200;
 
     if ( getStyles === null ) { 
-        getStyles = { root: { width: fieldWidth } };
+        getStyles = { wrapper: { width: fieldWidth } };
     }
 
     let thisField = <div id={ pageIDPref + field.name } style={{ width: fieldWidth }}><TextField
@@ -39,12 +39,13 @@ export function createTextField(field: IQuickField, pageIDPref: string, _onChang
         defaultValue={ defaultValue }
         label={ field.title }
         autoComplete='off'
+        disabled={field.disabled}
         onChanged={(value: string) => {
             _onChange(field.column, value);
           }}
         validateOnFocusIn
         validateOnFocusOut
-        multiline= { field.name === "activity" ? true : false }
+        multiline= { field.type === "MultiLine" ? true : false }
         autoAdjustHeight= { true }
 
     /></div>;

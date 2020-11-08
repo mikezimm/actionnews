@@ -37,7 +37,7 @@ export const timeDisplayControlType = TimeDisplayControlType.Dropdown;
 
 const emptyString = (value: string | Date) : string => { return "";};
 
-export function createDateField(field: IQuickField, pageIDPref: string, _onChange: any, _clearDate: any, _addWk: any, required: boolean, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+export function createDateField(field: IQuickField, pageIDPref: string, _onChange: any, _clearDate: any, _addWk: any, required: boolean, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth ) {
 
   const getDateErrorMessage = (value: Date): string => {
     let mess = value == null ? "Don't forget Date!" : "";
@@ -69,7 +69,9 @@ export function createDateField(field: IQuickField, pageIDPref: string, _onChang
 
    let theseButtons = buttons.length === 0 ? null : <Stack horizontal={true} wrap={false} horizontalAlign={"end"} tokens={stackPageTokens} className={ '' }>{ buttons } </Stack>;
 
-   let fieldWidth = field.width ? field.width : 200;
+   if ( getStyles === null ) { 
+        getStyles = { wrapper: { width: fieldWidth } };
+    }
 
   return (
       // Uncontrolled

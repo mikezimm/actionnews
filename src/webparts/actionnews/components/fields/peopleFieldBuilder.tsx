@@ -25,7 +25,7 @@ import stylesF from './StylesField.module.scss';
  * @param pageIDPref Added to function instead of being constant in project so it's more reusable
  * @param getStyles 
  */
-export function createPeopleField(field: IQuickField , maxCount: number, _onChange: any, addYouToField: any, pageIDPref: string , wpContext: WebPartContext, webAbsoluteUrl: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+export function createPeopleField(field: IQuickField , maxCount: number, _onChange: any, addYouToField: any, pageIDPref: string , wpContext: WebPartContext, webAbsoluteUrl: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth) {
     
     let users: IUser[] = maxCount === 1 ? [field.value] : field.value;
 
@@ -59,12 +59,11 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
 
     let addUserButton = field.disabled === true ? null : createIconButton('FollowUser','Add you',addYouToField, null, null );
 
-    let fieldWidth = field.width ? field.width : 200;
 
       return (
           // Uncontrolled
-          <div id={ pageIDPref + field.column } style={{ width: fieldWidth }} className={ stylesF.peopleBlock}>
-            <div className={ field.disabled !== true ? stylesF.addMeButton : null }>{ addUserButton } </div>
+          <div id={ pageIDPref + field.column } style={{ width: fieldWidth }} className={ [stylesF.commonStyles , stylesF.peopleBlock ].join(' ')}>
+            <div className={ field.disabled !== true ? stylesF.addMeButton : null } style={{ float: 'right', marginRight: 20 }}>{ addUserButton } </div>
               <PeoplePicker
                   context={wpContext}
                   webAbsoluteUrl={ webAbsoluteUrl }

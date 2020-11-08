@@ -6,6 +6,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { CompoundButton, Stack, IStackTokens, elementContains, initializeIcons } from 'office-ui-fabric-react';
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
+import { Dropdown, DropdownMenuItemType, IDropdownStyles, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 
 
 import stylesContents from './Contents/contents.module.scss';
@@ -320,6 +321,7 @@ public componentDidUpdate(prevProps){
             _clearDateField = { this._clearDateField.bind(this) }
             _addYouToField = { this._addUserToField.bind(this) }
             _addWeekToDate = { this._addWeekToDate.bind(this) }
+            _updateDropdown = { this._updateDropdown.bind(this) }
 
         ></ThisEditPane>
 
@@ -715,6 +717,29 @@ public componentDidUpdate(prevProps){
         if ( field.name === prop ) { 
           field.value = value ;
           console.log('found this item to update: ' , prop, value );
+        }
+      });
+    });
+    //Then update the quickFields
+
+    // console.log('HERE IS Current QuickFields:', quickFields );
+
+    this.setState({
+      quickFields: quickFields,
+    });
+  }
+
+  private _updateDropdown = (prop: React.FormEvent<HTMLDivElement>, e , pickedOption ): void => {
+
+    let quickFields = this.state.quickFields;
+    let thisProp : any = prop;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === thisProp ) { 
+          field.value = pickedOption.text ;
+          console.log('found this item to update: ' , thisProp, pickedOption.text );
         }
       });
     });

@@ -86,6 +86,9 @@
 
   .fieldWithIconButton{
     position: relative;
+    label {
+      padding-top: 10px;
+    }
   }
 
   .hoverCard {
