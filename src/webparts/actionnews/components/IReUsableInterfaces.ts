@@ -393,6 +393,8 @@ export interface ILink {
     id?: any;
     Id?: any;
     ID?: any;
+    remoteID?: any; //This is the ID of the user on another site collection, sourceWeb ID
+    PrincipalType?: number;
   
     isSiteAdmin?:boolean;
     LoginName?: string;

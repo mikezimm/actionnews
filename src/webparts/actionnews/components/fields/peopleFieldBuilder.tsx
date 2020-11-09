@@ -11,11 +11,14 @@ import { PeoplePicker, PrincipalType, } from "@pnp/spfx-controls-react/lib/Peopl
 
 import { IPersonaProps } from "office-ui-fabric-react/lib/components/Persona/Persona.types";
 
+import { getEmailFromLoginName, checkForLoginName } from '../../../../services/userServices';
+
 import { IUser, IQuickField } from '../IReUsableInterfaces';
 
 import { createIconButton } from '../createButtons/IconButton';
 
 import stylesF from './StylesField.module.scss';
+import { SearchResults } from '@pnp/sp/search';
 
 
 /**
@@ -37,26 +40,28 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
         return null;
       }
 
-      let uName = u.Name ? u.Name : u.loginName ? u.loginName : u.LoginName ? u.LoginName :u.email;
+      let uName = checkForLoginName(u);
+      if ( uName === undefined &&  u[0] ) {
+        uName = checkForLoginName(u[0]);
+      }
 
       if ( uName == undefined ) { // Added because when you remove the person in react comp, the user still is there, the name just gets removed.
         console.log('createPeopleField - did you remove a person from the array?', users, u);
-        alert('createPeopleField - did you remove a person from the array?' +  JSON.stringify(u));
+        //alert('createPeopleField - did you remove a person from the array?' +  JSON.stringify(u));
         return null;
       }
 
-      if (uName.indexOf('|') > -1 && uName.indexOf('@') > 0 ) {
-        //This is an ID structure from reading in from the list:  "i:0#.f|membership|clicky.mcclickster@mcclickster.onmicrosoft.com"
-        let uProps = uName.split('|');
-        let expectedEmailIndex = 2;
-        if (uProps.length === 3 && uProps[expectedEmailIndex].indexOf('@') > -1) {
-          return uProps[expectedEmailIndex];
-        }
-      }
-      console.log('Unknown User Structure for createPeopleField', u);
-      alert('Unknown User Structure for createPeopleField: ' +  JSON.stringify(u));
+      let userEmail = getEmailFromLoginName( uName );
 
-      return null;
+      if ( userEmail ) {
+          return userEmail;
+      } else {
+          console.log('Unknown User Structure for createPeopleField', u);
+          alert('Unknown User Structure for createPeopleField: ' +  JSON.stringify(u));
+          return null;
+      }
+
+
     });
 
     let addUserButton = field.disabled === true ? null : createIconButton('FollowUser','Add you',addYouToField, null, null );
@@ -89,5 +94,6 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
                   peoplePickerWPclassName={stylesF.fieldWithIconButton}
               /></div>
       );
+
 
   }

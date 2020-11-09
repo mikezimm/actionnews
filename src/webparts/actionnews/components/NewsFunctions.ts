@@ -30,7 +30,9 @@ export async function allAvailableActions(   newsService: INewsService, addThese
 //    console.log('UniqueId:', legacyPageContext.pageItemId);
 //    newsService.pageID = legacyPageContext.pageItemId;
 
-    let thisListWeb = Web(newsService.tenant + newsService.listWeb);
+    let getThisWeb = newsService.listWeb;
+    if ( getThisWeb.indexOf(newsService.tenant) < 0 ) {getThisWeb = newsService.tenant + newsService.listWeb; }
+    let thisListWeb = Web( getThisWeb );
     let scope = newsService.scope;
     let errMessage = '';
     
