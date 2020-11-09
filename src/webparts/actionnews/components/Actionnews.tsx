@@ -6,7 +6,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { CompoundButton, Stack, IStackTokens, elementContains, initializeIcons } from 'office-ui-fabric-react';
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
-
+import { Dropdown, DropdownMenuItemType, IDropdownStyles, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 
 import stylesContents from './Contents/contents.module.scss';
 
@@ -14,7 +14,7 @@ import { IActionnewsProps } from './IActionnewsProps';
 
 import { IActionnewsState, ActionStatus, IActionItem, IActionStatus, IPlannerTask, ActionSearchCols, INewsService,  } from './IActionnewsState';
 
-import { IQuickCommands, ICustViewDef, IQuickField } from './IReUsableInterfaces';
+import { IQuickCommands, ICustViewDef, IQuickField, IUser } from './IReUsableInterfaces';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
@@ -35,20 +35,28 @@ import  EarlyAccess from './HelpInfo/EarlyAccess';
 
 import ThisEditPane from './Panel/ThisEditPane';
 
+import { _saveEditPaneItem } from './Panel/editPaneFunctions';
+
 import { ActionQuickCommands } from './const_ActionCommands';
 
 import { ActionNewsViewDefs } from './const_ActionViewDefs';
 
-import { ActionNewsQuickFields } from './const_ActionQuickFields';
+import { getNewActionQuickFields } from './const_ActionQuickFields';
 
 import { findParentElementPropLikeThis } from '../../../services/basicElements';
 
+import { msPerWk, msPerDay } from '../../../services/dateServices';
+
+import { getEmailFromLoginName, checkForLoginName, ensureUserHere } from '../../../services/userServices';
 
 import { getAppropriateViewFields, getAppropriateViewGroups, } from './ReactList/listFunctions';
+import { PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
+
+import { makeIQuickField } from './const_ActionQuickFields';
 
 export default class Actionnews extends React.Component<IActionnewsProps, IActionnewsState> {
 
-  
+
 
     /***
      *     .o88b. d8888b. d88888b  .d8b.  d888888b d88888b      d8888b. d8888b. d888888b db      db           db      d888888b .d8888. d888888b 
@@ -117,7 +125,7 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
 
 
 private updateMainListColumns( list: INewsService ) {
-       
+
   let selectCols: string = "*";
   let expandThese = "";
 
@@ -145,7 +153,7 @@ private updateMainListColumns( list: INewsService ) {
   list.staticColumns = allColumns;
   list.expandColumns = expColumns;
 
-  list.selectColumnsStr = selColumns.join(',') ;
+  list.selectColumnsStr = selColumns.join(',');
   list.staticColumnsStr = allColumns.join(',');
   list.expandColumnsStr = expColumns.join(',');
 
@@ -183,7 +191,7 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
       } else { quickCommands.successBanner = quickCommands.successBanner * 1000; }
   }
 
-  let quickFields : IQuickField[][] = ActionNewsQuickFields ;
+  let quickFields : IQuickField[][] = getNewActionQuickFields() ;
 
   this.state = {
 
@@ -202,6 +210,7 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
         quickCommands: null,
 
         quickFields: quickFields,
+        staticFields: this.makeStaticFields(),
 
         bannerMessage: null,
     
@@ -211,15 +220,34 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
     
         groupByFields: [],
 
+        recentUsers: [],
+
         panelWidth: PanelType.medium,
   
   };
 
 }
 
+  
+private makeStaticFields ( ) {
+    
+  let PageID = makeIQuickField("PageID", "PageID", "PageID", "Text", false, '', false, true, this.props.pageId.toString()  );
+  let LibraryName = makeIQuickField("LibraryName", "LibraryName", "LibraryName", "Text", false, '', false, true, this.props.listName  );
+  let WebURL = makeIQuickField("WebURL", "WebURL", "WebURL", "Text", false, '', false, true, this.props.listWeb  );
+  let PageLink = makeIQuickField("PageLink", "PageLink", "PageLink", "Text", false, '', false, true, this.props.pageUrl  );
+//  let PageURL = makeIQuickField("PageURL", "PageURL", "PageURL", "Link", false, '', false, true, this.props.pageUrl );
+
+  const ActionNewsStaticFields : IQuickField[][] = [
+    [ PageID, LibraryName, WebURL, PageLink ]
+
+  ];
+
+  return ActionNewsStaticFields;
+}
+
 public componentDidMount() {
   this._updateStateOnPropsChange();
-  console.log('Mounted!');
+//  console.log('Mounted!');
 }
 
 
@@ -244,7 +272,7 @@ public componentDidUpdate(prevProps){
     rebuildPart = true ;
   }
 
-  console.log('componentDidUpdate: Actionnews.tsx');
+  //console.log('componentDidUpdate: Actionnews.tsx');
 
   if (rebuildPart === true) {
     this._updateStateOnPropsChange();
@@ -307,15 +335,24 @@ public componentDidUpdate(prevProps){
           isLightDismiss={ true }
           isFooterAtBottom={ true }
       >
-        
+
         <ThisEditPane 
+            wpContext={ this.props.wpContext }
+            webAbsoluteUrl={ this.state.newsService.listWeb }
             fields = { this.state.quickFields }
             contextUserInfo = { this.state.newsService.contextUserInfo }
             sourceUserInfo = { this.state.newsService.sourceUserInfo }
             onChange = { this._editFieldUpdate.bind(this) }
+            _clearDateField = { this._clearDateField.bind(this) }
+            _addYouToField = { this._addUserToField.bind(this) }
+            _addWeekToDate = { this._addWeekToDate.bind(this) }
+            _updateDropdown = { this._updateDropdown.bind(this) }
+            _saveItem= { this._saveItem.bind(this) }
+            _cancelItem= { this._onClosePanelNewItem.bind(this) }
+            
 
         ></ThisEditPane>
-      
+
     </Panel>;
 
     /***
@@ -332,7 +369,7 @@ public componentDidUpdate(prevProps){
     let actionNewsHeader = <div style={{ float: 'right' }}>
         <Stack horizontal={true} wrap={true} horizontalAlign={"end"} verticalAlign= {"center"} tokens={stackPageTokens}>{}
           { toggleNewItemPane }
-        </Stack>  
+        </Stack>
       </div>;
 
     let currentViewFields: any[] = [];
@@ -340,8 +377,8 @@ public componentDidUpdate(prevProps){
 
     let currentViewGroups : IGrouping[] =  getAppropriateViewGroups( ActionNewsViewDefs , this.state.WebpartWidth );
 
-    let  actionNewsItems  = this.state.allItems.length === 0 ? <div>NO ITEMS FOUND</div> : 
-      <ReactListItems 
+    let  actionNewsItems  = this.state.allItems.length === 0 ? <div>NO ITEMS FOUND</div> :
+      <ReactListItems
           parentListFieldTitles={ ActionNewsViewDefs.length > 0 ? null : null }
 
           webURL = { this.state.newsService.listWeb }
@@ -595,10 +632,75 @@ public componentDidUpdate(prevProps){
 
   } //End toggleTips  
 
-  private _editFieldUpdate = ( prop: string, value: any ): void => {
+
+  private _addUserToField = (prop: string, value: any ): void => {
+    let e: any = event;
+    let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 15, 'begins');
+    thisID = thisID.replace('EditFieldID','');
+    /*
+    var element2 = event.target as HTMLElement;
+    var element3 = event.currentTarget as HTMLElement;
+    let fieldID = this._findNamedElementID(element2);
+    //alert(`Adding you to ${fieldID}`);
+    let projObjectName = this.props.projectFields[fieldID].name;
+    let projObjectType = this.props.projectFields[fieldID].type;
+    let okToUpdateUser: boolean = true;
+    let stateProject = this.state.selectedProject;
+    if ( projObjectType === 'User') {
+      stateProject[projObjectName + 'Id'] = this.props.currentUser.id;
+      stateProject[projObjectName] = this.props.currentUser;
+
+    } else if ( projObjectType === 'MultiUser'){
+
+      if (stateProject[projObjectName + 'Ids'] == null ) {
+        stateProject[projObjectName + 'Ids'] = [this.props.currentUser.id];
+        stateProject[projObjectName] = [this.props.currentUser];
+
+      } else if (stateProject[projObjectName + 'Ids'].indexOf(this.props.currentUser.id) < 0 ) { 
+        stateProject[projObjectName + 'Ids'].push(this.props.currentUser.id);
+        stateProject[projObjectName].push(this.props.currentUser);
+
+      } else { alert('You are already here :)'); okToUpdateUser = false; }
+
+    } else {
+      okToUpdateUser = false;
+      alert ('Encountered strange error in _addUserToField... unexpected field type!');
+    }
+    if (  okToUpdateUser === true) {
+      this.setState({ selectedProject: stateProject });
+    } 
+*/
+    
+    let quickFields = this.state.quickFields;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === thisID ) { 
+
+          if (field.type === "MultiUser" ) {
+            field.value = value;
+  
+          } else if (field.type === "User" ) { //Single User, can't be an array
+            let saveUser = value ? value.results[0] : null;
+            field.value = saveUser;
+          }
+        
+        }
+      });
+    });
+    //Then update the quickFields
+
+    this.setState({ quickFields: quickFields, });
+  }
+
+    /*
+  */
+
+  private _addWeekToDate = (prop: string, value: any ): void => {
 
     let e: any = event;
-    let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 5, 'begins');
+    let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 15, 'begins');
     thisID = thisID.replace('EditFieldID','');
 
     let quickFields = this.state.quickFields;
@@ -606,16 +708,184 @@ public componentDidUpdate(prevProps){
     //Search through each row and field for name:
     quickFields.map( fieldRow => {
       fieldRow.map ( field => {
-        if ( field.name === thisID ) { field.value = prop ;}
+        if ( field.name === thisID ) { 
+
+          //Based on https://www.sitepoint.com/community/t/how-do-i-add-one-week-to-a-date/47817/2
+          let start = field.value ? field.value: new Date();
+
+          field.value = new Date( start.getTime() + msPerDay * value );
+        }
       });
     });
     //Then update the quickFields
 
-    console.log('HERE IS Current QuickFields:', quickFields );
+    this.setState({ quickFields: quickFields, });
+
+  }
+
+  private _clearDateField = (prop: string, value: any ): void => {
+
+    let e: any = event;
+    let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 15, 'begins');
+    thisID = thisID.replace('EditFieldID','');
+
+    let quickFields = this.state.quickFields;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === thisID ) { field.value = null ;}
+      });
+    });
+    //Then update the quickFields
+
+    this.setState({ quickFields: quickFields, });
+
+  }
+
+  private _editFieldUpdate = ( prop: string, value: any ): void => {
+
+    let e: any = event;
+
+    let quickFields = this.state.quickFields;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === prop ) { 
+          field.value = value ;
+          console.log('found this item to update: ' , prop, value );
+
+          if ( field.type.toLowerCase().indexOf('user') === 0  ) {
+            this.updateRecentUsers( field.value, this.state.recentUsers, this.state.newsService.listWeb );
+
+          } else if ( field.type.toLowerCase().indexOf('multiuser') === 0  ) {
+            this.updateRecentUsers( field.value, this.state.recentUsers, this.state.newsService.listWeb );
+
+          }
+
+
+        }
+      });
+    });
+    //Then update the quickFields
+
+    // console.log('HERE IS Current QuickFields:', quickFields );
+
 
     this.setState({
       quickFields: quickFields,
     });
   }
+
+  private async updateRecentUsers( theseUsers: IUser[], checkTheseUsers: IUser[] , webUrl: string ) {
+    let recentUsers = await this.unsureThisUser( theseUsers, checkTheseUsers, webUrl );
+    this.setState({
+      recentUsers: recentUsers,
+    });
+  }
+
+  private async unsureThisUser ( theseUsers: IUser[], checkTheseUsers: IUser[] , webUrl: string ) {
+
+    let updateState: boolean = null;
+
+    console.log('unsureThisUser', theseUsers);
+    let recentUsers : IUser[] = checkTheseUsers;
+    let ensureLogin : IUser[] = [];
+
+    //Get each user and check if they are in stateUsers:  getEmailFromLoginName, checkForLoginName
+    if ( theseUsers.length > 0 ) {
+      theseUsers.map( ensureUser => {
+        let loginName = checkForLoginName( ensureUser );
+        if ( loginName ) {
+  
+          let isAlreadyInState = false;
+  
+          //Check if loginName of new user is already in state
+          recentUsers.map( existingUser => {
+            if ( existingUser.loginName === loginName ) { isAlreadyInState = true ; }
+          });
+  
+          if ( isAlreadyInState === false ) {
+            console.log('NEED TO ENSURE LOGIN: ', loginName );
+            updateState = true;
+            ensureUser.loginName = loginName;
+            ensureLogin.push(ensureUser);
+          }
+        }
+      });
+    }
+
+    if ( ensureLogin.length > 0 ) {
+      for (let i = 0; i < ensureLogin.length; i++) {
+        let user = await ensureUserHere( ensureLogin[i].loginName, webUrl );
+        let localId = ensureLogin[i].id ? ensureLogin[i].id : ensureLogin[i].Id;
+        recentUsers.push({
+          id: localId,
+          Id: localId,
+          remoteID: user.data.Id,
+          title: user.data.Title,
+          Title: user.data.Title,
+          loginName: user.data.LoginName,
+          email: user.data.Email,
+          PrincipalType: user.data.PrincipalType,
+        });
+      }
+      console.log('updated state recentUsers: ', recentUsers );
+
+    }
+
+    return recentUsers;
+
+  }
+
+  private _updateDropdown = (prop: React.FormEvent<HTMLDivElement>, e , pickedOption ): void => {
+
+    let quickFields = this.state.quickFields;
+    let thisProp : any = prop;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === thisProp ) { 
+          field.value = pickedOption.text ;
+          console.log('found this item to update: ' , thisProp, pickedOption.text );
+        }
+      });
+    });
+    //Then update the quickFields
+
+    // console.log('HERE IS Current QuickFields:', quickFields );
+
+    this.setState({
+      quickFields: quickFields,
+    });
+  }
+
+  private async _saveItem ( ) {
+
+    let results : any = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, this.state.quickFields, this.state.staticFields, this.state.recentUsers );
+
+    let passed = results && results.data ? true : false;
+
+    if ( passed !== true ) {
+      //The save did not happend
+      console.log('was NOT ABLE TO SAVE ITEM');
+
+    } else {
+      alert('Your Action News item was just saved!');
+      let quickFields : IQuickField[][] = getNewActionQuickFields() ;
+      this.setState({
+        showNewItem: false,
+        quickFields: quickFields,
+      });
+      this.getAllItemsCall();
+
+    }
+    return null;
+
+  }
+ 
+
 
 }

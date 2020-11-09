@@ -7,32 +7,58 @@ import { TextField,  IStyleFunctionOrObject, ITextFieldStyleProps, ITextFieldSty
 import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
 import { IFormFields, IProjectFormFields, IFieldDef } from '../fields/fieldDefinitions';
+import { IQuickField } from '../../components/IReUsableInterfaces';
 
-const defaultWidth = 200;
+export const dropdownHeaderPrefix = 'Header=';
+export const dropdownDivider = '-Divider-';
 
-export function _createDropdownField(field: IFieldDef, choices: string[], _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>) {
+export function _createDropdownField(field: IQuickField, _onChange: any, pageIDPref: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth) {
+
+  let choices : string[] = field.choices && field.choices.length > 0 ? field.choices : [];
+
   const dropdownStyles: Partial<IDropdownStyles> = {
-      dropdown: { width: defaultWidth }
+      root: { width: fieldWidth }
     };
 
-    let sOptions: IDropdownOption[] = choices == null ? null : 
-      choices.map(val => {
-            return {
-                key: getChoiceKey(val),
-                text: val,
-            };
-        });
+  let sOptions: IDropdownOption[] = choices == null ? null : 
+    choices.map(val => {
 
-    let thisDropdown = sOptions == null ? null : <div
-        id={ field.name }
-          ><Dropdown 
-          label={ field.title }
-          selectedKey={ getChoiceKey(field.name) }
-          onChange={ _onChange }
-          options={ sOptions } 
-          styles={ dropdownStyles }
-        />
-      </div>;
+      let isHeader = val.toLowerCase().indexOf(dropdownHeaderPrefix.toLowerCase()) === 0 ? true : false;
+      let isDivider = val.toLowerCase().indexOf(dropdownDivider.toLowerCase()) === 0 ? true : false;
+      let itemType : DropdownMenuItemType = DropdownMenuItemType.Normal;
+
+      if ( isHeader === true ) {
+        val = val.replace(dropdownHeaderPrefix,'') ;
+        itemType = DropdownMenuItemType.Header;
+      }
+      else if ( isDivider === true ) {
+        val = '-' ;
+        itemType = DropdownMenuItemType.Divider;
+      }
+
+        return {
+            key: getChoiceKey(val),
+            text: val,
+            itemType: itemType,
+        };
+    });
+
+    if ( getStyles === null ) { 
+        getStyles = { wrapper: { width: fieldWidth } };
+    }
+
+  let thisDropdown = sOptions == null ? null : 
+    <div id={ pageIDPref + field.column } style={{ width: fieldWidth }}  className={ [ ].join(' ') }>
+        <Dropdown
+        label={ field.title }
+        selectedKey={ getChoiceKey(field.value) }
+        onChange={(choice: any, index: any) => {
+          _onChange(field.column, choice, index);
+        }}
+        options={ sOptions } 
+        styles={ dropdownStyles }
+      />
+    </div>;
 
   return thisDropdown;
 

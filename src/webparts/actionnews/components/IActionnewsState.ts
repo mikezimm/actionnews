@@ -74,6 +74,7 @@ export interface IActionnewsState {
     quickCommands: IQuickCommands;
 
     quickFields: IQuickField[][];
+    staticFields: IQuickField[][];
 
     allItems: IActionItem[];
 
@@ -87,6 +88,8 @@ export interface IActionnewsState {
 
     showNewItem: boolean;
     panelWidth: PanelType;
+
+    recentUsers: IUser[];
 
   }
 

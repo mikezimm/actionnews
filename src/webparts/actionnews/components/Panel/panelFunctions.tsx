@@ -23,7 +23,7 @@ export const ButtonIdDelim = '|||';
  * @param item 
  * @param sourceUserInfo  //This is just passed in in order to allow for user targeted b.showWhenEvalTrue checks
  */
-export function createPanelButtons ( quickCommands: IQuickCommands, item: IActionItem , sourceUserInfo: IUser ) {
+export function createPanelButtons ( quickCommands: IQuickCommands, item: IActionItem , _panelButtonClicked: any, sourceUserInfo: IUser ) {
 
     let allButtonRows : any[] = [];
 
@@ -63,8 +63,8 @@ export function createPanelButtons ( quickCommands: IQuickCommands, item: IActio
                             let buttonID = ['ButtonID', r, i , item.Id].join(ButtonIdDelim);
                             let buttonTitle = b.label;
                             let thisButton = b.primary === true ?
-                                <div id={ buttonID } title={ buttonTitle } ><PrimaryButton text={b.label} iconProps= { icon } onClick={this._panelButtonClicked.bind(this)} disabled={b.disabled} checked={b.checked} /></div>:
-                                <div id={ buttonID } title={ buttonTitle } ><DefaultButton text={b.label} iconProps= { icon } onClick={this._panelButtonClicked.bind(this)} disabled={b.disabled} checked={b.checked} /></div>;
+                                <div id={ buttonID } title={ buttonTitle } ><PrimaryButton text={b.label} iconProps= { icon } onClick={ _panelButtonClicked } disabled={b.disabled} checked={b.checked} /></div>:
+                                <div id={ buttonID } title={ buttonTitle } ><DefaultButton text={b.label} iconProps= { icon } onClick={ _panelButtonClicked } disabled={b.disabled} checked={b.checked} /></div>;
                             buttons.push( thisButton );
                         }
 

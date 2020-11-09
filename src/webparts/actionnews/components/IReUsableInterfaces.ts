@@ -216,6 +216,7 @@ export interface IQuickField extends Partial<IFieldDef> {
   disabled?: boolean;
   hidden?: boolean;
   blinkOnProject?: boolean;
+  choices?: string[];
 
   value?: any;
   width?: number; //Added for Drilldown7 webpart
@@ -392,6 +393,8 @@ export interface ILink {
     id?: any;
     Id?: any;
     ID?: any;
+    remoteID?: any; //This is the ID of the user on another site collection, sourceWeb ID
+    PrincipalType?: number;
   
     isSiteAdmin?:boolean;
     LoginName?: string;
