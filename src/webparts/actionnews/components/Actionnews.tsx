@@ -88,6 +88,10 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
         pageUrl: this.props.pageUrl,
         webServerRelativeUrl: this.props.webServerRelativeUrl,
 
+        pageLibraryServerRelativeUrl: this.props.pageLibraryServerRelativeUrl ,
+        pageLibraryTitle: this.props.pageLibraryTitle ,
+        pageLibraryId: this.props.pageLibraryId ,
+
         contextUserInfo: {
             LoginName: this.props.pageContext.user.loginName,
             Title: this.props.pageContext.user.displayName,
@@ -232,8 +236,8 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
 private makeStaticFields ( ) {
   let pageLinkDesc = this.props.pageUrl.replace(this.props.tenant,'');
   let PageID = makeIQuickField("PageID", "PageID", "PageID", "Text", false, '', false, true, this.props.pageId.toString()  );
-  let LibraryName = makeIQuickField("LibraryName", "LibraryName", "LibraryName", "Text", false, '', false, true, this.props.listName  );
-  let WebURL = makeIQuickField("WebURL", "WebURL", "WebURL", "Text", false, '', false, true, this.props.listWeb  );
+  let LibraryName = makeIQuickField("LibraryName", "LibraryName", "LibraryName", "Text", false, '', false, true, this.props.pageLibraryTitle  );
+  let WebURL = makeIQuickField("WebURL", "WebURL", "WebURL", "Text", false, '', false, true, this.props.webServerRelativeUrl  );
   let PageLink = makeIQuickField("PageLink", "PageLink", "PageLink", "Link", false, '', false, true, { Description: pageLinkDesc, Url: this.props.pageUrl } );
 //  let PageURL = makeIQuickField("PageURL", "PageURL", "PageURL", "Link", false, '', false, true, this.props.pageUrl );
 

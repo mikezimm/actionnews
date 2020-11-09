@@ -87,12 +87,16 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
 
     let scope : INewsScope = this.properties.scope ? this.properties.scope : 'Site';
 
+
     //It's best to add Tenant to URUL here
     let listWeb = this.properties.listWeb ? this.properties.listWeb : tenant + '/sites/ActionNewsSourceTTP/';
     let listName = this.properties.listName ? this.properties.listName : 'TheNewsPosts';
     let pageUrl = this.context.pageContext.legacyPageContext.webAbsoluteUrl + this.context.pageContext.legacyPageContext.serverRequestPath;
     let pageId = this.context.pageContext.legacyPageContext.pageItemId;
-    let webServerRelativeUrl = this.context.pageContext.legacyPageContext.webServerRelativeUrl;
+    let webServerRelativeUrl = this.context.pageContext.web.serverRelativeUrl;
+    let pageLibraryServerRelativeUrl = this.context.pageContext.list.serverRelativeUrl;
+    let pageLibraryTitle = this.context.pageContext.list.title;
+    let pageLibraryId = this.context.pageContext.list.id;
 
     const element: React.ReactElement<IActionnewsProps> = React.createElement(
       Actionnews,
@@ -114,6 +118,10 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
         pageUrl: pageUrl,
         pageId: pageId,
         webServerRelativeUrl: webServerRelativeUrl,
+
+        pageLibraryServerRelativeUrl: pageLibraryServerRelativeUrl,
+        pageLibraryTitle: pageLibraryTitle,
+        pageLibraryId: pageLibraryId,
 
       }
     );

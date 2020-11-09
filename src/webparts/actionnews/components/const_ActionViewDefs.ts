@@ -3,7 +3,7 @@ import { IQuickCommands , ICustViewDef } from "./IReUsableInterfaces";
 export const wideViewDef : ICustViewDef = {
   minWidth: 1000,
   viewFields: [
-    { name: "Id", displayName: "Id", minWidth: 50 },
+    { name: "Id", displayName: "Id", minWidth: 25, maxWidth: 50 },
     { name: "Title", displayName: "Title", minWidth: 200 }
   ],
   includeAttach: false,
@@ -15,7 +15,7 @@ export const wideViewDef : ICustViewDef = {
 export const medViewDef : ICustViewDef = {
   minWidth: 700,
   viewFields: [
-    { name: "Id", displayName: "Id", minWidth: 50 },
+    { name: "Id", displayName: "Id", minWidth: 25, maxWidth: 50 },
     { name: "Title", displayName: "Title", minWidth: 200 }
   ],
   includeAttach: false,
@@ -27,7 +27,7 @@ export const medViewDef : ICustViewDef = {
 export const narrowViewDef : ICustViewDef = {
   minWidth: 400,
   viewFields: [
-    { name: "Id", displayName: "Id", minWidth: 50 },
+    { name: "Id", displayName: "Id", minWidth: 25, maxWidth: 50 },
     { name: "Title", displayName: "Title", minWidth: 200 }
   ],
   includeAttach: false,

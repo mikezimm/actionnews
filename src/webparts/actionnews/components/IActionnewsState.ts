@@ -51,6 +51,10 @@ export interface INewsService {
     webServerRelativeUrl: string;
     pageID: string;
 
+    pageLibraryServerRelativeUrl: string;
+    pageLibraryTitle: string;
+    pageLibraryId: any;
+    
     viewDefs: ICustViewDef[];
     staticColumns: string[];
     selectColumns: string[];

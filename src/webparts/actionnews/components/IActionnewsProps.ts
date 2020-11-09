@@ -21,4 +21,8 @@ export interface IActionnewsProps {
   pageId: string;
   webServerRelativeUrl: string;
 
+  pageLibraryServerRelativeUrl: string;
+  pageLibraryTitle: string;
+  pageLibraryId: any;
+
 }
