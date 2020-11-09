@@ -230,11 +230,11 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
 
   
 private makeStaticFields ( ) {
-    
+  let pageLinkDesc = this.props.pageUrl.replace(this.props.tenant,'');
   let PageID = makeIQuickField("PageID", "PageID", "PageID", "Text", false, '', false, true, this.props.pageId.toString()  );
   let LibraryName = makeIQuickField("LibraryName", "LibraryName", "LibraryName", "Text", false, '', false, true, this.props.listName  );
   let WebURL = makeIQuickField("WebURL", "WebURL", "WebURL", "Text", false, '', false, true, this.props.listWeb  );
-  let PageLink = makeIQuickField("PageLink", "PageLink", "PageLink", "Text", false, '', false, true, this.props.pageUrl  );
+  let PageLink = makeIQuickField("PageLink", "PageLink", "PageLink", "Link", false, '', false, true, { Description: pageLinkDesc, Url: this.props.pageUrl } );
 //  let PageURL = makeIQuickField("PageURL", "PageURL", "PageURL", "Link", false, '', false, true, this.props.pageUrl );
 
   const ActionNewsStaticFields : IQuickField[][] = [
@@ -645,7 +645,7 @@ public componentDidUpdate(prevProps){
       fieldRow.map ( field => {
         if ( field.name === thisID ) { 
           if (field.type.toLowerCase().indexOf('user') < 0 ) {
-            alert('Error in _addUserToField:  Trying to add user to non-user field!')
+            alert('Error in _addUserToField:  Trying to add user to non-user field!');
           } else {
             let value = field.value;
             if ( value == null ) { value = []; }
@@ -715,7 +715,7 @@ public componentDidUpdate(prevProps){
     let e: any = event;
 
     let quickFields = this.state.quickFields;
-
+    
     //Search through each row and field for name:
     quickFields.map( fieldRow => {
       fieldRow.map ( field => {
