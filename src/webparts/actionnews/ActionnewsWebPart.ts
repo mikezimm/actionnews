@@ -26,6 +26,9 @@ export interface IActionnewsWebPartProps {
   listWeb: string;
   listName: string;
 
+  allowSplit: boolean;
+  allowCopy: boolean;
+
 }
 
 export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnewsWebPartProps> {
@@ -97,6 +100,7 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
     let pageLibraryServerRelativeUrl = this.context.pageContext.list.serverRelativeUrl;
     let pageLibraryTitle = this.context.pageContext.list.title;
     let pageLibraryId = this.context.pageContext.list.id;
+    let collectionURL = this.context.pageContext.site.serverRelativeUrl;
 
     const element: React.ReactElement<IActionnewsProps> = React.createElement(
       Actionnews,
@@ -122,7 +126,11 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
         pageLibraryServerRelativeUrl: pageLibraryServerRelativeUrl,
         pageLibraryTitle: pageLibraryTitle,
         pageLibraryId: pageLibraryId,
+        collectionURL: collectionURL,
 
+        allowSplit: this.properties.allowSplit,
+        allowCopy: this.properties.allowCopy,
+      
       }
     );
 

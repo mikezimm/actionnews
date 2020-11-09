@@ -47,7 +47,7 @@ import { findParentElementPropLikeThis } from '../../../services/basicElements';
 
 import { msPerWk, msPerDay } from '../../../services/dateServices';
 
-import { getEmailFromLoginName, checkForLoginName, ensureUserHere } from '../../../services/userServices';
+import { getEmailFromLoginName, checkForLoginName, ensureUserHere, ensureTheseUsers } from '../../../services/userServices';
 
 import { getAppropriateViewFields, getAppropriateViewGroups, } from './ReactList/listFunctions';
 import { PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
@@ -232,17 +232,18 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
 
 }
 
-  
 private makeStaticFields ( ) {
   let pageLinkDesc = this.props.pageUrl.replace(this.props.tenant,'');
   let PageID = makeIQuickField("PageID", "PageID", "PageID", "Text", false, '', false, true, this.props.pageId.toString()  );
   let LibraryName = makeIQuickField("LibraryName", "LibraryName", "LibraryName", "Text", false, '', false, true, this.props.pageLibraryTitle  );
   let WebURL = makeIQuickField("WebURL", "WebURL", "WebURL", "Text", false, '', false, true, this.props.webServerRelativeUrl  );
   let PageLink = makeIQuickField("PageLink", "PageLink", "PageLink", "Link", false, '', false, true, { Description: pageLinkDesc, Url: this.props.pageUrl } );
-//  let PageURL = makeIQuickField("PageURL", "PageURL", "PageURL", "Link", false, '', false, true, this.props.pageUrl );
+  let CollectionURL = makeIQuickField("CollectionURL", "CollectionURL", "CollectionURL", "Text", false, '', false, true, this.props.collectionURL );
+  
+  //  let PageURL = makeIQuickField("PageURL", "PageURL", "PageURL", "Link", false, '', false, true, this.props.pageUrl );
 
   const ActionNewsStaticFields : IQuickField[][] = [
-    [ PageID, LibraryName, WebURL, PageLink ]
+    [ PageID, LibraryName, WebURL, PageLink, CollectionURL ]
 
   ];
 
@@ -636,6 +637,16 @@ public componentDidUpdate(prevProps){
 
   } //End toggleTips  
 
+/***
+ *    d8888b. d88888b  .d88b.  d8888b. db      d88888b      d8888b. d888888b  .o88b. db   dD d88888b d8888b. 
+ *    88  `8D 88'     .8P  Y8. 88  `8D 88      88'          88  `8D   `88'   d8P  Y8 88 ,8P' 88'     88  `8D 
+ *    88oodD' 88ooooo 88    88 88oodD' 88      88ooooo      88oodD'    88    8P      88,8P   88ooooo 88oobY' 
+ *    88~~~   88~~~~~ 88    88 88~~~   88      88~~~~~      88~~~      88    8b      88`8b   88~~~~~ 88`8b   
+ *    88      88.     `8b  d8' 88      88booo. 88.          88        .88.   Y8b  d8 88 `88. 88.     88 `88. 
+ *    88      Y88888P  `Y88P'  88      Y88888P Y88888P      88      Y888888P  `Y88P' YP   YD Y88888P 88   YD 
+ *                                                                                                           
+ *                                                                                                           
+ */
 
   private _addUserToField = (prop: string, valueX: any ): void => {
     let e: any = event;
@@ -667,6 +678,17 @@ public componentDidUpdate(prevProps){
 
     /*
   */
+
+  /***
+ *    d8888b.  .d8b.  d888888b d88888b      d8888b. d888888b  .o88b. db   dD d88888b d8888b. 
+ *    88  `8D d8' `8b `~~88~~' 88'          88  `8D   `88'   d8P  Y8 88 ,8P' 88'     88  `8D 
+ *    88   88 88ooo88    88    88ooooo      88oodD'    88    8P      88,8P   88ooooo 88oobY' 
+ *    88   88 88~~~88    88    88~~~~~      88~~~      88    8b      88`8b   88~~~~~ 88`8b   
+ *    88  .8D 88   88    88    88.          88        .88.   Y8b  d8 88 `88. 88.     88 `88. 
+ *    Y8888D' YP   YP    YP    Y88888P      88      Y888888P  `Y88P' YP   YD Y88888P 88   YD 
+ *                                                                                           
+ *                                                                                           
+ */
 
   private _addWeekToDate = (prop: string, value: any ): void => {
 
@@ -714,6 +736,17 @@ public componentDidUpdate(prevProps){
 
   }
 
+  /***
+ *    d88888b d8888b. d888888b d888888b      db    db d8888b. d8888b.  .d8b.  d888888b d88888b 
+ *    88'     88  `8D   `88'   `~~88~~'      88    88 88  `8D 88  `8D d8' `8b `~~88~~' 88'     
+ *    88ooooo 88   88    88       88         88    88 88oodD' 88   88 88ooo88    88    88ooooo 
+ *    88~~~~~ 88   88    88       88         88    88 88~~~   88   88 88~~~88    88    88~~~~~ 
+ *    88.     88  .8D   .88.      88         88b  d88 88      88  .8D 88   88    88    88.     
+ *    Y88888P Y8888D' Y888888P    YP         ~Y8888P' 88      Y8888D' YP   YP    YP    Y88888P 
+ *                                                                                             
+ *                                                                                             
+ */
+
   private _editFieldUpdate = ( prop: string, value: any ): void => {
 
     let e: any = event;
@@ -748,64 +781,10 @@ public componentDidUpdate(prevProps){
   }
 
   private async updateRecentUsers( theseUsers: IUser[], checkTheseUsers: IUser[] , webUrl: string ) {
-    let recentUsers = await this.unsureThisUser( theseUsers, checkTheseUsers, webUrl );
+    let recentUsers = await ensureTheseUsers( theseUsers, checkTheseUsers, webUrl );
     this.setState({
       recentUsers: recentUsers,
     });
-  }
-
-  private async unsureThisUser ( theseUsers: IUser[], checkTheseUsers: IUser[] , webUrl: string ) {
-
-    let updateState: boolean = null;
-
-    console.log('unsureThisUser', theseUsers);
-    let recentUsers : IUser[] = checkTheseUsers;
-    let ensureLogin : IUser[] = [];
-
-    //Get each user and check if they are in stateUsers:  getEmailFromLoginName, checkForLoginName
-    if ( theseUsers.length > 0 ) {
-      theseUsers.map( ensureUser => {
-        let loginName = checkForLoginName( ensureUser );
-        if ( loginName ) {
-  
-          let isAlreadyInState = false;
-  
-          //Check if loginName of new user is already in state
-          recentUsers.map( existingUser => {
-            if ( existingUser.loginName === loginName ) { isAlreadyInState = true ; }
-          });
-  
-          if ( isAlreadyInState === false ) {
-            console.log('NEED TO ENSURE LOGIN: ', loginName );
-            updateState = true;
-            ensureUser.loginName = loginName;
-            ensureLogin.push(ensureUser);
-          }
-        }
-      });
-    }
-
-    if ( ensureLogin.length > 0 ) {
-      for (let i = 0; i < ensureLogin.length; i++) {
-        let user = await ensureUserHere( ensureLogin[i].loginName, webUrl );
-        let localId = ensureLogin[i].id ? ensureLogin[i].id : ensureLogin[i].Id;
-        recentUsers.push({
-          id: localId,
-          Id: localId,
-          remoteID: user.data.Id,
-          title: user.data.Title,
-          Title: user.data.Title,
-          loginName: user.data.LoginName,
-          email: user.data.Email,
-          PrincipalType: user.data.PrincipalType,
-        });
-      }
-      console.log('updated state recentUsers: ', recentUsers );
-
-    }
-
-    return recentUsers;
-
   }
 
   private _updateDropdown = (prop: React.FormEvent<HTMLDivElement>, e , pickedOption ): void => {
@@ -830,6 +809,17 @@ public componentDidUpdate(prevProps){
       quickFields: quickFields,
     });
   }
+
+/***
+ *    .d8888.  .d8b.  db    db d88888b      d888888b d888888b d88888b .88b  d88. 
+ *    88'  YP d8' `8b 88    88 88'            `88'   `~~88~~' 88'     88'YbdP`88 
+ *    `8bo.   88ooo88 Y8    8P 88ooooo         88       88    88ooooo 88  88  88 
+ *      `Y8b. 88~~~88 `8b  d8' 88~~~~~         88       88    88~~~~~ 88  88  88 
+ *    db   8D 88   88  `8bd8'  88.            .88.      88    88.     88  88  88 
+ *    `8888Y' YP   YP    YP    Y88888P      Y888888P    YP    Y88888P YP  YP  YP 
+ *                                                                               
+ *                                                                               
+ */
 
   private async _saveItem ( ) {
 

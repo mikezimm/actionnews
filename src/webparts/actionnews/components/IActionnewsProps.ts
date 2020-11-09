@@ -24,5 +24,10 @@ export interface IActionnewsProps {
   pageLibraryServerRelativeUrl: string;
   pageLibraryTitle: string;
   pageLibraryId: any;
+  collectionURL: string;
+
+  allowSplit: boolean;
+  allowCopy: boolean;
+
 
 }

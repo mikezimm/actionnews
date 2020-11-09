@@ -37,6 +37,17 @@ export const timeDisplayControlType = TimeDisplayControlType.Dropdown;
 
 const emptyString = (value: string | Date) : string => { return "";};
 
+/***
+ *     .o88b. d8888b. d88888b  .d8b.  d888888b d88888b      d8888b.  .d8b.  d888888b d88888b      d88888b d888888b d88888b db      d8888b. 
+ *    d8P  Y8 88  `8D 88'     d8' `8b `~~88~~' 88'          88  `8D d8' `8b `~~88~~' 88'          88'       `88'   88'     88      88  `8D 
+ *    8P      88oobY' 88ooooo 88ooo88    88    88ooooo      88   88 88ooo88    88    88ooooo      88ooo      88    88ooooo 88      88   88 
+ *    8b      88`8b   88~~~~~ 88~~~88    88    88~~~~~      88   88 88~~~88    88    88~~~~~      88~~~      88    88~~~~~ 88      88   88 
+ *    Y8b  d8 88 `88. 88.     88   88    88    88.          88  .8D 88   88    88    88.          88        .88.   88.     88booo. 88  .8D 
+ *     `Y88P' 88   YD Y88888P YP   YP    YP    Y88888P      Y8888D' YP   YP    YP    Y88888P      YP      Y888888P Y88888P Y88888P Y8888D' 
+ *                                                                                                                                         
+ *                                                                                                                                         
+ */
+
 export function createDateField(field: IQuickField, pageIDPref: string, _onChange: any, _clearDate: any, _addWk: any, required: boolean, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth ) {
 
   const getDateErrorMessage = (value: Date): string => {
@@ -72,6 +83,17 @@ export function createDateField(field: IQuickField, pageIDPref: string, _onChang
    if ( getStyles === null ) { 
         getStyles = { wrapper: { width: fieldWidth } };
     }
+
+/***
+ *    d8888b. d88888b d888888b db    db d8888b. d8b   db 
+ *    88  `8D 88'     `~~88~~' 88    88 88  `8D 888o  88 
+ *    88oobY' 88ooooo    88    88    88 88oobY' 88V8o 88 
+ *    88`8b   88~~~~~    88    88    88 88`8b   88 V8o88 
+ *    88 `88. 88.        88    88b  d88 88 `88. 88  V888 
+ *    88   YD Y88888P    YP    ~Y8888P' 88   YD VP   V8P 
+ *                                                       
+ *                                                       
+ */
 
   return (
       // Uncontrolled

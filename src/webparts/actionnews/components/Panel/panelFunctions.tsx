@@ -17,6 +17,17 @@ import { IActionItem } from '../IActionnewsState';
 
 export const ButtonIdDelim = '|||';
 
+/***
+ *     .o88b. d8888b. d88888b  .d8b.  d888888b d88888b      d8888b.  .d8b.  d8b   db d88888b db           d8888b. db    db d888888b d888888b  .d88b.  d8b   db .d8888. 
+ *    d8P  Y8 88  `8D 88'     d8' `8b `~~88~~' 88'          88  `8D d8' `8b 888o  88 88'     88           88  `8D 88    88 `~~88~~' `~~88~~' .8P  Y8. 888o  88 88'  YP 
+ *    8P      88oobY' 88ooooo 88ooo88    88    88ooooo      88oodD' 88ooo88 88V8o 88 88ooooo 88           88oooY' 88    88    88       88    88    88 88V8o 88 `8bo.   
+ *    8b      88`8b   88~~~~~ 88~~~88    88    88~~~~~      88~~~   88~~~88 88 V8o88 88~~~~~ 88           88~~~b. 88    88    88       88    88    88 88 V8o88   `Y8b. 
+ *    Y8b  d8 88 `88. 88.     88   88    88    88.          88      88   88 88  V888 88.     88booo.      88   8D 88b  d88    88       88    `8b  d8' 88  V888 db   8D 
+ *     `Y88P' 88   YD Y88888P YP   YP    YP    Y88888P      88      YP   YP VP   V8P Y88888P Y88888P      Y8888P' ~Y8888P'    YP       YP     `Y88P'  VP   V8P `8888Y' 
+ *                                                                                                                                                                     
+ *                                                                                                                                                                     
+ */
+
 /**
  * 
  * @param quickCommands 
