@@ -633,59 +633,26 @@ public componentDidUpdate(prevProps){
   } //End toggleTips  
 
 
-  private _addUserToField = (prop: string, value: any ): void => {
+  private _addUserToField = (prop: string, valueX: any ): void => {
     let e: any = event;
     let thisID = findParentElementPropLikeThis(e.target, 'id', 'EditFieldID', 15, 'begins');
     thisID = thisID.replace('EditFieldID','');
-    /*
-    var element2 = event.target as HTMLElement;
-    var element3 = event.currentTarget as HTMLElement;
-    let fieldID = this._findNamedElementID(element2);
-    //alert(`Adding you to ${fieldID}`);
-    let projObjectName = this.props.projectFields[fieldID].name;
-    let projObjectType = this.props.projectFields[fieldID].type;
-    let okToUpdateUser: boolean = true;
-    let stateProject = this.state.selectedProject;
-    if ( projObjectType === 'User') {
-      stateProject[projObjectName + 'Id'] = this.props.currentUser.id;
-      stateProject[projObjectName] = this.props.currentUser;
 
-    } else if ( projObjectType === 'MultiUser'){
-
-      if (stateProject[projObjectName + 'Ids'] == null ) {
-        stateProject[projObjectName + 'Ids'] = [this.props.currentUser.id];
-        stateProject[projObjectName] = [this.props.currentUser];
-
-      } else if (stateProject[projObjectName + 'Ids'].indexOf(this.props.currentUser.id) < 0 ) { 
-        stateProject[projObjectName + 'Ids'].push(this.props.currentUser.id);
-        stateProject[projObjectName].push(this.props.currentUser);
-
-      } else { alert('You are already here :)'); okToUpdateUser = false; }
-
-    } else {
-      okToUpdateUser = false;
-      alert ('Encountered strange error in _addUserToField... unexpected field type!');
-    }
-    if (  okToUpdateUser === true) {
-      this.setState({ selectedProject: stateProject });
-    } 
-*/
-    
     let quickFields = this.state.quickFields;
 
     //Search through each row and field for name:
     quickFields.map( fieldRow => {
       fieldRow.map ( field => {
         if ( field.name === thisID ) { 
-
-          if (field.type === "MultiUser" ) {
+          if (field.type.toLowerCase().indexOf('user') < 0 ) {
+            alert('Error in _addUserToField:  Trying to add user to non-user field!')
+          } else {
+            let value = field.value;
+            if ( value == null ) { value = []; }
+            value.push( this.state.newsService.contextUserInfo );
             field.value = value;
-  
-          } else if (field.type === "User" ) { //Single User, can't be an array
-            let saveUser = value ? value.results[0] : null;
-            field.value = saveUser;
+            this.updateRecentUsers( field.value, this.state.recentUsers, this.state.newsService.listWeb );
           }
-        
         }
       });
     });
@@ -763,8 +730,6 @@ public componentDidUpdate(prevProps){
             this.updateRecentUsers( field.value, this.state.recentUsers, this.state.newsService.listWeb );
 
           }
-
-
         }
       });
     });

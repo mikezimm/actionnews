@@ -73,12 +73,14 @@ function addTheseFieldsToSaveObject( saveNewObject, theseFields, recentUsers) {
 
                     theseIds.results = saveValue.map( u => {
                         let remoteId : any = doesObjectExistInArray(recentUsers, "Id", u.id, true );
+                        if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "email", u.email, true ); }
                         return recentUsers[remoteId].remoteID;
                     });
                     saveValue = theseIds;
                 } else { //Single User
                     if ( saveValue[0] ) {
                         let remoteId : any = doesObjectExistInArray(recentUsers, "Id", saveValue[0].id, true );
+                        if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "email", saveValue[0].email, true ); }
                         saveValue = recentUsers[remoteId].remoteID;
                     }
                 }

@@ -40,18 +40,29 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
         return null;
       }
 
-      let uName = checkForLoginName(u);
-      if ( uName === undefined &&  u[0] ) {
-        uName = checkForLoginName(u[0]);
+      let userEmail = null;
+      if ( u.email ) {
+        userEmail = u.email;
+
+      } else if ( u[0] && u[0].email ) {
+        userEmail = u[0].email;
+
+      } else {
+        let uName = checkForLoginName(u);
+        if ( uName === undefined &&  u[0] ) {
+          uName = checkForLoginName(u[0]);
+        }
+  
+        if ( uName == undefined ) { // Added because when you remove the person in react comp, the user still is there, the name just gets removed.
+          console.log('createPeopleField - did you remove a person from the array?', users, u);
+          //alert('createPeopleField - did you remove a person from the array?' +  JSON.stringify(u));
+          return null;
+        }
+  
+        userEmail = getEmailFromLoginName( uName );
+
       }
 
-      if ( uName == undefined ) { // Added because when you remove the person in react comp, the user still is there, the name just gets removed.
-        console.log('createPeopleField - did you remove a person from the array?', users, u);
-        //alert('createPeopleField - did you remove a person from the array?' +  JSON.stringify(u));
-        return null;
-      }
-
-      let userEmail = getEmailFromLoginName( uName );
 
       if ( userEmail ) {
           return userEmail;
