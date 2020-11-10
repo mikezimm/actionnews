@@ -100,8 +100,8 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
     let pageId = this.context.pageContext.legacyPageContext.pageItemId;
     let webServerRelativeUrl = this.context.pageContext.legacyPageContext.webServerRelativeUrl;
     let pageLibraryServerRelativeUrl = this.context.pageContext.legacyPageContext.listUrl;
-    let pageLibraryTitle = this.context.pageContext.list.title;
-    let pageLibraryId = this.context.pageContext.list.id;
+    let pageLibraryTitle = this.context.pageContext.list ? this.context.pageContext.list.title : '';
+    let pageLibraryId = this.context.pageContext.list ? this.context.pageContext.list.id : '';
     let collectionURL = this.context.pageContext.site.serverRelativeUrl;
 
     const element: React.ReactElement<IActionnewsProps> = React.createElement(

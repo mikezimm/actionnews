@@ -84,6 +84,8 @@ export interface IActionnewsState {
     quickFields: IQuickField[][];
     staticFields: IQuickField[][];
 
+    pageTitle: string;
+
     allItems: IActionItem[];
 
     bannerMessage: any;

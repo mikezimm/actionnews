@@ -2,6 +2,7 @@ import * as React from 'react';
 import styles from './Actionnews.module.scss';
 import stylesC from './CommonStyles.module.scss';
 import { sp } from "@pnp/sp";
+import { Web } from "@pnp/sp/presets/all";
 
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
@@ -90,7 +91,7 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
         pageID: pageID,
         pageUrl: this.props.pageUrl,
         webServerRelativeUrl: this.props.webServerRelativeUrl,
-        pageTitle: null,
+        pageTitle: pageID === "-1" ? 'Workbench' : null,
 
         pageLibraryServerRelativeUrl: this.props.pageLibraryServerRelativeUrl ,
         pageLibraryTitle: this.props.pageLibraryTitle ,
@@ -221,7 +222,8 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
         staticFields: this.makeStaticFields(),
 
         bannerMessage: null,
-    
+        pageTitle: null,
+
         showTips: false,
 
         showNewItem: false,
@@ -258,6 +260,7 @@ private makeStaticFields ( ) {
 }
 
 public componentDidMount() {
+  // this.udpatePageTitle(this.state.newsService);
   this._updateStateOnPropsChange();
 //  console.log('Mounted!');
 }
@@ -539,7 +542,8 @@ public componentDidUpdate(prevProps){
           errMessage: errMessage,
       });
 
-      this._getPageTitle( newsService );
+      //this._getPageTitle( newsService );
+
       //This is required so that the old list items are removed and it's re-rendered.
       //If you do not re-run it, the old list items will remain and new results get added to the list.
       //However the list will show correctly if you click on a pivot.
@@ -668,22 +672,24 @@ public componentDidUpdate(prevProps){
 
   } //End toggleNewItem  
 
-  private async _getPageTitle(newsService: INewsService) : Promise<INewsService>{
+  private async udpatePageTitle(newsService: INewsService) : Promise<void>{
     let pageTitle = null;
 
     let errMessage = null;
     if ( newsService.pageTitle == null ) {
       try {
+
         let pageId: any = newsService.pageID;
-        let pageLibraryServerRelativeUrl = newsService.pageLibraryServerRelativeUrl;
-        let resultData: any = await sp.web.getList( pageLibraryServerRelativeUrl).items.getById( pageId ).select("Title").get();
+        let pageLibraryServerRelativeUrl = newsService.listWeb;
+        const pageWeb = Web(this.props.webServerRelativeUrl);
+        let _guid = newsService.pageLibraryId._guid;
+        let resultData: any = await pageWeb.lists.getById( _guid ).items.getById( pageId ).select("Title").get();
         console.log('This should be the page title', resultData);
-        pageTitle = resultData.Title;
+        pageTitle = await resultData.Title;
         newsService.pageTitle = pageTitle;
-/*
-        setTimeout(() => {
-            this.setState({ newsService: newsService });
-        } , 2000);
+      //This setState crashes the webpart.
+        this.setState({ pageTitle: pageTitle });
+        /*
 */
       } catch (e) {
           errMessage = getHelpfullError(e, true, true);
@@ -691,7 +697,6 @@ public componentDidUpdate(prevProps){
       }
 
     }
-    return newsService;
 
   }
 
