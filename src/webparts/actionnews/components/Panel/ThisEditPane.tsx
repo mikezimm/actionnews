@@ -32,6 +32,7 @@ export interface IEditPaneProps {
   _cancelItem: any;
   wpContext: WebPartContext;
   webAbsoluteUrl: string;
+  allowSplit: boolean;
 
 }
 
@@ -87,8 +88,13 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
           thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, null, fieldWidth );
         } else if ( thisFieldObject.type === 'Time' || thisFieldObject.type === 'Date' ) {
           thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null, fieldWidth );
-        } else if ( thisFieldObject.type === 'User' || thisFieldObject.type === 'MultiUser' ) {
-          thisField = createPeopleField( thisFieldObject, thisFieldObject.type === 'User' ? 1 : 4 , this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
+        } else if ( thisFieldObject.type.toLowerCase().indexOf('user') > -1 ) {
+          let userCount = thisFieldObject.type.toLowerCase() === 'user' ? 1 : 5 ;
+          
+          //Turn off MultiUser Split column if prop is off.
+          if ( thisFieldObject.type.toLowerCase().indexOf('split') > -1 && this.props.allowSplit !== true ) { userCount = 1 ; }
+
+          thisField = createPeopleField( thisFieldObject, userCount , this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
         } else if ( thisFieldObject.type === 'Choice' || thisFieldObject.type === 'Dropdown' ) {
           thisField = _createDropdownField( thisFieldObject, this.props._updateDropdown, 'EditFieldID', null, fieldWidth );
         }

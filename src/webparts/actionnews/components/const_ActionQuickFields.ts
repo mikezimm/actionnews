@@ -55,7 +55,7 @@ export function getNewActionQuickFields() {
   let TitleField : IQuickField = makeIQuickField("Title", "Title", "Title", "Text", false, null, false, true, 'Get Page Title here'  );
   let FollowupDate : IQuickField = makeIQuickField("FollowupDate","FollowupDate", "FollowupDate", "Time", false, null, false, false, getTodayPlus7Days() ); //true
 
-  let Primary : IQuickField = makeIQuickField("Primary","Primary", "Primary","User", false, null, false, false ); //true
+  let Primary : IQuickField = makeIQuickField("Primary","Primary", "Primary","SplitUser", false, null, false, false ); //true
   let Secondary : IQuickField = makeIQuickField("Secondary","Secondary", "Secondary","MultiUser", false, null, false, false );
 
   let FollowupComments : IQuickField = makeIQuickField("FollowupComments", "FollowupComments", "FollowupComments", "MultiLine", false, null, false, false ); //true

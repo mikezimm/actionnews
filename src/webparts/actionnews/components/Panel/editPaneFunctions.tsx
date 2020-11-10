@@ -76,7 +76,7 @@ export async function _saveEditPaneItem( webUrl: string, listName: string, quick
  *                                                                                                                                               
  */
 
-function addTheseFieldsToSaveObject( saveNewObject, theseFields, recentUsers) {
+function addTheseFieldsToSaveObject( saveNewObject, theseFields, recentUsers ) {
 
     //Search through each row and field for name:
     theseFields.map( fieldRow => {
@@ -90,21 +90,21 @@ function addTheseFieldsToSaveObject( saveNewObject, theseFields, recentUsers) {
                 saveColumn = saveColumn + 'Id' ;
 
                 let theseIds = { results: [] };
-                if ( field.type.toLowerCase().indexOf('multi') > -1  ) {
-                    // results structure for MultiUsers:  https://pnp.github.io/pnpjs/sp/items/#add-items
+                if ( field.type.toLowerCase().indexOf('user') === 0  ) {
+                    if ( saveValue[0] ) {
+                        let remoteId : any = doesObjectExistInArray(recentUsers, "Id", saveValue[0].id, true );
+                        if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "email", saveValue[0].email, true ); }
+                        saveValue = recentUsers[remoteId].remoteID;
+                    }
 
+                } else { //Multi/Split User
+                    // results structure for MultiUsers:  https://pnp.github.io/pnpjs/sp/items/#add-items
                     theseIds.results = saveValue.map( u => {
                         let remoteId : any = doesObjectExistInArray(recentUsers, "Id", u.id, true );
                         if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "email", u.email, true ); }
                         return recentUsers[remoteId].remoteID;
                     });
                     saveValue = theseIds;
-                } else { //Single User
-                    if ( saveValue[0] ) {
-                        let remoteId : any = doesObjectExistInArray(recentUsers, "Id", saveValue[0].id, true );
-                        if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "email", saveValue[0].email, true ); }
-                        saveValue = recentUsers[remoteId].remoteID;
-                    }
                 }
 
             } else if ( field.type.toLowerCase().indexOf('date') > -1 || field.type.toLowerCase().indexOf('time') > -1 ) {

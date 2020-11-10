@@ -54,7 +54,7 @@ export interface INewsService {
     pageLibraryServerRelativeUrl: string;
     pageLibraryTitle: string;
     pageLibraryId: any;
-    
+
     viewDefs: ICustViewDef[];
     staticColumns: string[];
     selectColumns: string[];
@@ -94,6 +94,9 @@ export interface IActionnewsState {
     panelWidth: PanelType;
 
     recentUsers: IUser[];
+
+    allowSplit: boolean;
+    allowCopy: boolean;
 
   }
 

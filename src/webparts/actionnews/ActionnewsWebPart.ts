@@ -6,6 +6,8 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 
+import { propertyPaneBuilder } from '../../services/propPane/PropPaneBuilder';
+
 import { sp } from '@pnp/sp';
 
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
@@ -96,8 +98,8 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
     let listName = this.properties.listName ? this.properties.listName : 'TheNewsPosts';
     let pageUrl = this.context.pageContext.legacyPageContext.webAbsoluteUrl + this.context.pageContext.legacyPageContext.serverRequestPath;
     let pageId = this.context.pageContext.legacyPageContext.pageItemId;
-    let webServerRelativeUrl = this.context.pageContext.web.serverRelativeUrl;
-    let pageLibraryServerRelativeUrl = this.context.pageContext.list.serverRelativeUrl;
+    let webServerRelativeUrl = this.context.pageContext.legacyPageContext.webServerRelativeUrl;
+    let pageLibraryServerRelativeUrl = this.context.pageContext.legacyPageContext.listUrl;
     let pageLibraryTitle = this.context.pageContext.list.title;
     let pageLibraryId = this.context.pageContext.list.id;
     let collectionURL = this.context.pageContext.site.serverRelativeUrl;
@@ -146,24 +148,8 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    return {
-      pages: [
-        {
-          header: {
-            description: strings.PropertyPaneDescription
-          },
-          groups: [
-            {
-              groupName: strings.BasicGroupName,
-              groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
-                })
-              ]
-            }
-          ]
-        }
-      ]
-    };
+    return propertyPaneBuilder.getPropertyPaneConfiguration(
+      this.properties,
+      );
   }
 }

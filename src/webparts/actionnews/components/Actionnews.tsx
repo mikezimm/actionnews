@@ -4,6 +4,8 @@ import stylesC from './CommonStyles.module.scss';
 
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+
 import { CompoundButton, Stack, IStackTokens, elementContains, initializeIcons } from 'office-ui-fabric-react';
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
 import { Dropdown, DropdownMenuItemType, IDropdownStyles, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
@@ -227,6 +229,9 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
         recentUsers: [],
 
         panelWidth: PanelType.medium,
+
+        allowSplit: this.props.allowSplit,
+        allowCopy: this.props.allowCopy,
   
   };
 
@@ -337,6 +342,7 @@ public componentDidUpdate(prevProps){
           headerText={ 'Create New Item' }
           closeButtonAriaLabel="Close"
           onRenderFooterContent={this._onRenderFooterContent}
+          onRenderHeader={ this.props.allowSplit ? this._onRenderHeader : null }
           isLightDismiss={ true }
           isFooterAtBottom={ true }
       >
@@ -354,6 +360,7 @@ public componentDidUpdate(prevProps){
             _updateDropdown = { this._updateDropdown.bind(this) }
             _saveItem= { this._saveItem.bind(this) }
             _cancelItem= { this._onClosePanelNewItem.bind(this) }
+            allowSplit= { this.state.allowSplit }
             
 
         ></ThisEditPane>
@@ -599,6 +606,36 @@ public componentDidUpdate(prevProps){
         );
     }
 
+    private _onRenderHeader = (): JSX.Element => {
+
+      let defStyles = { root: { width: 160, } };
+
+      let thisToggle = <Toggle label={ 'Split Notifications' } 
+          onText={ 'On' } 
+          offText={ 'Off' } 
+          onChange={ this._toggleSplit.bind(this) } 
+          checked={ this.state.allowSplit }
+          styles={ defStyles }
+      />;
+      
+      const stackTokens: IStackTokens = { childrenGap: 20 };
+
+      return (
+      <div>
+        <Stack horizontal={ true } horizontalAlign= { 'space-between' } tokens={stackTokens}>
+          <span style={{ marginLeft: 35, fontSize: 28, marginTop: 5 }}>Create New Item</span>
+          { thisToggle }
+        </Stack>
+
+      </div>
+      );
+  }
+
+  private _toggleSplit() {
+
+    this.setState({ allowSplit: this.state.allowSplit !== true ? true : false });
+
+  }
 
 /***
  *    .d8888. db   db  .d88b.  db   d8b   db      d8888b.  .d8b.  d8b   db d88888b db      
@@ -763,7 +800,7 @@ public componentDidUpdate(prevProps){
           if ( field.type.toLowerCase().indexOf('user') === 0  ) {
             this.updateRecentUsers( field.value, this.state.recentUsers, this.state.newsService.listWeb );
 
-          } else if ( field.type.toLowerCase().indexOf('multiuser') === 0  ) {
+          } else if ( field.type.toLowerCase().indexOf('user') > 0  ) { //covers multiUser and splitUser
             this.updateRecentUsers( field.value, this.state.recentUsers, this.state.newsService.listWeb );
 
           }
@@ -823,17 +860,64 @@ public componentDidUpdate(prevProps){
 
   private async _saveItem ( ) {
 
-    let results : any = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, this.state.quickFields, this.state.staticFields, this.state.recentUsers );
+    let splitCount = 1;
+    let splitUsers = [];
+    let splitField = '';
+    //Get array of split users
+    let quickFields = this.state.quickFields;
+    
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.type.toLowerCase().indexOf('split') > -1 ) { 
+          splitUsers = JSON.parse( JSON.stringify( field.value ));
+          splitField = field.name;
+          splitCount = field.value.length;
+        }
+      });
+    });
+
+    let results : any = null;
+    if ( splitCount === 1 ) {
+      results = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, this.state.quickFields, this.state.staticFields, this.state.recentUsers );
+  
+    } else {
+
+      //Save each item individually
+      for (let i = 0; i < splitCount; i++) {
+
+        quickFields.map( fieldRow => {
+          fieldRow.map ( field => {
+            if ( field.name === splitField ) { 
+              field.value = [ splitUsers[i] ];
+            }
+          });
+        });
+
+        results = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, quickFields, this.state.staticFields, this.state.recentUsers );
+
+      }
+
+    }
 
     let passed = results && results.data ? true : false;
 
     if ( passed !== true ) {
       //The save did not happend
       console.log('was NOT ABLE TO SAVE ITEM');
+      
+      //Put back original splitUsers array - NOT needed if I clear this field after save.
+      quickFields.map( fieldRow => {
+        fieldRow.map ( field => {
+          if ( field.name === splitField ) { 
+            field.value = splitUsers;
+          }
+        });
+      });
 
     } else {
       alert('Your Action News item was just saved!');
-      let quickFields : IQuickField[][] = getNewActionQuickFields() ;
+      quickFields = getNewActionQuickFields() ;
       this.setState({
         showNewItem: false,
         quickFields: quickFields,
