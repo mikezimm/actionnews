@@ -30,6 +30,7 @@ export interface IEditPaneProps {
   _updateDropdown: any;
   _saveItem: any;
   _cancelItem: any;
+  _getTitleValue: any;
   wpContext: WebPartContext;
   webAbsoluteUrl: string;
   allowSplit: boolean;
@@ -84,8 +85,10 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
       let fieldWidth = ( 500 / rowFields ) - ( fieldRow.length - 1 ) * 10 ; //Accounts for 30 padding between cells on same row
       let thisRow: any[] = fieldRow.map( thisFieldObject => {
         let thisField: any = <div> { thisFieldObject.name } - { thisFieldObject.value }</div>;
-        if ( thisFieldObject.type === 'Text' || thisFieldObject.type === 'MultiLine') {
-          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, null, fieldWidth );
+        if ( thisFieldObject.title === 'Title' ) {
+          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._getTitleValue, null, fieldWidth );
+        } else if ( thisFieldObject.type === 'Text' || thisFieldObject.type === 'MultiLine') {
+          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, null, null, fieldWidth );
         } else if ( thisFieldObject.type === 'Time' || thisFieldObject.type === 'Date' ) {
           thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null, fieldWidth );
         } else if ( thisFieldObject.type.toLowerCase().indexOf('user') > -1 ) {

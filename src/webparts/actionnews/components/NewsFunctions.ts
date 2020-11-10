@@ -98,6 +98,69 @@ function buildMetaFromItem( theItem: IActionItem ) {
     return meta;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export async function allAvailableActionsTitle(   newsService: INewsService, addTheseItemsToTitle: any ): Promise<string>{
+
+    let result = null;
+    let errMessage = null;
+
+//    let legacyPageContext = await currentPage.legacyPageContext()//.pageItemId;
+//    console.log('UniqueId:', legacyPageContext.pageItemId);
+//    newsService.pageID = legacyPageContext.pageItemId;
+
+    let getThisWeb = newsService.webServerRelativeUrl;
+    if ( getThisWeb.indexOf(newsService.tenant) < 0 ) {getThisWeb = newsService.tenant + newsService.webServerRelativeUrl; }
+    let thisListWeb = Web( getThisWeb );
+
+
+    let thisListObject = thisListWeb.lists.getByTitle(newsService.pageLibraryTitle);
+    /**
+     * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
+     */
+
+     try {
+        let pageID : any = newsService.pageID;
+        result = await thisListObject.items.getById( pageID ).get();
+    } catch (e) {
+        errMessage = getHelpfullError(e, true, true);
+
+    }
+
+    addTheseItemsToTitle( result );
+
+    return result.Title;
+
+}
+
+
+
+
+export async function getPageTitleTest( newsService: INewsService ) {
+
+    let result = '';
+    let list = await sp.web.lists.getByTitle(newsService.pageLibraryTitle);
+    let currentPage = await list.items.getById( parseInt( newsService.pageID ) ).get();
+
+    console.log( 'Page Title is' , currentPage.Title );
+    return currentPage.Title;
+
+}
+
 //  d8888b. db    db d888888b db      d8888b.      .d8888. d88888b  .d8b.  d8888b.  .o88b. db   db 
 //  88  `8D 88    88   `88'   88      88  `8D      88'  YP 88'     d8' `8b 88  `8D d8P  Y8 88   88 
 //  88oooY' 88    88    88    88      88   88      `8bo.   88ooooo 88ooo88 88oobY' 8P      88ooo88 

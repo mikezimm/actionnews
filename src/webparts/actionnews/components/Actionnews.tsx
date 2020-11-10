@@ -24,7 +24,7 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 import InfoPage from './HelpInfo/infoPages';
 
-import { allAvailableActions } from './NewsFunctions';
+import { allAvailableActions, getPageTitleTest, allAvailableActionsTitle } from './NewsFunctions';
 
 import * as links from './HelpInfo/AllLinks';
 
@@ -55,6 +55,8 @@ import { getEmailFromLoginName, checkForLoginName, ensureUserHere, ensureTheseUs
 
 import { getAppropriateViewFields, getAppropriateViewGroups, } from './ReactList/listFunctions';
 import { PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
+
+import {  } from './NewsFunctions';
 
 import { makeIQuickField } from './const_ActionQuickFields';
 
@@ -248,6 +250,7 @@ private makeStaticFields ( ) {
   let WebURL = makeIQuickField("WebURL", "WebURL", "WebURL", "Text", false, '', false, true, this.props.webServerRelativeUrl  );
   let PageLink = makeIQuickField("PageLink", "PageLink", "PageLink", "Link", false, '', false, true, { Description: pageLinkDesc, Url: this.props.pageUrl } );
   let CollectionURL = makeIQuickField("CollectionURL", "CollectionURL", "CollectionURL", "Text", false, '', false, true, this.props.collectionURL );
+  let PageTitle = makeIQuickField("PageTitle", "PageTitle", "PageTitle", "Text", false, '', false, true, 'Add Page Title here' );
   
   //  let PageURL = makeIQuickField("PageURL", "PageURL", "PageURL", "Link", false, '', false, true, this.props.pageUrl );
 
@@ -366,6 +369,7 @@ public componentDidUpdate(prevProps){
             _saveItem= { this._saveItem.bind(this) }
             _cancelItem= { this._onClosePanelNewItem.bind(this) }
             allowSplit= { this.state.allowSplit }
+            _getTitleValue = {  this.getAllItemsCallTitle.bind(this) /*this.updatePageTitleInStateTest.bind(this)  null */  }
             
 
         ></ThisEditPane>
@@ -542,7 +546,8 @@ public componentDidUpdate(prevProps){
           errMessage: errMessage,
       });
 
-      //this._getPageTitle( newsService );
+      //This call will crash the component :(
+      //this.getAllItemsCallTitle();
 
       //This is required so that the old list items are removed and it's re-rendered.
       //If you do not re-run it, the old list items will remain and new results get added to the list.
@@ -551,6 +556,39 @@ public componentDidUpdate(prevProps){
       return true;
   }
 
+
+  private getAllItemsCallTitle() {
+
+    let result : any = allAvailableActionsTitle( this.state.newsService, this.addTheseItemsToStateTitle.bind(this) );
+
+  }
+
+  private addTheseItemsToStateTitle( page: any ) {
+
+    let quickFields : IQuickField[][] = this.state.quickFields;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === 'Title' ) { 
+          field.value = page.Title;
+        }
+      });
+    });
+
+    this.setState({
+        pageTitle: page.Title,
+        quickFields: quickFields,
+    });
+
+      
+
+      //This is required so that the old list items are removed and it's re-rendered.
+      //If you do not re-run it, the old list items will remain and new results get added to the list.
+      //However the list will show correctly if you click on a pivot.
+      //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
+      return true;
+  }
     
   /***
    *         db    db d8888b. d8888b.  .d8b.  d888888b d88888b      .d8888. d888888b  .d8b.  d888888b d88888b 
@@ -672,6 +710,8 @@ public componentDidUpdate(prevProps){
 
   } //End toggleNewItem  
 
+
+
   private async udpatePageTitle(newsService: INewsService) : Promise<void>{
     let pageTitle = null;
 
@@ -750,6 +790,61 @@ public componentDidUpdate(prevProps){
 
     /*
   */
+
+ private updatePageTitleInStateTest( ) {
+
+  let result = getPageTitleTest( this.state.newsService );
+  let theTitle = null;
+  let quickFields = this.state.quickFields;  //Can't access state inside the function below... has to be out here
+
+  result.then(function(title) {
+    theTitle = title;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === 'Title' ) { 
+          field.value = theTitle;
+        }
+      });
+    });
+  
+    this.updateStateTitle( quickFields );
+
+  });
+
+} //End toggleNewItem  
+
+ private updatePageTitleInStateTestXXX = (prop: string, value: any ): void => {
+
+  let result = getPageTitleTest( this.state.newsService );
+  let theTitle = null;
+  let quickFields = this.state.quickFields;  //Can't access state inside the function below... has to be out here
+
+  result.then(function(title) {
+    theTitle = title;
+
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.name === 'Title' ) { 
+          field.value = theTitle;
+        }
+      });
+    });
+  
+    this.updateStateTitle( quickFields );
+
+  });
+
+} //End toggleNewItem  
+
+
+private async updateStateTitle( quickFields: IQuickField[][] ) {
+  await this.setState({ quickFields: quickFields, });
+
+}
+
 
   /***
  *    d8888b.  .d8b.  d888888b d88888b      d8888b. d888888b  .o88b. db   dD d88888b d8888b. 

@@ -4,6 +4,8 @@ import { Dropdown, DropdownMenuItemType, IDropdownStyles, IDropdownOption } from
 import { TextField,  IStyleFunctionOrObject, ITextFieldStyleProps, ITextFieldStyles } from "office-ui-fabric-react";
 import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
+import { createIconButton , createIconButtonWithReturnVal, defCommandIconStyles} from "../createButtons/IconButton";
+
 import { IFormFields, IProjectFormFields, IFieldDef } from '../fields/fieldDefinitions';
 
 import { IQuickField } from '../IReUsableInterfaces';
@@ -24,7 +26,7 @@ const emptyString = (value: string | Date) : string => { return "";};
  *                                                                                                                                           
  */
 
-export function createTextField(field: IQuickField, pageIDPref: string, _onChange: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth: number) {
+export function createTextField(field: IQuickField, pageIDPref: string, _onChange: any, _setValue: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth: number) {
     let defaultValue = field.value ? field.value : null ;
 
 //    let fieldWidth = field.width ? field.width : 200;
@@ -36,6 +38,10 @@ export function createTextField(field: IQuickField, pageIDPref: string, _onChang
     let isRequired = field.required ? field.required : false ;
     if ( field.value && field.value.length > 0 ) { isRequired = false ; }
 
+    let myIconStyles = defCommandIconStyles;
+    myIconStyles.icon.fontSize = 14;
+    myIconStyles.icon.fontWeight = "900";
+    let setThisValue = _setValue !== null ? createIconButton('Down','Set Title', _setValue, null, myIconStyles ) : null ;
 
 /***
  *    d8888b. d88888b d888888b db    db d8888b. d8b   db 
@@ -48,23 +54,29 @@ export function createTextField(field: IQuickField, pageIDPref: string, _onChang
  *                                                       
  */
 
-    let thisField = <div id={ pageIDPref + field.name } style={{ width: fieldWidth }}><TextField
-        className={ epStyles.textField }
-        styles={ getStyles  } //this.getReportingStyles
-        defaultValue={ defaultValue }
-        label={ field.title }
-        required={ isRequired }
-        autoComplete='off'
-        disabled={field.disabled}
-        onChanged={(value: string) => {
-            _onChange(field.column, value);
-          }}
-        validateOnFocusIn
-        validateOnFocusOut
-        multiline= { field.type === "MultiLine" ? true : false }
-        autoAdjustHeight= { true }
 
-    /></div>;
+
+    let thisField = 
+    <div id={ pageIDPref + field.column } style={{ width: fieldWidth }}  className={ [epStyles.peopleBlock, epStyles.commonStyles ].join(' ') }>
+        <div className={ setThisValue !== null ? epStyles.addMeButton : '' }>{ setThisValue } </div>
+        <div className={ [epStyles.fieldWithIconButton, epStyles.setInputWidth100].join(' ') } style={{ width: fieldWidth }}  >
+            <TextField
+            className={ epStyles.textField }
+            styles={ getStyles  } //this.getReportingStyles
+            defaultValue={ defaultValue }
+            label={ field.title }
+            required={ isRequired }
+            autoComplete='off'
+            disabled={field.disabled}
+            onChanged={(value: string) => {
+                _onChange(field.column, value);
+            }}
+            validateOnFocusIn
+            validateOnFocusOut
+            multiline= { field.type === "MultiLine" ? true : false }
+            autoAdjustHeight= { true }
+
+    /></div></div>;
   
 
     return thisField;
