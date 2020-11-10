@@ -13,6 +13,8 @@ import { autoDetailsList } from '../../../../services/hoverCardService';
 
 import { doesObjectExistInArray,  } from '../../../../services/arrayServices';
 
+import { checkIfUserExistsInArray } from '../../../../services/userServices';
+
 import { findParentElementPropLikeThis } from '../../../../services/basicElements';
 
 import { getHelpfullError } from '../../../../services/ErrorHandler';
@@ -92,19 +94,24 @@ function addTheseFieldsToSaveObject( saveNewObject, theseFields, recentUsers ) {
                 let theseIds = { results: [] };
                 if ( field.type.toLowerCase().indexOf('user') === 0  ) {
                     if ( saveValue[0] ) {
-                        let remoteId : any = doesObjectExistInArray(recentUsers, "Id", saveValue[0].id, true );
-                        if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "email", saveValue[0].email, true ); }
-                        saveValue = recentUsers[remoteId].remoteID;
+                        let remoteId : any = checkIfUserExistsInArray( recentUsers, saveValue[0].id );
+                        if ( remoteId !== false ) {
+                            saveValue = recentUsers[remoteId].remoteID;
+                        }
+
                     }
 
                 } else { //Multi/Split User
                     // results structure for MultiUsers:  https://pnp.github.io/pnpjs/sp/items/#add-items
                     theseIds.results = saveValue.map( u => {
-                        let remoteId : any = doesObjectExistInArray(recentUsers, "Id", u.id, true );
-                        if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "email", u.email, true ); }
+                        let remoteId : any = checkIfUserExistsInArray( recentUsers, u );
+                        if ( remoteId !== false ) {
+                            saveValue = recentUsers[remoteId].remoteID;
+                        }
                         return recentUsers[remoteId].remoteID;
                     });
                     saveValue = theseIds;
+                    if ( field.type.toLowerCase().indexOf('split') > -1 && theseIds.results.length > 0 ) { saveValue = theseIds.results[0] ; }
                 }
 
             } else if ( field.type.toLowerCase().indexOf('date') > -1 || field.type.toLowerCase().indexOf('time') > -1 ) {

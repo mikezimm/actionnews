@@ -23,9 +23,6 @@ export async function allAvailableActions(   newsService: INewsService, addThese
 
     let allItems : IActionItem[] = null;
 
-    let currentPage : any = await sp.web.getFileByServerRelativePath(newsService.pageUrl);
-    console.log('CurrentPage:', currentPage);
-
 //    let legacyPageContext = await currentPage.legacyPageContext()//.pageItemId;
 //    console.log('UniqueId:', legacyPageContext.pageItemId);
 //    newsService.pageID = legacyPageContext.pageItemId;

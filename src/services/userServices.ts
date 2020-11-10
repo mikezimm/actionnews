@@ -8,6 +8,28 @@ import { getHelpfullError } from './ErrorHandler';
 
 import { Web, IList, IItem, IItemAddResult, } from "@pnp/sp/presets/all";
 
+import { doesObjectExistInArray } from './arrayServices';
+
+
+export function checkIfUserExistsInArray( recentUsers : IUser[] , user: IUser ) {
+
+    let remoteId : any = false;
+
+    remoteId = doesObjectExistInArray(recentUsers, "Id", user.id, true );
+    if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "email", user.email, true ); }
+    if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "loginName", user.loginName, true ); }
+    if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "email", user.email, true ); }
+    if ( remoteId === false ) { remoteId = doesObjectExistInArray(recentUsers, "title", user.title, true ); }
+
+    if ( remoteId === false ) {
+        alert('Error addTheseFieldsToSaveObject:\n' +  JSON.stringify( user ));
+    } else {
+        remoteId = parseInt(remoteId, 10);
+    }
+
+    return remoteId;
+}
+
 //getEmailFromLoginName, checkForLoginName
 
 /***

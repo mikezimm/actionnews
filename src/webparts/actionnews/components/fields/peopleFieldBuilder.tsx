@@ -9,7 +9,7 @@ import { IFormFields, IProjectFormFields, IFieldDef } from '../fields/fieldDefin
 
 import { PeoplePicker, PrincipalType, } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 
-import { IPersonaProps } from "office-ui-fabric-react/lib/components/Persona/Persona.types";
+import { IPersonaProps, } from "office-ui-fabric-react/lib/components/Persona/Persona.types";
 
 import { getEmailFromLoginName, checkForLoginName } from '../../../../services/userServices';
 
@@ -89,13 +89,23 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
 
     let addUserButton = field.disabled === true ? null : createIconButton('FollowUser','Add you',addYouToField, null, null );
 
-    
     let isRequired = field.required ? field.required : false ;
     if ( field.value && field.value.length > 0 ) { isRequired = false ; }
 
     let fieldTitle = field.title;
-    if ( maxCount > 1 && field.type.toLowerCase().indexOf('multi') > -1 ) { fieldTitle += ' ++' ; }
-    else if ( maxCount > 1 && field.type.toLowerCase().indexOf('split') > -1 ) { fieldTitle += ' +|+' ; }   
+    let tooltipMessage: string = null;
+    let showtooltip: boolean = false;
+
+    if ( maxCount > 1 && field.type.toLowerCase().indexOf('multi') > -1 ) { 
+      fieldTitle += ' ++' ; 
+      tooltipMessage = 'Multi-User field';
+      showtooltip = true;
+    }
+    else if ( maxCount > 1 && field.type.toLowerCase().indexOf('split') > -1 ) { 
+      fieldTitle += ' +|+' ; 
+      tooltipMessage = 'Split-User field - \ncreates one item for each person!';
+      showtooltip = true;
+    }   
 
 /***
  *    d8888b. d88888b d888888b db    db d8888b. d8b   db 
@@ -119,12 +129,14 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
                   titleText={ fieldTitle }
                   personSelectionLimit={maxCount}
                   //groupName={"Team Site Owners"} // Leave this blank in case you want to filter from all users
-                  showtooltip={false}
+                  showtooltip={ showtooltip }
                   required={ isRequired } // isRequired in v1.16
                   disabled={ field.disabled }
                   onChange={(items: IPersonaProps[]) => {  // selectedItems in v1.16
                     _onChange(field.column, items);
                   }}
+                  tooltipDirectional = { 5 }
+                  tooltipMessage= { tooltipMessage }
                   showHiddenInUI={false}
                   principalTypes={[PrincipalType.User]}
                   resolveDelay={1000} 

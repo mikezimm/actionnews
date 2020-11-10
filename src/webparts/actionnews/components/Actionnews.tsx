@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styles from './Actionnews.module.scss';
 import stylesC from './CommonStyles.module.scss';
+import { sp } from "@pnp/sp";
 
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
@@ -89,6 +90,7 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
         pageID: pageID,
         pageUrl: this.props.pageUrl,
         webServerRelativeUrl: this.props.webServerRelativeUrl,
+        pageTitle: null,
 
         pageLibraryServerRelativeUrl: this.props.pageLibraryServerRelativeUrl ,
         pageLibraryTitle: this.props.pageLibraryTitle ,
@@ -531,13 +533,13 @@ public componentDidUpdate(prevProps){
           console.log('addTheseItemsToState allItems: QTY: ', allItems.length );
       }
 
-
       this.setState({
           allItems: allItems,
           newsService:  newsService,
           errMessage: errMessage,
       });
 
+      this._getPageTitle( newsService );
       //This is required so that the old list items are removed and it's re-rendered.
       //If you do not re-run it, the old list items will remain and new results get added to the list.
       //However the list will show correctly if you click on a pivot.
@@ -652,18 +654,46 @@ public componentDidUpdate(prevProps){
     
       this.setState({ 
           showNewItem: false,
-
       });
   }
 
   public _onShowPanelNewItem = ( item: any ): void => {
+  // public async _onShowPanelNewItem ( item: any ) {
     //This sends back the correct pivot category which matches the category on the tile.
+    //sourceUserInfo
 
     this.setState({
       showNewItem: true,
     });
 
   } //End toggleNewItem  
+
+  private async _getPageTitle(newsService: INewsService) : Promise<INewsService>{
+    let pageTitle = null;
+
+    let errMessage = null;
+    if ( newsService.pageTitle == null ) {
+      try {
+        let pageId: any = newsService.pageID;
+        let pageLibraryServerRelativeUrl = newsService.pageLibraryServerRelativeUrl;
+        let resultData: any = await sp.web.getList( pageLibraryServerRelativeUrl).items.getById( pageId ).select("Title").get();
+        console.log('This should be the page title', resultData);
+        pageTitle = resultData.Title;
+        newsService.pageTitle = pageTitle;
+/*
+        setTimeout(() => {
+            this.setState({ newsService: newsService });
+        } , 2000);
+*/
+      } catch (e) {
+          errMessage = getHelpfullError(e, true, true);
+
+      }
+
+    }
+    return newsService;
+
+  }
 
   public toggleTips = (item: any): void => {
     //This sends back the correct pivot category which matches the category on the tile.
@@ -879,11 +909,13 @@ public componentDidUpdate(prevProps){
 
     let results : any = null;
     if ( splitCount === 1 ) {
-      results = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, this.state.quickFields, this.state.staticFields, this.state.recentUsers );
+      let recentUsers = JSON.parse(JSON.stringify( this.state.recentUsers )); // Needed to prevent it from getting over-written in this function somewhere
+      results = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, this.state.quickFields, this.state.staticFields, recentUsers );
   
     } else {
 
-      //Save each item individually
+      //Save each item individually - unless allowSplit !== true, then just set to first item in array
+      if ( splitCount > 1 && this.state.allowSplit !== true ) { splitCount = 1; }
       for (let i = 0; i < splitCount; i++) {
 
         quickFields.map( fieldRow => {
@@ -894,7 +926,8 @@ public componentDidUpdate(prevProps){
           });
         });
 
-        results = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, quickFields, this.state.staticFields, this.state.recentUsers );
+        let recentUsers = JSON.parse(JSON.stringify( this.state.recentUsers )); // Needed to prevent it from getting over-written in this function somewhere
+        results = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, quickFields, this.state.staticFields, recentUsers );
 
       }
 
@@ -928,7 +961,5 @@ public componentDidUpdate(prevProps){
     return null;
 
   }
- 
-
 
 }

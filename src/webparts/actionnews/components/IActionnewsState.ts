@@ -42,6 +42,10 @@ export interface INewsService {
     listGuid?: string;
 
     pageUrl: string;
+    pageTitle?: string;
+    pageDesc?: string;
+    pageImage?: string;
+    pageTags?: string[];
 
     contextUserInfo?: IUser;  //For site you are on ( aka current page context )
     sourceUserInfo?: IUser;   //For site where the list is stored
