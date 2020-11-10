@@ -172,6 +172,21 @@ private updateMainListColumns( list: INewsService ) {
 
 }
 
+private makeDefaultTitle( pageTitleBlock: string ) {
+
+  let defaultTitle = this.props.titleAddendum;
+
+  if ( defaultTitle.indexOf('<PageTitle>') > -1 ) {
+    defaultTitle = defaultTitle.replace('<PageTitle>', pageTitleBlock);
+
+  } else {
+    defaultTitle = defaultTitle + ' - ' + defaultTitle;
+
+  }
+
+  return defaultTitle;
+
+}
 
 /***
  *          .o88b.  .d88b.  d8b   db .d8888. d888888b d8888b. db    db  .o88b. d888888b  .d88b.  d8888b. 
@@ -202,7 +217,7 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
       } else { quickCommands.successBanner = quickCommands.successBanner * 1000; }
   }
 
-  let quickFields : IQuickField[][] = getNewActionQuickFields( 'Fetching Page Title - ' + this.props.titleAddendum, this.props.comments ) ;
+  let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTitle('Fetching Page Title - '), this.props.comments ) ;
 
   this.state = {
 
@@ -534,7 +549,7 @@ public componentDidUpdate(prevProps){
 
   private addTheseItemsToState( newsService: INewsService, allItems , errMessage : string ) {
 
-    let quickFields : IQuickField[][] = getNewActionQuickFields( newsService.pageTitle + ' - ' + this.props.titleAddendum, this.props.comments ) ;
+    let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTitle(newsService.pageTitle), this.props.comments ) ;
 
     if ( allItems.length < 300 ) {
         console.log('addTheseItemsToState allItems: ', allItems);
@@ -926,7 +941,7 @@ public componentDidUpdate(prevProps){
 
     } else {
       alert('Your Action News item was just saved!');
-      quickFields = getNewActionQuickFields( this.state.newsService.pageTitle + ' - ' + this.props.titleAddendum, this.props.comments ) ;
+      quickFields = getNewActionQuickFields( this.makeDefaultTitle(this.state.newsService.pageTitle) , this.props.comments ) ;
       this.setState({
         showNewItem: false,
         quickFields: quickFields,
