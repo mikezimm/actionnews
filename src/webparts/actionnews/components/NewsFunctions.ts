@@ -54,6 +54,30 @@ export async function allAvailableActions(   newsService: INewsService, addThese
 
     }
 
+    /**
+     * Get page title here
+     */
+
+     let thisPage = null;
+    getThisWeb = newsService.webServerRelativeUrl;
+    if ( getThisWeb.indexOf(newsService.tenant) < 0 ) {getThisWeb = newsService.tenant + newsService.webServerRelativeUrl; }
+    thisListWeb = Web( getThisWeb );
+
+    thisListObject = thisListWeb.lists.getByTitle(newsService.pageLibraryTitle);
+    /**
+     * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
+     */
+
+     try {
+        let pageID : any = newsService.pageID;
+        thisPage = await thisListObject.items.getById( pageID ).get();
+        newsService.pageTitle = thisPage.Title;
+        
+    } catch (e) {
+        errMessage = getHelpfullError(e, true, true);
+
+    }
+
     allItems = processAllItems( allItems, errMessage, newsService, addTheseItemsToState );
 
     return allItems;
@@ -119,14 +143,9 @@ export async function allAvailableActionsTitle(   newsService: INewsService, add
     let result = null;
     let errMessage = null;
 
-//    let legacyPageContext = await currentPage.legacyPageContext()//.pageItemId;
-//    console.log('UniqueId:', legacyPageContext.pageItemId);
-//    newsService.pageID = legacyPageContext.pageItemId;
-
     let getThisWeb = newsService.webServerRelativeUrl;
     if ( getThisWeb.indexOf(newsService.tenant) < 0 ) {getThisWeb = newsService.tenant + newsService.webServerRelativeUrl; }
     let thisListWeb = Web( getThisWeb );
-
 
     let thisListObject = thisListWeb.lists.getByTitle(newsService.pageLibraryTitle);
     /**

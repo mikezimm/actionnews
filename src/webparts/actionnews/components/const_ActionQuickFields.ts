@@ -50,15 +50,15 @@ function getTodayPlus7Days() {          //Based on https://www.sitepoint.com/com
   return todayPlus7;
 }
 
-export function getNewActionQuickFields() {
+export function getNewActionQuickFields( setTitleDefault : string, setCommentsDefault : string ) {
 
-  let TitleField : IQuickField = makeIQuickField("Title", "Title", "Title", "Text", false, null, false, true, 'Get Page Title here'  );
+  let TitleField : IQuickField = makeIQuickField("Title", "Title", "Title", "Text", false, null, false, true, setTitleDefault  );
   let FollowupDate : IQuickField = makeIQuickField("FollowupDate","FollowupDate", "FollowupDate", "Time", false, null, false, false, getTodayPlus7Days() ); //true
 
   let Primary : IQuickField = makeIQuickField("Primary","Primary", "Primary","SplitUser", false, null, false, false ); //true
   let Secondary : IQuickField = makeIQuickField("Secondary","Secondary", "Secondary","MultiUser", false, null, false, false );
 
-  let FollowupComments : IQuickField = makeIQuickField("FollowupComments", "FollowupComments", "FollowupComments", "MultiLine", false, null, false, false ); //true
+  let FollowupComments : IQuickField = makeIQuickField("FollowupComments", "FollowupComments", "FollowupComments", "MultiLine", false, null, false, false, setCommentsDefault ); //true
 
   const statusChoices: string[] = [
     dropdownHeaderPrefix + 'Active',

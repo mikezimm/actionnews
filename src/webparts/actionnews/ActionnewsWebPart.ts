@@ -31,6 +31,9 @@ export interface IActionnewsWebPartProps {
   allowSplit: boolean;
   allowCopy: boolean;
 
+  titleAddendum: string;
+  comments: string;
+
 }
 
 export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnewsWebPartProps> {
@@ -132,6 +135,9 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
 
         allowSplit: this.properties.allowSplit,
         allowCopy: this.properties.allowCopy,
+
+        titleAddendum: this.properties.titleAddendum ,
+        comments: this.properties.comments ,
       
       }
     );

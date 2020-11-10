@@ -87,6 +87,24 @@ export class IntroPage {
 
         ]}, // this group
 
+        { groupName: 'Default comments',
+        isCollapsed: true ,
+        groupFields: [
+
+          PropertyPaneTextField('titleAddendum', {
+            label: 'Default Title addendum',
+            description: 'Item Title is automatically populated with Page Title and this text.',
+            multiline: true,
+          }),
+
+          PropertyPaneTextField('comments', {
+            label: 'Default comments',
+            description: 'This text will show up as default comments... can be reminder',
+            multiline: true,
+          }),
+
+        ]}, // this group
+
         ]}; // Groups
   } // getPropertyPanePage()
 }

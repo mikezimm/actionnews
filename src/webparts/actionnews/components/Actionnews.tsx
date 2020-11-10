@@ -202,7 +202,7 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
       } else { quickCommands.successBanner = quickCommands.successBanner * 1000; }
   }
 
-  let quickFields : IQuickField[][] = getNewActionQuickFields() ;
+  let quickFields : IQuickField[][] = getNewActionQuickFields( 'Fetching Page Title - ' + this.props.titleAddendum, this.props.comments ) ;
 
   this.state = {
 
@@ -347,7 +347,7 @@ public componentDidUpdate(prevProps){
           isOpen={this.state.showNewItem}
           type={ this.state.panelWidth }
           onDismiss={this._onClosePanelNewItem}
-          headerText={ 'Create New Item' }
+          headerText={ 'Create New ActionNews Item' }
           closeButtonAriaLabel="Close"
           onRenderFooterContent={this._onRenderFooterContent}
           onRenderHeader={ this.props.allowSplit ? this._onRenderHeader : null }
@@ -369,7 +369,7 @@ public componentDidUpdate(prevProps){
             _saveItem= { this._saveItem.bind(this) }
             _cancelItem= { this._onClosePanelNewItem.bind(this) }
             allowSplit= { this.state.allowSplit }
-            _getTitleValue = {  this.getAllItemsCallTitle.bind(this) /*this.updatePageTitleInStateTest.bind(this)  null */  }
+            _getTitleValue = { null /*this.updatePageTitleInStateTest.bind(this)  null */  }
             
 
         ></ThisEditPane>
@@ -534,61 +534,24 @@ public componentDidUpdate(prevProps){
 
   private addTheseItemsToState( newsService: INewsService, allItems , errMessage : string ) {
 
-      if ( allItems.length < 300 ) {
-          console.log('addTheseItemsToState allItems: ', allItems);
-      } {
-          console.log('addTheseItemsToState allItems: QTY: ', allItems.length );
-      }
+    let quickFields : IQuickField[][] = getNewActionQuickFields( newsService.pageTitle + ' - ' + this.props.titleAddendum, this.props.comments ) ;
 
-      this.setState({
-          allItems: allItems,
-          newsService:  newsService,
-          errMessage: errMessage,
-      });
-
-      //This call will crash the component :(
-      //this.getAllItemsCallTitle();
-
-      //This is required so that the old list items are removed and it's re-rendered.
-      //If you do not re-run it, the old list items will remain and new results get added to the list.
-      //However the list will show correctly if you click on a pivot.
-      //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
-      return true;
-  }
-
-
-  private getAllItemsCallTitle() {
-
-    let result : any = allAvailableActionsTitle( this.state.newsService, this.addTheseItemsToStateTitle.bind(this) );
-
-  }
-
-  private addTheseItemsToStateTitle( page: any ) {
-
-    let quickFields : IQuickField[][] = this.state.quickFields;
-
-    //Search through each row and field for name:
-    quickFields.map( fieldRow => {
-      fieldRow.map ( field => {
-        if ( field.name === 'Title' ) { 
-          field.value = page.Title;
-        }
-      });
-    });
+    if ( allItems.length < 300 ) {
+        console.log('addTheseItemsToState allItems: ', allItems);
+    } {
+        console.log('addTheseItemsToState allItems: QTY: ', allItems.length );
+    }
 
     this.setState({
-        pageTitle: page.Title,
+        allItems: allItems,
+        newsService:  newsService,
+        errMessage: errMessage,
         quickFields: quickFields,
     });
 
-      
-
-      //This is required so that the old list items are removed and it's re-rendered.
-      //If you do not re-run it, the old list items will remain and new results get added to the list.
-      //However the list will show correctly if you click on a pivot.
-      //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
-      return true;
+    return true;
   }
+
     
   /***
    *         db    db d8888b. d8888b.  .d8b.  d888888b d88888b      .d8888. d888888b  .d8b.  d888888b d88888b 
@@ -667,7 +630,7 @@ public componentDidUpdate(prevProps){
       return (
       <div>
         <Stack horizontal={ true } horizontalAlign= { 'space-between' } tokens={stackTokens}>
-          <span style={{ marginLeft: 35, fontSize: 28, marginTop: 5 }}>Create New Item</span>
+          <span style={{ marginLeft: 35, fontSize: 28, marginTop: 5 }}>Create Action News item(s)</span>
           { thisToggle }
         </Stack>
 
@@ -709,36 +672,6 @@ public componentDidUpdate(prevProps){
     });
 
   } //End toggleNewItem  
-
-
-
-  private async udpatePageTitle(newsService: INewsService) : Promise<void>{
-    let pageTitle = null;
-
-    let errMessage = null;
-    if ( newsService.pageTitle == null ) {
-      try {
-
-        let pageId: any = newsService.pageID;
-        let pageLibraryServerRelativeUrl = newsService.listWeb;
-        const pageWeb = Web(this.props.webServerRelativeUrl);
-        let _guid = newsService.pageLibraryId._guid;
-        let resultData: any = await pageWeb.lists.getById( _guid ).items.getById( pageId ).select("Title").get();
-        console.log('This should be the page title', resultData);
-        pageTitle = await resultData.Title;
-        newsService.pageTitle = pageTitle;
-      //This setState crashes the webpart.
-        this.setState({ pageTitle: pageTitle });
-        /*
-*/
-      } catch (e) {
-          errMessage = getHelpfullError(e, true, true);
-
-      }
-
-    }
-
-  }
 
   public toggleTips = (item: any): void => {
     //This sends back the correct pivot category which matches the category on the tile.
@@ -787,63 +720,6 @@ public componentDidUpdate(prevProps){
 
     this.setState({ quickFields: quickFields, });
   }
-
-    /*
-  */
-
- private updatePageTitleInStateTest( ) {
-
-  let result = getPageTitleTest( this.state.newsService );
-  let theTitle = null;
-  let quickFields = this.state.quickFields;  //Can't access state inside the function below... has to be out here
-
-  result.then(function(title) {
-    theTitle = title;
-
-    //Search through each row and field for name:
-    quickFields.map( fieldRow => {
-      fieldRow.map ( field => {
-        if ( field.name === 'Title' ) { 
-          field.value = theTitle;
-        }
-      });
-    });
-  
-    this.updateStateTitle( quickFields );
-
-  });
-
-} //End toggleNewItem  
-
- private updatePageTitleInStateTestXXX = (prop: string, value: any ): void => {
-
-  let result = getPageTitleTest( this.state.newsService );
-  let theTitle = null;
-  let quickFields = this.state.quickFields;  //Can't access state inside the function below... has to be out here
-
-  result.then(function(title) {
-    theTitle = title;
-
-    //Search through each row and field for name:
-    quickFields.map( fieldRow => {
-      fieldRow.map ( field => {
-        if ( field.name === 'Title' ) { 
-          field.value = theTitle;
-        }
-      });
-    });
-  
-    this.updateStateTitle( quickFields );
-
-  });
-
-} //End toggleNewItem  
-
-
-private async updateStateTitle( quickFields: IQuickField[][] ) {
-  await this.setState({ quickFields: quickFields, });
-
-}
 
 
   /***
@@ -1050,7 +926,7 @@ private async updateStateTitle( quickFields: IQuickField[][] ) {
 
     } else {
       alert('Your Action News item was just saved!');
-      quickFields = getNewActionQuickFields() ;
+      quickFields = getNewActionQuickFields( this.state.newsService.pageTitle + ' - ' + this.props.titleAddendum, this.props.comments ) ;
       this.setState({
         showNewItem: false,
         quickFields: quickFields,

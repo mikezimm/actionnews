@@ -24,7 +24,9 @@
       "description": "Action News",
       "allowSplit": true,
       "allowCopy": true,
-      "scope": "User"
+      "scope": "User",
+      "titleAddendum": " - Followup requested!" ,
+      "comments": "Add comments here :)"
     }
   }]
 }
