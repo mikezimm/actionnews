@@ -8,6 +8,8 @@ import epStyles from './EditPaneStyles.module.scss';
 
 import { IQuickCommands, ICustViewDef,IQuickField, IUser } from '../IReUsableInterfaces';
 
+import { MyDivider } from '../../../../services/drawServices';
+
 import { ISingleButtonProps } from '../createButtons/ICreateButtons';
 
 import { _createDropdownField } from '../fields/dropdownFieldBuilder';
@@ -100,6 +102,10 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
           thisField = createPeopleField( thisFieldObject, userCount , this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
         } else if ( thisFieldObject.type === 'Choice' || thisFieldObject.type === 'Dropdown' ) {
           thisField = _createDropdownField( thisFieldObject, this.props._updateDropdown, 'EditFieldID', null, fieldWidth );
+        } else if ( thisFieldObject.type === 'Divider') {
+
+          thisField = MyDivider( thisFieldObject.title , { color: 'gray', height: 2 });
+        
         }
 
         //createDateField

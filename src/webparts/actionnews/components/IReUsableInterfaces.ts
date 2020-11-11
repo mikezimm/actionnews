@@ -210,7 +210,7 @@ export interface IQuickField extends Partial<IFieldDef> {
   // name: string;
   // title: string;
   // column: string;
-  // type: string; //Smart, Text, Number, etc...
+  // type: string; //Smart, Text, Number, Divider, Html, Text etc...
 
   required: boolean;
   disabled?: boolean;
@@ -221,6 +221,7 @@ export interface IQuickField extends Partial<IFieldDef> {
   value?: any;
   default?: any;
   width?: number; //Added for Drilldown7 webpart
+  styles?: any;
 
 }
 

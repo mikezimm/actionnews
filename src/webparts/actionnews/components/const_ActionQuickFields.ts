@@ -6,6 +6,26 @@ import { IQuickCommands , ICustViewDef, IQuickField } from "./IReUsableInterface
 
 import { msPerWk, msPerDay } from '../../../services/dateServices';
 
+/**
+ * 
+ * @param title Title string if required, can contain <above> or <below> anywhere to target location.
+ * @param styles Styles should be this limited structure:  { color: 'htmlColor', height: 2 }
+ */
+export function MakeQuickDivider( title: string, styles: any ) {
+
+  let quickDivider : IQuickField = {
+    title: title,
+    // column: string;
+    required: false,
+    type: 'Divider',
+    default: '',
+    styles: styles,
+  }
+
+  return quickDivider;
+
+};
+
 export const ActionSearchCols = [
 
   'Title',
@@ -64,7 +84,7 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
     dropdownHeaderPrefix + 'Active',
     '0. Created', 
     '2. Notified', 
-    '4. Reviewing', 
+    '4. Reviewing',
     '6. Working', 
     dropdownHeaderPrefix + 'InActive', 
     '8. Complete', 
@@ -81,6 +101,7 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
   let NotifyCount : IQuickField = makeIQuickField("NotifyCount", "NotifyCount", "NotifyCount", "Text", false, null, true, false );
   let NotifyHistory : IQuickField = makeIQuickField("NotifyHistory", "NotifyHistory", "NotifyHistory", "MultiLine", false, null, true, false );
 
+  let NotifyDivider : IQuickField = MakeQuickDivider('Notifications', {} );
   let ActionNewsNEWQuickFields : IQuickField[][] = [
 
     [ TitleField ], //Row 1 fields
@@ -88,6 +109,8 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
     [ FollowupComments ], //Row 3 fields
     [ FollowupDate ], //Row 4 fields
     [ Status ],
+    [ NotifyDivider ],
+
     [ Notified, NotifyCount ],
     [ NotifyHistory ],
   
