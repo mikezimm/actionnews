@@ -25,7 +25,7 @@
       "allowSplit": true,
       "allowCopy": true,
       "scope": "User",
-      "titleAddendum": " - Followup requested!" ,
+      "titleAddendum": "<PageTitle> - Followup requested!" ,
       "comments": "Add comments here :)"
     }
   }]

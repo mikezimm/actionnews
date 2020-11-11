@@ -18,6 +18,8 @@ import * as strings from 'ActionnewsWebPartStrings';
 import Actionnews from './components/Actionnews';
 import { IActionnewsProps, INewsScope } from './components/IActionnewsProps';
 
+import { makeTheTimeObject } from '../../services/dateServices';
+
 export interface IActionnewsWebPartProps {
   description: string;
 
@@ -119,6 +121,8 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
 
         //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
         WebpartElement: this.domElement,
+
+        today: makeTheTimeObject(''),
 
         scope: scope,
         listWeb: listWeb,

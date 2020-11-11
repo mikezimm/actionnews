@@ -219,6 +219,7 @@ export interface IQuickField extends Partial<IFieldDef> {
   choices?: string[];
 
   value?: any;
+  default?: any;
   width?: number; //Added for Drilldown7 webpart
 
 }

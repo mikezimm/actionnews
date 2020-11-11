@@ -172,19 +172,26 @@ private updateMainListColumns( list: INewsService ) {
 
 }
 
-private makeDefaultTitle( pageTitleBlock: string ) {
+private makeDefaultTextField( field: 'Title' | 'Comments' , pageTitleBlock: string ) {
 
-  let defaultTitle = this.props.titleAddendum;
+  let defaultValue = field === 'Title' ? this.props.titleAddendum : this.props.comments;
+  let newValue = '';
 
-  if ( defaultTitle.indexOf('<PageTitle>') > -1 ) {
-    defaultTitle = defaultTitle.replace('<PageTitle>', pageTitleBlock);
+  if ( field === 'Title' && defaultValue.toLowerCase().indexOf('<title>') === -1 ) {
+    newValue = defaultValue + ' - ' + pageTitleBlock;
 
-  } else {
-    defaultTitle = defaultTitle + ' - ' + defaultTitle;
+  } else if ( defaultValue.toLowerCase().indexOf('<title>') > -1 ) {
+    newValue = defaultValue.replace(/\<Title\>/gi, pageTitleBlock);
 
   }
 
-  return defaultTitle;
+  newValue = newValue.replace(/\<Today\>/gi, '');
+  if (this.state && this.state.newsService && this.state.newsService.contextUserInfo ) {
+    newValue = newValue.replace(/\<UserName\>/gi, this.state.newsService.contextUserInfo.Title );
+    newValue = newValue.replace(/\<UserInitials\>/gi, this.state.newsService.contextUserInfo.initials);
+  }
+
+  return newValue;
 
 }
 
@@ -217,7 +224,7 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
       } else { quickCommands.successBanner = quickCommands.successBanner * 1000; }
   }
 
-  let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTitle('Fetching Page Title - '), this.props.comments ) ;
+  let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTextField('Title','Fetching Page Title - '), this.makeDefaultTextField('Comments',this.props.comments ) ) ;
 
   this.state = {
 
@@ -549,7 +556,7 @@ public componentDidUpdate(prevProps){
 
   private addTheseItemsToState( newsService: INewsService, allItems , errMessage : string ) {
 
-    let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTitle(newsService.pageTitle), this.props.comments ) ;
+    let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTextField('Title', newsService.pageTitle), this.makeDefaultTextField('Comments', this.props.comments),  ) ;
 
     if ( allItems.length < 300 ) {
         console.log('addTheseItemsToState allItems: ', allItems);
@@ -941,7 +948,7 @@ public componentDidUpdate(prevProps){
 
     } else {
       alert('Your Action News item was just saved!');
-      quickFields = getNewActionQuickFields( this.makeDefaultTitle(this.state.newsService.pageTitle) , this.props.comments ) ;
+      quickFields = getNewActionQuickFields( this.makeDefaultTextField('Title', this.state.newsService.pageTitle) , this.makeDefaultTextField('Comments', this.props.comments)  ) ;
       this.setState({
         showNewItem: false,
         quickFields: quickFields,
