@@ -20,11 +20,11 @@ export function MakeQuickDivider( title: string, styles: any ) {
     type: 'Divider',
     default: '',
     styles: styles,
-  }
+  };
 
   return quickDivider;
 
-};
+}
 
 export const ActionSearchCols = [
 
@@ -101,7 +101,7 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
   let NotifyCount : IQuickField = makeIQuickField("NotifyCount", "NotifyCount", "NotifyCount", "Text", false, null, true, false );
   let NotifyHistory : IQuickField = makeIQuickField("NotifyHistory", "NotifyHistory", "NotifyHistory", "MultiLine", false, null, true, false );
 
-  let NotifyDivider : IQuickField = MakeQuickDivider('Notifications', {} );
+  let NotifyDivider : IQuickField = MakeQuickDivider('<Above>Notifications', {} );
   let ActionNewsNEWQuickFields : IQuickField[][] = [
 
     [ TitleField ], //Row 1 fields

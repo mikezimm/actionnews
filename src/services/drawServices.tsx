@@ -12,19 +12,19 @@ export const ColoredLine = ({ color, height }) => ( <hr style={{ color: color, b
 export function MyDivider ( title: string, styles: any ) {
 
     let color = styles.color ? styles.color : 'gray';
-    let height = styles.height ? styles.height : 2;
+    let height = styles.height ? styles.height : 1;
 
     let dividerElements = [];
     let divider = <div><ColoredLine color={ color } height= { height } /></div>;
     let isAbove = title.toLowerCase().indexOf('<above>') > -1 ? true : false ;
     let isBelow = isAbove === false || title.toLowerCase().indexOf('<below>') > -1 ? true : false ;
-    let titleElement = title != '' ? <h2> { title.replace(/\<above\>/gi,'').replace(/\<below\>/gi,'') } </h2> : null;
+    let titleElement = title != '' ? <span style={{ fontSize: 28 }}> { title.replace(/\<above\>/gi,'').replace(/\<below\>/gi,'') } </span> : null;
 
     if ( isAbove && titleElement != null ) { dividerElements.push( titleElement ); }
     dividerElements.push( divider );
     if ( isBelow && titleElement != null ) { dividerElements.push( titleElement ); }
 
-    let thisDivider = <div> { dividerElements.map( e => { return e }) }</div>;
+    let thisDivider = <div style={{ width: '100%'}}> { dividerElements.map( e => { return e; }) }</div>;
 
     return thisDivider;
 
