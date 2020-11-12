@@ -102,6 +102,32 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
   let NotifyHistory : IQuickField = makeIQuickField("NotifyHistory", "NotifyHistory", "NotifyHistory", "MultiLine", false, null, true, false );
 
   let NotifyDivider : IQuickField = MakeQuickDivider('<Above>Notifications', {} );
+
+  let testSpan : IQuickField = {
+    required: false,
+    title: 'Hellow TestSpan',
+    type: 'span',
+    styles: { color: 'green', fontSize: '20px' }
+  };
+
+  let testLink : IQuickField = {
+    required: false,
+    title: 'Go to google!',
+    type: 'link',
+    value: 'https://www.google.com',
+    styles: { fontSize: '20px' }  ,
+  };
+
+
+  let testImage : IQuickField = {
+    required: false,
+    title: 'Cool lightning image!',
+    type: 'image',
+    value: 'https://wallpapercave.com/wp/wO7581D.jpg',
+    default: 'https://wallpapercave.com/wp/wO7581D.jpg', //for images: default is the href
+    styles: { padding: '0px', ImageCoverStyle: 3 ,ImageFit: 2 ,height: 40, width: '100%' }  ,
+  };
+
   let ActionNewsNEWQuickFields : IQuickField[][] = [
 
     [ TitleField ], //Row 1 fields
@@ -110,7 +136,8 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
     [ FollowupDate ], //Row 4 fields
     [ Status ],
     [ NotifyDivider ],
-
+    [ testSpan , testLink ],
+    [ testImage ],
     [ Notified, NotifyCount ],
     [ NotifyHistory ],
   

@@ -8,7 +8,7 @@ import epStyles from './EditPaneStyles.module.scss';
 
 import { IQuickCommands, ICustViewDef,IQuickField, IUser } from '../IReUsableInterfaces';
 
-import { MyDivider } from '../../../../services/drawServices';
+import { MyDivider , MyText , IMyTextElementTypes, MyImage } from '../../../../services/basicElements';
 
 import { ISingleButtonProps } from '../createButtons/ICreateButtons';
 
@@ -19,6 +19,8 @@ import { createTextField } from '../fields/textFieldBuilder';
 import { createDateField } from '../fields/dateFieldBuilder';
 
 import { createPeopleField } from '../fields/peopleFieldBuilder';
+
+import { createLink } from '../HelpInfo/AllLinks';
 
 export interface IEditPaneProps {
   // These are set based on the toggles shown above the s (not needed in real code)
@@ -86,26 +88,35 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
       let rowFields = fieldRow.length;
       let fieldWidth = ( 500 / rowFields ) - ( fieldRow.length - 1 ) * 10 ; //Accounts for 30 padding between cells on same row
       let thisRow: any[] = fieldRow.map( thisFieldObject => {
+
         let thisField: any = <div> { thisFieldObject.name } - { thisFieldObject.value }</div>;
+        let thisType : string | IMyTextElementTypes = thisFieldObject.type ? thisFieldObject.type.toLowerCase() : '';
+
         if ( thisFieldObject.title === 'Title' ) {
           thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._getTitleValue, null, fieldWidth );
-        } else if ( thisFieldObject.type === 'Text' || thisFieldObject.type === 'MultiLine') {
-          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, null, null, fieldWidth );
-        } else if ( thisFieldObject.type === 'Time' || thisFieldObject.type === 'Date' ) {
+        } else if ( thisType === 'text' || thisType === 'multiline') {
+          thisField = createTextField( thisFieldObject, 'EditfieldID', this.props.onChange, null, null, fieldWidth );
+        } else if ( thisType === 'time' || thisType === 'date' ) {
           thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null, fieldWidth );
-        } else if ( thisFieldObject.type.toLowerCase().indexOf('user') > -1 ) {
-          let userCount = thisFieldObject.type.toLowerCase() === 'user' ? 1 : 5 ;
+        } else if ( thisType.indexOf('user') > -1 ) {
+          let userCount = thisType === 'user' ? 1 : 5 ;
           
           //Turn off MultiUser Split column if prop is off.
-          if ( thisFieldObject.type.toLowerCase().indexOf('split') > -1 && this.props.allowSplit !== true ) { userCount = 1 ; }
+          if ( thisType.toLowerCase().indexOf('split') > -1 && this.props.allowSplit !== true ) { userCount = 1 ; }
 
           thisField = createPeopleField( thisFieldObject, userCount , this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
-        } else if ( thisFieldObject.type === 'Choice' || thisFieldObject.type === 'Dropdown' ) {
+        } else if ( thisType === 'choice' || thisType === 'dropdown' ) {
           thisField = _createDropdownField( thisFieldObject, this.props._updateDropdown, 'EditFieldID', null, fieldWidth );
-        } else if ( thisFieldObject.type === 'Divider') {
-
+        } else if ( thisType === 'divider') {
           thisField = MyDivider( thisFieldObject.title , { color: 'gray', height: 2 });
-        
+        } else if ( thisType === 'h1' || thisType === 'h2' || thisType === 'h3' ) {
+          thisField = MyText( thisType, thisFieldObject.title , thisFieldObject.styles );
+        } else if ( thisType === 'span' || thisType === 'p' || thisType === 'h3' ) {
+          thisField = MyText( thisType, thisFieldObject.title , thisFieldObject.styles );  
+        } else if ( thisType === 'link' ) {
+          thisField = createLink( thisFieldObject.value, '_blank' , thisFieldObject.title, thisFieldObject.styles ); 
+        } else if ( thisType === 'image' ) {
+          thisField = MyImage( thisFieldObject.title, thisFieldObject.value, thisFieldObject.styles, thisFieldObject.default );          
         }
 
         //createDateField
