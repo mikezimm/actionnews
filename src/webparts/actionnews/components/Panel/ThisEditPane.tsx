@@ -38,6 +38,7 @@ export interface IEditPaneProps {
   wpContext: WebPartContext;
   webAbsoluteUrl: string;
   allowSplit: boolean;
+  readOnlyMode: boolean;
 
 }
 
@@ -91,22 +92,22 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
 
         let thisField: any = <div> { thisFieldObject.name } - { thisFieldObject.value }</div>;
         let thisType : string | IMyTextElementTypes = thisFieldObject.type ? thisFieldObject.type.toLowerCase() : '';
-
+        let readOnlyMode = this.props.readOnlyMode === true ? this.props.readOnlyMode : false;
         if ( thisFieldObject.title === 'Title' ) {
-          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._getTitleValue, null, fieldWidth );
+          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._getTitleValue, null, fieldWidth, readOnlyMode );
         } else if ( thisType === 'text' || thisType === 'multiline') {
-          thisField = createTextField( thisFieldObject, 'EditfieldID', this.props.onChange, null, null, fieldWidth );
+          thisField = createTextField( thisFieldObject, 'EditfieldID', this.props.onChange, null, null, fieldWidth, readOnlyMode );
         } else if ( thisType === 'time' || thisType === 'date' ) {
-          thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null, fieldWidth );
+          thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null, fieldWidth, readOnlyMode );
         } else if ( thisType.indexOf('user') > -1 ) {
           let userCount = thisType === 'user' ? 1 : 5 ;
           
           //Turn off MultiUser Split column if prop is off.
           if ( thisType.toLowerCase().indexOf('split') > -1 && this.props.allowSplit !== true ) { userCount = 1 ; }
 
-          thisField = createPeopleField( thisFieldObject, userCount , this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
+          thisField = createPeopleField( thisFieldObject, userCount , this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth, readOnlyMode );
         } else if ( thisType === 'choice' || thisType === 'dropdown' ) {
-          thisField = _createDropdownField( thisFieldObject, this.props._updateDropdown, 'EditFieldID', null, fieldWidth );
+          thisField = _createDropdownField( thisFieldObject, this.props._updateDropdown, 'EditFieldID', null, fieldWidth, readOnlyMode );
         } else if ( thisType === 'divider') {
           thisField = MyDivider( thisFieldObject.title , { color: 'gray', height: 2 });
         } else if ( thisType === 'h1' || thisType === 'h2' || thisType === 'h3' ) {

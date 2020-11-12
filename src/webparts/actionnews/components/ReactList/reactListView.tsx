@@ -340,7 +340,15 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
              *                                                              
              */
 
-            let toggles = !this.state.showPanel ? null : <div style={{ float: 'right' }}> { makeToggles(this.getPageToggles( this.state.panelWidth )) } </div>;
+           //Only get buttons if panelItem is selected
+
+            let buttons, fields, toggles = null;
+
+            if ( this.state.showPanel === true ) {
+                buttons = createPanelButtons( this.props.quickCommands, this.state.panelItem, this._panelButtonClicked.bind(this), this.props.sourceUserInfo ) ;
+                toggles = <div style={{ float: 'right' }}> { makeToggles(this.getPageToggles( this.state.panelWidth )) } </div>;
+                fields = null;
+            }
 
             let fullPanel = !this.state.showPanel ? null : 
                 <Panel
@@ -355,7 +363,8 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
                 >
                     { toggles }
                     { attachments }
-                    { createPanelButtons( this.props.quickCommands, this.state.panelItem, this._panelButtonClicked.bind(this), this.props.sourceUserInfo ) }
+                    { buttons }
+                    { fields }
                     { autoDetailsList(this.state.panelItem, ["Title","refiners"],["search","meta","searchString"],true) }
                 </Panel>;
 

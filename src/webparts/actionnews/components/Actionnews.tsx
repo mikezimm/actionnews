@@ -401,6 +401,7 @@ public componentDidUpdate(prevProps){
             _cancelItem= { this._onClosePanelNewItem.bind(this) }
             allowSplit= { this.state.allowSplit }
             _getTitleValue = { null /*this.updatePageTitleInStateTest.bind(this)  null */  }
+            readOnlyMode = { false }
             
 
         ></ThisEditPane>
@@ -913,7 +914,7 @@ public componentDidUpdate(prevProps){
         if ( field.type.toLowerCase().indexOf('split') > -1 ) { 
           splitUsers = JSON.parse( JSON.stringify( field.value ));
           splitField = field.name;
-          splitCount = field.value.length;
+          splitCount = field.value ? field.value.length : 0;
         }
       });
     });
@@ -958,6 +959,8 @@ public componentDidUpdate(prevProps){
           }
         });
       });
+
+     alert('Your item was not saved...\nPossibly because you have a splitPersonField type with no value.');
 
     } else {
       alert('Your Action News item was just saved!');

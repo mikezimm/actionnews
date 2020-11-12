@@ -11,6 +11,8 @@ import { Dialog, DialogType, DialogFooter, IDialogProps } 	from 'office-ui-fabri
 import { Button, ButtonType, } 			from 'office-ui-fabric-react/lib/Button';
 import { Label } 			from 'office-ui-fabric-react/lib/Label';
 
+import { getHelpfullError } from '../../../../services/ErrorHandler';
+
 import { IMyProgress, IQuickButton, IQuickCommands, IUser } from '../IReUsableInterfaces';
 
 import { IActionItem } from '../IActionnewsState';
@@ -64,7 +66,15 @@ export function createPanelButtons ( quickCommands: IQuickCommands, item: IActio
                          */
 
                         if ( b.showWhenEvalTrue && b.showWhenEvalTrue.length > 0 ) {
-                            let buildButtonTest = eval( b.showWhenEvalTrue );
+
+                            let buildButtonTest = false;
+                            try {
+                                buildButtonTest = eval( b.showWhenEvalTrue );
+                            } catch (e) {
+                                let errMessage = getHelpfullError(e, true, true);
+                                alert('panelFunctions.tsx Error creating button: \n' + b.showWhenEvalTrue + '\n\n' + errMessage );
+                            }
+                            
                             if ( buildButtonTest === true ) {
                                 //build all the buttons
                             } else { buildThisButton = false; }

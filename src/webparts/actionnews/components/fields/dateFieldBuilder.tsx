@@ -48,7 +48,7 @@ const emptyString = (value: string | Date) : string => { return "";};
  *                                                                                                                                         
  */
 
-export function createDateField(field: IQuickField, pageIDPref: string, _onChange: any, _clearDate: any, _addWk: any, required: boolean, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth ) {
+export function createDateField(field: IQuickField, pageIDPref: string, _onChange: any, _clearDate: any, _addWk: any, required: boolean, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth, disabled: boolean = false ) {
 
   const getDateErrorMessage = (value: Date): string => {
     let mess = value == null ? "Don't forget Date!" : "";
@@ -107,7 +107,7 @@ export function createDateField(field: IQuickField, pageIDPref: string, _onChang
               _onChange(field.column, date);
             }}
 
-            disabled={field.disabled}
+            disabled={disabled === true ? disabled : field.disabled}
             key={ pageIDPref + field.column }
             dateConvention={DateConvention.Date} showMonthPickerAsOverlay={showMonthPickerAsOverlay}
             showWeekNumbers={showWeekNumbers} timeConvention={timeConvention}

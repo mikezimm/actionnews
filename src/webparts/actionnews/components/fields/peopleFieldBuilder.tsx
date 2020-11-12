@@ -42,7 +42,8 @@ import { SearchResults } from '@pnp/sp/search';
  * @param pageIDPref Added to function instead of being constant in project so it's more reusable
  * @param getStyles 
  */
-export function createPeopleField(field: IQuickField , maxCount: number, _onChange: any, addYouToField: any, pageIDPref: string , wpContext: WebPartContext, webAbsoluteUrl: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth) {
+export function createPeopleField(field: IQuickField , maxCount: number, _onChange: any, addYouToField: any, pageIDPref: string , wpContext: WebPartContext, 
+  webAbsoluteUrl: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth, disabled: boolean = false) {
     
     let users: IUser[] = maxCount === 1 ? [field.value] : field.value;
 
@@ -118,10 +119,11 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
  *                                                       
  */
 
+      let isDisabled = disabled === true ? disabled : field.disabled;
       return (
           // Uncontrolled
           <div id={ pageIDPref + field.column } style={{ width: fieldWidth }} className={ [stylesF.commonStyles , stylesF.peopleBlock ].join(' ')}>
-            <div className={ field.disabled !== true ? stylesF.addMeButton : null } style={{ float: 'right', marginRight: 20 }}>{ addUserButton } </div>
+            <div className={ isDisabled !== true ? stylesF.addMeButton : null } style={{ float: 'right', marginRight: 20 }}>{ addUserButton } </div>
               <PeoplePicker
                   context={wpContext}
                   webAbsoluteUrl={ webAbsoluteUrl }
@@ -131,7 +133,7 @@ export function createPeopleField(field: IQuickField , maxCount: number, _onChan
                   //groupName={"Team Site Owners"} // Leave this blank in case you want to filter from all users
                   showtooltip={ showtooltip }
                   required={ isRequired } // isRequired in v1.16
-                  disabled={ field.disabled }
+                  disabled={ isDisabled }
                   onChange={(items: IPersonaProps[]) => {  // selectedItems in v1.16
                     _onChange(field.column, items);
                   }}
