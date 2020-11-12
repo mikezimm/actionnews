@@ -21,7 +21,12 @@
     "description": { "default": "Tag, Followup, Assign reminders based on site pages and news." },
     "officeFabricIconFontName": "CommentActive",
     "properties": {
-      "description": "Action News"
+      "description": "Action News",
+      "allowSplit": true,
+      "allowCopy": true,
+      "scope": "User",
+      "titleAddendum": "<PageTitle> - Followup requested!" ,
+      "comments": "Add comments here :)"
     }
   }]
 }

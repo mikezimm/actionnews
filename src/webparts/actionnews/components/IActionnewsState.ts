@@ -42,6 +42,10 @@ export interface INewsService {
     listGuid?: string;
 
     pageUrl: string;
+    pageTitle?: string;
+    pageDesc?: string;
+    pageImage?: string;
+    pageTags?: string[];
 
     contextUserInfo?: IUser;  //For site you are on ( aka current page context )
     sourceUserInfo?: IUser;   //For site where the list is stored
@@ -54,7 +58,7 @@ export interface INewsService {
     pageLibraryServerRelativeUrl: string;
     pageLibraryTitle: string;
     pageLibraryId: any;
-    
+
     viewDefs: ICustViewDef[];
     staticColumns: string[];
     selectColumns: string[];
@@ -80,6 +84,8 @@ export interface IActionnewsState {
     quickFields: IQuickField[][];
     staticFields: IQuickField[][];
 
+    pageTitle: string;
+
     allItems: IActionItem[];
 
     bannerMessage: any;
@@ -94,6 +100,9 @@ export interface IActionnewsState {
     panelWidth: PanelType;
 
     recentUsers: IUser[];
+
+    allowSplit: boolean;
+    allowCopy: boolean;
 
   }
 

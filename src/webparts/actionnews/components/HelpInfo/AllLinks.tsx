@@ -104,8 +104,8 @@ export function createRepoLinks(href: string, target: string, linkDesc: string){
     };
 }
 
-export function createLink(href: string, target: string, linkDesc: string){
+export function createLink(href: string, target: string, linkDesc: string, styles?: any ){
     return (
-        <Link href={href} target={ target }>{ linkDesc }</Link>
+        <Link style={ styles } href={href} target={ target }>{ linkDesc }</Link>
     );
 }

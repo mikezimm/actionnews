@@ -23,9 +23,6 @@ export async function allAvailableActions(   newsService: INewsService, addThese
 
     let allItems : IActionItem[] = null;
 
-    let currentPage : any = await sp.web.getFileByServerRelativePath(newsService.pageUrl);
-    console.log('CurrentPage:', currentPage);
-
 //    let legacyPageContext = await currentPage.legacyPageContext()//.pageItemId;
 //    console.log('UniqueId:', legacyPageContext.pageItemId);
 //    newsService.pageID = legacyPageContext.pageItemId;
@@ -52,6 +49,30 @@ export async function allAvailableActions(   newsService: INewsService, addThese
         } else {
             allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(500).get();
         }
+    } catch (e) {
+        errMessage = getHelpfullError(e, true, true);
+
+    }
+
+    /**
+     * Get page title here
+     */
+
+     let thisPage = null;
+    getThisWeb = newsService.webServerRelativeUrl;
+    if ( getThisWeb.indexOf(newsService.tenant) < 0 ) {getThisWeb = newsService.tenant + newsService.webServerRelativeUrl; }
+    thisListWeb = Web( getThisWeb );
+
+    thisListObject = thisListWeb.lists.getByTitle(newsService.pageLibraryTitle);
+    /**
+     * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
+     */
+
+     try {
+        let pageID : any = newsService.pageID;
+        thisPage = await thisListObject.items.getById( pageID ).get();
+        newsService.pageTitle = thisPage.Title;
+        
     } catch (e) {
         errMessage = getHelpfullError(e, true, true);
 
@@ -99,6 +120,64 @@ function buildMetaFromItem( theItem: IActionItem ) {
     //meta = addItemToArrayIfItDoesNotExist(meta, theItem.sort );
 
     return meta;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export async function allAvailableActionsTitle(   newsService: INewsService, addTheseItemsToTitle: any ): Promise<string>{
+
+    let result = null;
+    let errMessage = null;
+
+    let getThisWeb = newsService.webServerRelativeUrl;
+    if ( getThisWeb.indexOf(newsService.tenant) < 0 ) {getThisWeb = newsService.tenant + newsService.webServerRelativeUrl; }
+    let thisListWeb = Web( getThisWeb );
+
+    let thisListObject = thisListWeb.lists.getByTitle(newsService.pageLibraryTitle);
+    /**
+     * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
+     */
+
+     try {
+        let pageID : any = newsService.pageID;
+        result = await thisListObject.items.getById( pageID ).get();
+    } catch (e) {
+        errMessage = getHelpfullError(e, true, true);
+
+    }
+
+    addTheseItemsToTitle( result );
+
+    return result.Title;
+
+}
+
+
+
+
+export async function getPageTitleTest( newsService: INewsService ) {
+
+    let result = '';
+    let list = await sp.web.lists.getByTitle(newsService.pageLibraryTitle);
+    let currentPage = await list.items.getById( parseInt( newsService.pageID ) ).get();
+
+    console.log( 'Page Title is' , currentPage.Title );
+    return currentPage.Title;
+
 }
 
 //  d8888b. db    db d888888b db      d8888b.      .d8888. d88888b  .d8b.  d8888b.  .o88b. db   db 

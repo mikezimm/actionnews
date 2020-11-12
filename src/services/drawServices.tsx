@@ -4,6 +4,32 @@ import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 export const ColoredLine = ({ color, height }) => ( <hr style={{ color: color, backgroundColor: color, height: height }}/> );
 
+/**
+ * 
+ * @param title Title string if required, can contain <above> or <below> anywhere to target location.
+ * @param styles Styles should be this limited structure:  { color: 'htmlColor', height: 2 }
+ */
+export function MyDivider ( title: string, styles: any ) {
+
+    let color = styles.color ? styles.color : 'gray';
+    let height = styles.height ? styles.height : 1;
+
+    let dividerElements = [];
+    let divider = <div><ColoredLine color={ color } height= { height } /></div>;
+    let isAbove = title.toLowerCase().indexOf('<above>') > -1 ? true : false ;
+    let isBelow = isAbove === false || title.toLowerCase().indexOf('<below>') > -1 ? true : false ;
+    let titleElement = title != '' ? <span style={{ fontSize: 28 }}> { title.replace(/\<above\>/gi,'').replace(/\<below\>/gi,'') } </span> : null;
+
+    if ( isAbove && titleElement != null ) { dividerElements.push( titleElement ); }
+    dividerElements.push( divider );
+    if ( isBelow && titleElement != null ) { dividerElements.push( titleElement ); }
+
+    let thisDivider = <div style={{ width: '100%'}}> { dividerElements.map( e => { return e; }) }</div>;
+
+    return thisDivider;
+
+}
+
 export const defProjectIconStyle = {
     name: null,
     color: null,

@@ -6,6 +6,26 @@ import { IQuickCommands , ICustViewDef, IQuickField } from "./IReUsableInterface
 
 import { msPerWk, msPerDay } from '../../../services/dateServices';
 
+/**
+ * 
+ * @param title Title string if required, can contain <above> or <below> anywhere to target location.
+ * @param styles Styles should be this limited structure:  { color: 'htmlColor', height: 2 }
+ */
+export function MakeQuickDivider( title: string, styles: any ) {
+
+  let quickDivider : IQuickField = {
+    title: title,
+    // column: string;
+    required: false,
+    type: 'Divider',
+    default: '',
+    styles: styles,
+  };
+
+  return quickDivider;
+
+}
+
 export const ActionSearchCols = [
 
   'Title',
@@ -50,21 +70,21 @@ function getTodayPlus7Days() {          //Based on https://www.sitepoint.com/com
   return todayPlus7;
 }
 
-export function getNewActionQuickFields() {
+export function getNewActionQuickFields( setTitleDefault : string, setCommentsDefault : string ) {
 
-  let TitleField : IQuickField = makeIQuickField("Title", "Title", "Title", "Text", false, null, false, true, 'Get Page Title here'  );
+  let TitleField : IQuickField = makeIQuickField("Title", "Title", "Title", "Text", false, null, false, true, setTitleDefault  );
   let FollowupDate : IQuickField = makeIQuickField("FollowupDate","FollowupDate", "FollowupDate", "Time", false, null, false, false, getTodayPlus7Days() ); //true
 
-  let Primary : IQuickField = makeIQuickField("Primary","Primary", "Primary","User", false, null, false, false ); //true
+  let Primary : IQuickField = makeIQuickField("Primary","Primary", "Primary","SplitUser", false, null, false, false ); //true
   let Secondary : IQuickField = makeIQuickField("Secondary","Secondary", "Secondary","MultiUser", false, null, false, false );
 
-  let FollowupComments : IQuickField = makeIQuickField("FollowupComments", "FollowupComments", "FollowupComments", "MultiLine", false, null, false, false ); //true
+  let FollowupComments : IQuickField = makeIQuickField("FollowupComments", "FollowupComments", "FollowupComments", "MultiLine", false, null, false, false, setCommentsDefault ); //true
 
   const statusChoices: string[] = [
     dropdownHeaderPrefix + 'Active',
     '0. Created', 
     '2. Notified', 
-    '4. Reviewing', 
+    '4. Reviewing',
     '6. Working', 
     dropdownHeaderPrefix + 'InActive', 
     '8. Complete', 
@@ -81,6 +101,33 @@ export function getNewActionQuickFields() {
   let NotifyCount : IQuickField = makeIQuickField("NotifyCount", "NotifyCount", "NotifyCount", "Text", false, null, true, false );
   let NotifyHistory : IQuickField = makeIQuickField("NotifyHistory", "NotifyHistory", "NotifyHistory", "MultiLine", false, null, true, false );
 
+  let NotifyDivider : IQuickField = MakeQuickDivider('<Above>Notifications', {} );
+
+  let testSpan : IQuickField = {
+    required: false,
+    title: 'Hellow TestSpan',
+    type: 'span',
+    styles: { color: 'green', fontSize: '20px' }
+  };
+
+  let testLink : IQuickField = {
+    required: false,
+    title: 'Go to google!',
+    type: 'link',
+    value: 'https://www.google.com',
+    styles: { fontSize: '20px' }  ,
+  };
+
+
+  let testImage : IQuickField = {
+    required: false,
+    title: 'Cool lightning image!',
+    type: 'image',
+    value: 'https://wallpapercave.com/wp/wO7581D.jpg',
+    default: 'https://wallpapercave.com/wp/wO7581D.jpg', //for images: default is the href
+    styles: { padding: '0px', ImageCoverStyle: 3 ,ImageFit: 2 ,height: 40, width: '100%' }  ,
+  };
+
   let ActionNewsNEWQuickFields : IQuickField[][] = [
 
     [ TitleField ], //Row 1 fields
@@ -88,6 +135,9 @@ export function getNewActionQuickFields() {
     [ FollowupComments ], //Row 3 fields
     [ FollowupDate ], //Row 4 fields
     [ Status ],
+    [ NotifyDivider ],
+    [ testSpan , testLink ],
+    [ testImage ],
     [ Notified, NotifyCount ],
     [ NotifyHistory ],
   

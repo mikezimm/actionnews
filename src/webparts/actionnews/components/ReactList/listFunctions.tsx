@@ -91,6 +91,17 @@ export function getAppropriateViewFields ( viewDefs: ICustViewDef[], currentWidt
 
 }
 
+/***
+ *     d888b  d88888b d888888b      db    db d888888b d88888b db   d8b   db       d888b  d8888b.  .d88b.  db    db d8888b. .d8888. 
+ *    88' Y8b 88'     `~~88~~'      88    88   `88'   88'     88   I8I   88      88' Y8b 88  `8D .8P  Y8. 88    88 88  `8D 88'  YP 
+ *    88      88ooooo    88         Y8    8P    88    88ooooo 88   I8I   88      88      88oobY' 88    88 88    88 88oodD' `8bo.   
+ *    88  ooo 88~~~~~    88         `8b  d8'    88    88~~~~~ Y8   I8I   88      88  ooo 88`8b   88    88 88    88 88~~~     `Y8b. 
+ *    88. ~8~ 88.        88          `8bd8'    .88.   88.     `8b d8'8b d8'      88. ~8~ 88 `88. `8b  d8' 88b  d88 88      db   8D 
+ *     Y888P  Y88888P    YP            YP    Y888888P Y88888P  `8b8' `8d8'        Y888P  88   YD  `Y88P'  ~Y8888P' 88      `8888Y' 
+ *                                                                                                                                 
+ *                                                                                                                                 
+ */
+
 export function getAppropriateViewGroups ( viewDefs: ICustViewDef[], currentWidth: number ) {
     let result : IGrouping[] = [];
 
@@ -119,6 +130,17 @@ export function getAppropriateViewProp ( viewDefs: ICustViewDef[], currentWidth:
         return null;
     }
 }
+
+/***
+ *    db    db d8888b. d8888b.  .d8b.  d888888b d88888b      db      d888888b .d8888. d888888b      d888888b d888888b d88888b .88b  d88. 
+ *    88    88 88  `8D 88  `8D d8' `8b `~~88~~' 88'          88        `88'   88'  YP `~~88~~'        `88'   `~~88~~' 88'     88'YbdP`88 
+ *    88    88 88oodD' 88   88 88ooo88    88    88ooooo      88         88    `8bo.      88            88       88    88ooooo 88  88  88 
+ *    88    88 88~~~   88   88 88~~~88    88    88~~~~~      88         88      `Y8b.    88            88       88    88~~~~~ 88  88  88 
+ *    88b  d88 88      88  .8D 88   88    88    88.          88booo.   .88.   db   8D    88           .88.      88    88.     88  88  88 
+ *    ~Y8888P' 88      Y8888D' YP   YP    YP    Y88888P      Y88888P Y888888P `8888Y'    YP         Y888888P    YP    Y88888P YP  YP  YP 
+ *                                                                                                                                       
+ *                                                                                                                                       
+ */
 
 export async function updateReactListItem( webUrl: string, listName: string, Id: number, thisButtonObject : IQuickButton, sourceUserInfo: IUser, panelItem: IActionItem ): Promise<void>{
 

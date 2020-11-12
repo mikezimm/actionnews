@@ -6,6 +6,8 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 
+import { propertyPaneBuilder } from '../../services/propPane/PropPaneBuilder';
+
 import { sp } from '@pnp/sp';
 
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
@@ -16,6 +18,8 @@ import * as strings from 'ActionnewsWebPartStrings';
 import Actionnews from './components/Actionnews';
 import { IActionnewsProps, INewsScope } from './components/IActionnewsProps';
 
+import { makeTheTimeObject } from '../../services/dateServices';
+
 export interface IActionnewsWebPartProps {
   description: string;
 
@@ -25,6 +29,12 @@ export interface IActionnewsWebPartProps {
   scope: INewsScope;
   listWeb: string;
   listName: string;
+
+  allowSplit: boolean;
+  allowCopy: boolean;
+
+  titleAddendum: string;
+  comments: string;
 
 }
 
@@ -93,10 +103,11 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
     let listName = this.properties.listName ? this.properties.listName : 'TheNewsPosts';
     let pageUrl = this.context.pageContext.legacyPageContext.webAbsoluteUrl + this.context.pageContext.legacyPageContext.serverRequestPath;
     let pageId = this.context.pageContext.legacyPageContext.pageItemId;
-    let webServerRelativeUrl = this.context.pageContext.web.serverRelativeUrl;
-    let pageLibraryServerRelativeUrl = this.context.pageContext.list.serverRelativeUrl;
-    let pageLibraryTitle = this.context.pageContext.list.title;
-    let pageLibraryId = this.context.pageContext.list.id;
+    let webServerRelativeUrl = this.context.pageContext.legacyPageContext.webServerRelativeUrl;
+    let pageLibraryServerRelativeUrl = this.context.pageContext.legacyPageContext.listUrl;
+    let pageLibraryTitle = this.context.pageContext.list ? this.context.pageContext.list.title : '';
+    let pageLibraryId = this.context.pageContext.list ? this.context.pageContext.list.id : '';
+    let collectionURL = this.context.pageContext.site.serverRelativeUrl;
 
     const element: React.ReactElement<IActionnewsProps> = React.createElement(
       Actionnews,
@@ -111,6 +122,8 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
         //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
         WebpartElement: this.domElement,
 
+        today: makeTheTimeObject(''),
+
         scope: scope,
         listWeb: listWeb,
         listName: listName,
@@ -122,7 +135,14 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
         pageLibraryServerRelativeUrl: pageLibraryServerRelativeUrl,
         pageLibraryTitle: pageLibraryTitle,
         pageLibraryId: pageLibraryId,
+        collectionURL: collectionURL,
 
+        allowSplit: this.properties.allowSplit,
+        allowCopy: this.properties.allowCopy,
+
+        titleAddendum: this.properties.titleAddendum ,
+        comments: this.properties.comments ,
+      
       }
     );
 
@@ -138,24 +158,8 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    return {
-      pages: [
-        {
-          header: {
-            description: strings.PropertyPaneDescription
-          },
-          groups: [
-            {
-              groupName: strings.BasicGroupName,
-              groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
-                })
-              ]
-            }
-          ]
-        }
-      ]
-    };
+    return propertyPaneBuilder.getPropertyPaneConfiguration(
+      this.properties,
+      );
   }
 }

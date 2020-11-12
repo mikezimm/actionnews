@@ -1,9 +1,13 @@
 import * as React from 'react';
 import styles from './Actionnews.module.scss';
 import stylesC from './CommonStyles.module.scss';
+import { sp } from "@pnp/sp";
+import { Web } from "@pnp/sp/presets/all";
 
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+
 import { CompoundButton, Stack, IStackTokens, elementContains, initializeIcons } from 'office-ui-fabric-react';
 import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp/spfx-controls-react/lib/ListView";
 import { Dropdown, DropdownMenuItemType, IDropdownStyles, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
@@ -20,7 +24,7 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 import InfoPage from './HelpInfo/infoPages';
 
-import { allAvailableActions } from './NewsFunctions';
+import { allAvailableActions, getPageTitleTest, allAvailableActionsTitle } from './NewsFunctions';
 
 import * as links from './HelpInfo/AllLinks';
 
@@ -47,10 +51,12 @@ import { findParentElementPropLikeThis } from '../../../services/basicElements';
 
 import { msPerWk, msPerDay } from '../../../services/dateServices';
 
-import { getEmailFromLoginName, checkForLoginName, ensureUserHere } from '../../../services/userServices';
+import { getEmailFromLoginName, checkForLoginName, ensureUserHere, ensureTheseUsers } from '../../../services/userServices';
 
 import { getAppropriateViewFields, getAppropriateViewGroups, } from './ReactList/listFunctions';
 import { PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
+
+import {  } from './NewsFunctions';
 
 import { makeIQuickField } from './const_ActionQuickFields';
 
@@ -87,6 +93,7 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
         pageID: pageID,
         pageUrl: this.props.pageUrl,
         webServerRelativeUrl: this.props.webServerRelativeUrl,
+        pageTitle: pageID === "-1" ? 'Workbench' : null,
 
         pageLibraryServerRelativeUrl: this.props.pageLibraryServerRelativeUrl ,
         pageLibraryTitle: this.props.pageLibraryTitle ,
@@ -165,6 +172,28 @@ private updateMainListColumns( list: INewsService ) {
 
 }
 
+private makeDefaultTextField( field: 'Title' | 'Comments' , pageTitleBlock: string ) {
+
+  let defaultValue = field === 'Title' ? this.props.titleAddendum : this.props.comments;
+  let newValue = '';
+
+  if ( field === 'Title' && defaultValue.toLowerCase().indexOf('<title>') === -1 ) {
+    newValue = defaultValue + ' - ' + pageTitleBlock;
+
+  } else if ( defaultValue.toLowerCase().indexOf('<title>') > -1 ) {
+    newValue = defaultValue.replace(/\<Title\>/gi, pageTitleBlock);
+
+  }
+
+  newValue = newValue.replace(/\<Today\>/gi, '');
+  if (this.state && this.state.newsService && this.state.newsService.contextUserInfo ) {
+    newValue = newValue.replace(/\<UserName\>/gi, this.state.newsService.contextUserInfo.Title );
+    newValue = newValue.replace(/\<UserInitials\>/gi, this.state.newsService.contextUserInfo.initials);
+  }
+
+  return newValue;
+
+}
 
 /***
  *          .o88b.  .d88b.  d8b   db .d8888. d888888b d8888b. db    db  .o88b. d888888b  .d88b.  d8888b. 
@@ -195,7 +224,7 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
       } else { quickCommands.successBanner = quickCommands.successBanner * 1000; }
   }
 
-  let quickFields : IQuickField[][] = getNewActionQuickFields() ;
+  let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTextField('Title','Fetching Page Title - '), this.makeDefaultTextField('Comments',this.props.comments ) ) ;
 
   this.state = {
 
@@ -217,7 +246,8 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
         staticFields: this.makeStaticFields(),
 
         bannerMessage: null,
-    
+        pageTitle: null,
+
         showTips: false,
 
         showNewItem: false,
@@ -227,22 +257,27 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
         recentUsers: [],
 
         panelWidth: PanelType.medium,
+
+        allowSplit: this.props.allowSplit,
+        allowCopy: this.props.allowCopy,
   
   };
 
 }
 
-  
 private makeStaticFields ( ) {
   let pageLinkDesc = this.props.pageUrl.replace(this.props.tenant,'');
   let PageID = makeIQuickField("PageID", "PageID", "PageID", "Text", false, '', false, true, this.props.pageId.toString()  );
   let LibraryName = makeIQuickField("LibraryName", "LibraryName", "LibraryName", "Text", false, '', false, true, this.props.pageLibraryTitle  );
   let WebURL = makeIQuickField("WebURL", "WebURL", "WebURL", "Text", false, '', false, true, this.props.webServerRelativeUrl  );
   let PageLink = makeIQuickField("PageLink", "PageLink", "PageLink", "Link", false, '', false, true, { Description: pageLinkDesc, Url: this.props.pageUrl } );
-//  let PageURL = makeIQuickField("PageURL", "PageURL", "PageURL", "Link", false, '', false, true, this.props.pageUrl );
+  let CollectionURL = makeIQuickField("CollectionURL", "CollectionURL", "CollectionURL", "Text", false, '', false, true, this.props.collectionURL );
+  let PageTitle = makeIQuickField("PageTitle", "PageTitle", "PageTitle", "Text", false, '', false, true, 'Add Page Title here' );
+  
+  //  let PageURL = makeIQuickField("PageURL", "PageURL", "PageURL", "Link", false, '', false, true, this.props.pageUrl );
 
   const ActionNewsStaticFields : IQuickField[][] = [
-    [ PageID, LibraryName, WebURL, PageLink ]
+    [ PageID, LibraryName, WebURL, PageLink, CollectionURL ]
 
   ];
 
@@ -250,6 +285,7 @@ private makeStaticFields ( ) {
 }
 
 public componentDidMount() {
+  // this.udpatePageTitle(this.state.newsService);
   this._updateStateOnPropsChange();
 //  console.log('Mounted!');
 }
@@ -333,9 +369,10 @@ public componentDidUpdate(prevProps){
           isOpen={this.state.showNewItem}
           type={ this.state.panelWidth }
           onDismiss={this._onClosePanelNewItem}
-          headerText={ 'Create New Item' }
+          headerText={ 'Create New ActionNews Item' }
           closeButtonAriaLabel="Close"
           onRenderFooterContent={this._onRenderFooterContent}
+          onRenderHeader={ this.props.allowSplit ? this._onRenderHeader : null }
           isLightDismiss={ true }
           isFooterAtBottom={ true }
       >
@@ -353,6 +390,8 @@ public componentDidUpdate(prevProps){
             _updateDropdown = { this._updateDropdown.bind(this) }
             _saveItem= { this._saveItem.bind(this) }
             _cancelItem= { this._onClosePanelNewItem.bind(this) }
+            allowSplit= { this.state.allowSplit }
+            _getTitleValue = { null /*this.updatePageTitleInStateTest.bind(this)  null */  }
             
 
         ></ThisEditPane>
@@ -517,24 +556,22 @@ public componentDidUpdate(prevProps){
 
   private addTheseItemsToState( newsService: INewsService, allItems , errMessage : string ) {
 
-      if ( allItems.length < 300 ) {
-          console.log('addTheseItemsToState allItems: ', allItems);
-      } {
-          console.log('addTheseItemsToState allItems: QTY: ', allItems.length );
-      }
+    let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTextField('Title', newsService.pageTitle), this.makeDefaultTextField('Comments', this.props.comments),  ) ;
 
+    if ( allItems.length < 300 ) {
+        console.log('addTheseItemsToState allItems: ', allItems);
+    } {
+        console.log('addTheseItemsToState allItems: QTY: ', allItems.length );
+    }
 
-      this.setState({
-          allItems: allItems,
-          newsService:  newsService,
-          errMessage: errMessage,
-      });
+    this.setState({
+        allItems: allItems,
+        newsService:  newsService,
+        errMessage: errMessage,
+        quickFields: quickFields,
+    });
 
-      //This is required so that the old list items are removed and it's re-rendered.
-      //If you do not re-run it, the old list items will remain and new results get added to the list.
-      //However the list will show correctly if you click on a pivot.
-      //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
-      return true;
+    return true;
   }
 
     
@@ -598,6 +635,36 @@ public componentDidUpdate(prevProps){
         );
     }
 
+    private _onRenderHeader = (): JSX.Element => {
+
+      let defStyles = { root: { width: 160, } };
+
+      let thisToggle = <Toggle label={ 'Split Notifications' } 
+          onText={ 'On' } 
+          offText={ 'Off' } 
+          onChange={ this._toggleSplit.bind(this) } 
+          checked={ this.state.allowSplit }
+          styles={ defStyles }
+      />;
+      
+      const stackTokens: IStackTokens = { childrenGap: 20 };
+
+      return (
+      <div>
+        <Stack horizontal={ true } horizontalAlign= { 'space-between' } tokens={stackTokens}>
+          <span style={{ marginLeft: 35, fontSize: 28, marginTop: 5 }}>Create Action News item(s)</span>
+          { thisToggle }
+        </Stack>
+
+      </div>
+      );
+  }
+
+  private _toggleSplit() {
+
+    this.setState({ allowSplit: this.state.allowSplit !== true ? true : false });
+
+  }
 
 /***
  *    .d8888. db   db  .d88b.  db   d8b   db      d8888b.  .d8b.  d8b   db d88888b db      
@@ -614,12 +681,13 @@ public componentDidUpdate(prevProps){
     
       this.setState({ 
           showNewItem: false,
-
       });
   }
 
   public _onShowPanelNewItem = ( item: any ): void => {
+  // public async _onShowPanelNewItem ( item: any ) {
     //This sends back the correct pivot category which matches the category on the tile.
+    //sourceUserInfo
 
     this.setState({
       showNewItem: true,
@@ -636,6 +704,16 @@ public componentDidUpdate(prevProps){
 
   } //End toggleTips  
 
+/***
+ *    d8888b. d88888b  .d88b.  d8888b. db      d88888b      d8888b. d888888b  .o88b. db   dD d88888b d8888b. 
+ *    88  `8D 88'     .8P  Y8. 88  `8D 88      88'          88  `8D   `88'   d8P  Y8 88 ,8P' 88'     88  `8D 
+ *    88oodD' 88ooooo 88    88 88oodD' 88      88ooooo      88oodD'    88    8P      88,8P   88ooooo 88oobY' 
+ *    88~~~   88~~~~~ 88    88 88~~~   88      88~~~~~      88~~~      88    8b      88`8b   88~~~~~ 88`8b   
+ *    88      88.     `8b  d8' 88      88booo. 88.          88        .88.   Y8b  d8 88 `88. 88.     88 `88. 
+ *    88      Y88888P  `Y88P'  88      Y88888P Y88888P      88      Y888888P  `Y88P' YP   YD Y88888P 88   YD 
+ *                                                                                                           
+ *                                                                                                           
+ */
 
   private _addUserToField = (prop: string, valueX: any ): void => {
     let e: any = event;
@@ -665,8 +743,17 @@ public componentDidUpdate(prevProps){
     this.setState({ quickFields: quickFields, });
   }
 
-    /*
-  */
+
+  /***
+ *    d8888b.  .d8b.  d888888b d88888b      d8888b. d888888b  .o88b. db   dD d88888b d8888b. 
+ *    88  `8D d8' `8b `~~88~~' 88'          88  `8D   `88'   d8P  Y8 88 ,8P' 88'     88  `8D 
+ *    88   88 88ooo88    88    88ooooo      88oodD'    88    8P      88,8P   88ooooo 88oobY' 
+ *    88   88 88~~~88    88    88~~~~~      88~~~      88    8b      88`8b   88~~~~~ 88`8b   
+ *    88  .8D 88   88    88    88.          88        .88.   Y8b  d8 88 `88. 88.     88 `88. 
+ *    Y8888D' YP   YP    YP    Y88888P      88      Y888888P  `Y88P' YP   YD Y88888P 88   YD 
+ *                                                                                           
+ *                                                                                           
+ */
 
   private _addWeekToDate = (prop: string, value: any ): void => {
 
@@ -714,6 +801,17 @@ public componentDidUpdate(prevProps){
 
   }
 
+  /***
+ *    d88888b d8888b. d888888b d888888b      db    db d8888b. d8888b.  .d8b.  d888888b d88888b 
+ *    88'     88  `8D   `88'   `~~88~~'      88    88 88  `8D 88  `8D d8' `8b `~~88~~' 88'     
+ *    88ooooo 88   88    88       88         88    88 88oodD' 88   88 88ooo88    88    88ooooo 
+ *    88~~~~~ 88   88    88       88         88    88 88~~~   88   88 88~~~88    88    88~~~~~ 
+ *    88.     88  .8D   .88.      88         88b  d88 88      88  .8D 88   88    88    88.     
+ *    Y88888P Y8888D' Y888888P    YP         ~Y8888P' 88      Y8888D' YP   YP    YP    Y88888P 
+ *                                                                                             
+ *                                                                                             
+ */
+
   private _editFieldUpdate = ( prop: string, value: any ): void => {
 
     let e: any = event;
@@ -730,7 +828,7 @@ public componentDidUpdate(prevProps){
           if ( field.type.toLowerCase().indexOf('user') === 0  ) {
             this.updateRecentUsers( field.value, this.state.recentUsers, this.state.newsService.listWeb );
 
-          } else if ( field.type.toLowerCase().indexOf('multiuser') === 0  ) {
+          } else if ( field.type.toLowerCase().indexOf('user') > 0  ) { //covers multiUser and splitUser
             this.updateRecentUsers( field.value, this.state.recentUsers, this.state.newsService.listWeb );
 
           }
@@ -748,64 +846,10 @@ public componentDidUpdate(prevProps){
   }
 
   private async updateRecentUsers( theseUsers: IUser[], checkTheseUsers: IUser[] , webUrl: string ) {
-    let recentUsers = await this.unsureThisUser( theseUsers, checkTheseUsers, webUrl );
+    let recentUsers = await ensureTheseUsers( theseUsers, checkTheseUsers, webUrl );
     this.setState({
       recentUsers: recentUsers,
     });
-  }
-
-  private async unsureThisUser ( theseUsers: IUser[], checkTheseUsers: IUser[] , webUrl: string ) {
-
-    let updateState: boolean = null;
-
-    console.log('unsureThisUser', theseUsers);
-    let recentUsers : IUser[] = checkTheseUsers;
-    let ensureLogin : IUser[] = [];
-
-    //Get each user and check if they are in stateUsers:  getEmailFromLoginName, checkForLoginName
-    if ( theseUsers.length > 0 ) {
-      theseUsers.map( ensureUser => {
-        let loginName = checkForLoginName( ensureUser );
-        if ( loginName ) {
-  
-          let isAlreadyInState = false;
-  
-          //Check if loginName of new user is already in state
-          recentUsers.map( existingUser => {
-            if ( existingUser.loginName === loginName ) { isAlreadyInState = true ; }
-          });
-  
-          if ( isAlreadyInState === false ) {
-            console.log('NEED TO ENSURE LOGIN: ', loginName );
-            updateState = true;
-            ensureUser.loginName = loginName;
-            ensureLogin.push(ensureUser);
-          }
-        }
-      });
-    }
-
-    if ( ensureLogin.length > 0 ) {
-      for (let i = 0; i < ensureLogin.length; i++) {
-        let user = await ensureUserHere( ensureLogin[i].loginName, webUrl );
-        let localId = ensureLogin[i].id ? ensureLogin[i].id : ensureLogin[i].Id;
-        recentUsers.push({
-          id: localId,
-          Id: localId,
-          remoteID: user.data.Id,
-          title: user.data.Title,
-          Title: user.data.Title,
-          loginName: user.data.LoginName,
-          email: user.data.Email,
-          PrincipalType: user.data.PrincipalType,
-        });
-      }
-      console.log('updated state recentUsers: ', recentUsers );
-
-    }
-
-    return recentUsers;
-
   }
 
   private _updateDropdown = (prop: React.FormEvent<HTMLDivElement>, e , pickedOption ): void => {
@@ -831,19 +875,80 @@ public componentDidUpdate(prevProps){
     });
   }
 
+/***
+ *    .d8888.  .d8b.  db    db d88888b      d888888b d888888b d88888b .88b  d88. 
+ *    88'  YP d8' `8b 88    88 88'            `88'   `~~88~~' 88'     88'YbdP`88 
+ *    `8bo.   88ooo88 Y8    8P 88ooooo         88       88    88ooooo 88  88  88 
+ *      `Y8b. 88~~~88 `8b  d8' 88~~~~~         88       88    88~~~~~ 88  88  88 
+ *    db   8D 88   88  `8bd8'  88.            .88.      88    88.     88  88  88 
+ *    `8888Y' YP   YP    YP    Y88888P      Y888888P    YP    Y88888P YP  YP  YP 
+ *                                                                               
+ *                                                                               
+ */
+
   private async _saveItem ( ) {
 
-    let results : any = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, this.state.quickFields, this.state.staticFields, this.state.recentUsers );
+    let splitCount = 1;
+    let splitUsers = [];
+    let splitField = '';
+    //Get array of split users
+    let quickFields = this.state.quickFields;
+    
+    //Search through each row and field for name:
+    quickFields.map( fieldRow => {
+      fieldRow.map ( field => {
+        if ( field.type.toLowerCase().indexOf('split') > -1 ) { 
+          splitUsers = JSON.parse( JSON.stringify( field.value ));
+          splitField = field.name;
+          splitCount = field.value.length;
+        }
+      });
+    });
+
+    let results : any = null;
+    if ( splitCount === 1 ) {
+      let recentUsers = JSON.parse(JSON.stringify( this.state.recentUsers )); // Needed to prevent it from getting over-written in this function somewhere
+      results = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, this.state.quickFields, this.state.staticFields, recentUsers );
+  
+    } else {
+
+      //Save each item individually - unless allowSplit !== true, then just set to first item in array
+      if ( splitCount > 1 && this.state.allowSplit !== true ) { splitCount = 1; }
+      for (let i = 0; i < splitCount; i++) {
+
+        quickFields.map( fieldRow => {
+          fieldRow.map ( field => {
+            if ( field.name === splitField ) { 
+              field.value = [ splitUsers[i] ];
+            }
+          });
+        });
+
+        let recentUsers = JSON.parse(JSON.stringify( this.state.recentUsers )); // Needed to prevent it from getting over-written in this function somewhere
+        results = await _saveEditPaneItem( this.state.newsService.listWeb, this.state.newsService.listName, quickFields, this.state.staticFields, recentUsers );
+
+      }
+
+    }
 
     let passed = results && results.data ? true : false;
 
     if ( passed !== true ) {
       //The save did not happend
       console.log('was NOT ABLE TO SAVE ITEM');
+      
+      //Put back original splitUsers array - NOT needed if I clear this field after save.
+      quickFields.map( fieldRow => {
+        fieldRow.map ( field => {
+          if ( field.name === splitField ) { 
+            field.value = splitUsers;
+          }
+        });
+      });
 
     } else {
       alert('Your Action News item was just saved!');
-      let quickFields : IQuickField[][] = getNewActionQuickFields() ;
+      quickFields = getNewActionQuickFields( this.makeDefaultTextField('Title', this.state.newsService.pageTitle) , this.makeDefaultTextField('Comments', this.props.comments)  ) ;
       this.setState({
         showNewItem: false,
         quickFields: quickFields,
@@ -854,7 +959,5 @@ public componentDidUpdate(prevProps){
     return null;
 
   }
- 
-
 
 }

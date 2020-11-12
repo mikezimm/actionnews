@@ -8,6 +8,8 @@ import epStyles from './EditPaneStyles.module.scss';
 
 import { IQuickCommands, ICustViewDef,IQuickField, IUser } from '../IReUsableInterfaces';
 
+import { MyDivider , MyText , IMyTextElementTypes, MyImage } from '../../../../services/basicElements';
+
 import { ISingleButtonProps } from '../createButtons/ICreateButtons';
 
 import { _createDropdownField } from '../fields/dropdownFieldBuilder';
@@ -17,6 +19,8 @@ import { createTextField } from '../fields/textFieldBuilder';
 import { createDateField } from '../fields/dateFieldBuilder';
 
 import { createPeopleField } from '../fields/peopleFieldBuilder';
+
+import { createLink } from '../HelpInfo/AllLinks';
 
 export interface IEditPaneProps {
   // These are set based on the toggles shown above the s (not needed in real code)
@@ -30,8 +34,10 @@ export interface IEditPaneProps {
   _updateDropdown: any;
   _saveItem: any;
   _cancelItem: any;
+  _getTitleValue: any;
   wpContext: WebPartContext;
   webAbsoluteUrl: string;
+  allowSplit: boolean;
 
 }
 
@@ -43,9 +49,16 @@ const stackTokens: IStackTokens = { childrenGap: 20 };
 
 export default class ThisEditPane extends React.Component<IEditPaneProps, IEditPaneState> {
 
-  /**
-   * Constructor
-   */
+/***
+ *     .o88b.  .d88b.  d8b   db .d8888. d888888b d8888b. db    db  .o88b. d888888b  .d88b.  d8888b. 
+ *    d8P  Y8 .8P  Y8. 888o  88 88'  YP `~~88~~' 88  `8D 88    88 d8P  Y8 `~~88~~' .8P  Y8. 88  `8D 
+ *    8P      88    88 88V8o 88 `8bo.      88    88oobY' 88    88 8P         88    88    88 88oobY' 
+ *    8b      88    88 88 V8o88   `Y8b.    88    88`8b   88    88 8b         88    88    88 88`8b   
+ *    Y8b  d8 `8b  d8' 88  V888 db   8D    88    88 `88. 88b  d88 Y8b  d8    88    `8b  d8' 88 `88. 
+ *     `Y88P'  `Y88P'  VP   V8P `8888Y'    YP    88   YD ~Y8888P'  `Y88P'    YP     `Y88P'  88   YD 
+ *                                                                                                  
+ *                                                                                                  
+ */
 
   constructor(props: IEditPaneProps) {
     super(props);
@@ -57,6 +70,17 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
     };
   }
 
+/***
+ *    d8888b. d88888b d8b   db d8888b. d88888b d8888b. 
+ *    88  `8D 88'     888o  88 88  `8D 88'     88  `8D 
+ *    88oobY' 88ooooo 88V8o 88 88   88 88ooooo 88oobY' 
+ *    88`8b   88~~~~~ 88 V8o88 88   88 88~~~~~ 88`8b   
+ *    88 `88. 88.     88  V888 88  .8D 88.     88 `88. 
+ *    88   YD Y88888P VP   V8P Y8888D' Y88888P 88   YD 
+ *                                                     
+ *                                                     
+ */
+
   public render(): React.ReactElement<IEditPaneProps> {
 
     let fields = this.props.fields.map( fieldRow => {
@@ -64,15 +88,35 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
       let rowFields = fieldRow.length;
       let fieldWidth = ( 500 / rowFields ) - ( fieldRow.length - 1 ) * 10 ; //Accounts for 30 padding between cells on same row
       let thisRow: any[] = fieldRow.map( thisFieldObject => {
+
         let thisField: any = <div> { thisFieldObject.name } - { thisFieldObject.value }</div>;
-        if ( thisFieldObject.type === 'Text' || thisFieldObject.type === 'MultiLine') {
-          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, null, fieldWidth );
-        } else if ( thisFieldObject.type === 'Time' || thisFieldObject.type === 'Date' ) {
+        let thisType : string | IMyTextElementTypes = thisFieldObject.type ? thisFieldObject.type.toLowerCase() : '';
+
+        if ( thisFieldObject.title === 'Title' ) {
+          thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._getTitleValue, null, fieldWidth );
+        } else if ( thisType === 'text' || thisType === 'multiline') {
+          thisField = createTextField( thisFieldObject, 'EditfieldID', this.props.onChange, null, null, fieldWidth );
+        } else if ( thisType === 'time' || thisType === 'date' ) {
           thisField = createDateField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._clearDateField, this.props._addWeekToDate, thisFieldObject.required, null, fieldWidth );
-        } else if ( thisFieldObject.type === 'User' || thisFieldObject.type === 'MultiUser' ) {
-          thisField = createPeopleField( thisFieldObject, thisFieldObject.type === 'User' ? 1 : 4 , this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
-        } else if ( thisFieldObject.type === 'Choice' || thisFieldObject.type === 'Dropdown' ) {
+        } else if ( thisType.indexOf('user') > -1 ) {
+          let userCount = thisType === 'user' ? 1 : 5 ;
+          
+          //Turn off MultiUser Split column if prop is off.
+          if ( thisType.toLowerCase().indexOf('split') > -1 && this.props.allowSplit !== true ) { userCount = 1 ; }
+
+          thisField = createPeopleField( thisFieldObject, userCount , this.props.onChange, this.props._addYouToField, 'EditFieldID', this.props.wpContext , this.props.webAbsoluteUrl, null, fieldWidth );
+        } else if ( thisType === 'choice' || thisType === 'dropdown' ) {
           thisField = _createDropdownField( thisFieldObject, this.props._updateDropdown, 'EditFieldID', null, fieldWidth );
+        } else if ( thisType === 'divider') {
+          thisField = MyDivider( thisFieldObject.title , { color: 'gray', height: 2 });
+        } else if ( thisType === 'h1' || thisType === 'h2' || thisType === 'h3' ) {
+          thisField = MyText( thisType, thisFieldObject.title , thisFieldObject.styles );
+        } else if ( thisType === 'span' || thisType === 'p' || thisType === 'h3' ) {
+          thisField = MyText( thisType, thisFieldObject.title , thisFieldObject.styles );  
+        } else if ( thisType === 'link' ) {
+          thisField = createLink( thisFieldObject.value, '_blank' , thisFieldObject.title, thisFieldObject.styles ); 
+        } else if ( thisType === 'image' ) {
+          thisField = MyImage( thisFieldObject.title, thisFieldObject.value, thisFieldObject.styles, thisFieldObject.default );          
         }
 
         //createDateField
@@ -87,6 +131,17 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
 
     }) ;
 
+  /***
+ *    d8888b. db    db d888888b d888888b  .d88b.  d8b   db .d8888. 
+ *    88  `8D 88    88 `~~88~~' `~~88~~' .8P  Y8. 888o  88 88'  YP 
+ *    88oooY' 88    88    88       88    88    88 88V8o 88 `8bo.   
+ *    88~~~b. 88    88    88       88    88    88 88 V8o88   `Y8b. 
+ *    88   8D 88b  d88    88       88    `8b  d8' 88  V888 db   8D 
+ *    Y8888P' ~Y8888P'    YP       YP     `Y88P'  VP   V8P `8888Y' 
+ *                                                                 
+ *                                                                 
+ */
+
     let iconSave = { iconName: 'Save' };
     let saveButton = <div id={ 'SaveButton' } title={ 'Save' } ><PrimaryButton text={ 'Save' } iconProps= { iconSave } onClick={ this.props._saveItem } disabled={this.checkForSaveDisabled()} checked={ null } /></div>;
 
@@ -97,6 +152,17 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
         { saveButton } { cancelButton }
     </Stack>;
 
+/***
+ *    d8888b. d88888b d888888b db    db d8888b. d8b   db 
+ *    88  `8D 88'     `~~88~~' 88    88 88  `8D 888o  88 
+ *    88oobY' 88ooooo    88    88    88 88oobY' 88V8o 88 
+ *    88`8b   88~~~~~    88    88    88 88`8b   88 V8o88 
+ *    88 `88. 88.        88    88b  d88 88 `88. 88  V888 
+ *    88   YD Y88888P    YP    ~Y8888P' 88   YD VP   V8P 
+ *                                                       
+ *                                                       
+ */
+
     return (
     <div className={[styles.floatRight, epStyles.commonStyles ].join(' ')}>
         <Stack horizontal={ false } tokens={stackTokens}>
@@ -106,6 +172,17 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
     </div>
     );
   }
+
+/***
+ *     .o88b. db   db d88888b  .o88b. db   dD      d8888b. d888888b .d8888.  .d8b.  d8888b. db      d88888b d8888b. 
+ *    d8P  Y8 88   88 88'     d8P  Y8 88 ,8P'      88  `8D   `88'   88'  YP d8' `8b 88  `8D 88      88'     88  `8D 
+ *    8P      88ooo88 88ooooo 8P      88,8P        88   88    88    `8bo.   88ooo88 88oooY' 88      88ooooo 88   88 
+ *    8b      88~~~88 88~~~~~ 8b      88`8b        88   88    88      `Y8b. 88~~~88 88~~~b. 88      88~~~~~ 88   88 
+ *    Y8b  d8 88   88 88.     Y8b  d8 88 `88.      88  .8D   .88.   db   8D 88   88 88   8D 88booo. 88.     88  .8D 
+ *     `Y88P' YP   YP Y88888P  `Y88P' YP   YD      Y8888D' Y888888P `8888Y' YP   YP Y8888P' Y88888P Y88888P Y8888D' 
+ *                                                                                                                  
+ *                                                                                                                  
+ */
 
   private checkForSaveDisabled(){
 
