@@ -160,6 +160,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
         });
 
     }
+
     private covertFieldInfoToIViewFields( parentListFieldTitles: [] , fieldsToShow: string[] ) {
 
         /**

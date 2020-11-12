@@ -118,7 +118,6 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
     styles: { fontSize: '20px' }  ,
   };
 
-
   let testImage : IQuickField = {
     required: false,
     title: 'Cool lightning image!',

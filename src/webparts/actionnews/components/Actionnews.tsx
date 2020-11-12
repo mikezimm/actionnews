@@ -226,6 +226,15 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
 
   let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTextField('Title','Fetching Page Title - '), this.makeDefaultTextField('Comments',this.props.comments ) ) ;
 
+  let updateQuickFields = false;
+  if ( !quickCommands ) { }  //do nothing 
+  else if ( !quickCommands.quickFields ) { updateQuickFields = true ; }
+  else if ( quickCommands.quickFields.length === 0 ) { updateQuickFields = true ; }
+
+  if ( updateQuickFields === true ) {
+    quickCommands.quickFields = quickFields;
+  }
+
   this.state = {
 
         // 0 - Context
@@ -240,7 +249,7 @@ let quickCommands : IQuickCommands = ActionQuickCommands;
         allItems: [],
         errMessage: '',
 
-        quickCommands: null,
+        quickCommands: quickCommands,
 
         quickFields: quickFields,
         staticFields: this.makeStaticFields(),
@@ -564,17 +573,27 @@ public componentDidUpdate(prevProps){
         console.log('addTheseItemsToState allItems: QTY: ', allItems.length );
     }
 
+    let quickCommands = this.state.quickCommands;
+    quickCommands.quickFields = quickFields;
+
     this.setState({
         allItems: allItems,
         newsService:  newsService,
         errMessage: errMessage,
         quickFields: quickFields,
+        quickCommands: quickCommands,
     });
 
     return true;
   }
 
-    
+  private updateQuickFieldsInState( quickFields : IQuickField[][] , quickCommands : IQuickCommands, showNewItem: boolean ) {
+
+    quickCommands.quickFields = quickFields;
+
+    this.setState({ quickFields: quickFields, quickCommands: quickCommands, showNewItem });
+
+  }
   /***
    *         db    db d8888b. d8888b.  .d8b.  d888888b d88888b      .d8888. d888888b  .d8b.  d888888b d88888b 
    *         88    88 88  `8D 88  `8D d8' `8b `~~88~~' 88'          88'  YP `~~88~~' d8' `8b `~~88~~' 88'     
@@ -740,7 +759,8 @@ public componentDidUpdate(prevProps){
     });
     //Then update the quickFields
 
-    this.setState({ quickFields: quickFields, });
+    this.updateQuickFieldsInState( quickFields , this.state.quickCommands, this.state.showNewItem );
+
   }
 
 
@@ -776,8 +796,7 @@ public componentDidUpdate(prevProps){
       });
     });
     //Then update the quickFields
-
-    this.setState({ quickFields: quickFields, });
+    this.updateQuickFieldsInState( quickFields , this.state.quickCommands, this.state.showNewItem );
 
   }
 
@@ -796,8 +815,7 @@ public componentDidUpdate(prevProps){
       });
     });
     //Then update the quickFields
-
-    this.setState({ quickFields: quickFields, });
+    this.updateQuickFieldsInState( quickFields , this.state.quickCommands, this.state.showNewItem );
 
   }
 
@@ -838,11 +856,8 @@ public componentDidUpdate(prevProps){
     //Then update the quickFields
 
     // console.log('HERE IS Current QuickFields:', quickFields );
+    this.updateQuickFieldsInState( quickFields , this.state.quickCommands, this.state.showNewItem );
 
-
-    this.setState({
-      quickFields: quickFields,
-    });
   }
 
   private async updateRecentUsers( theseUsers: IUser[], checkTheseUsers: IUser[] , webUrl: string ) {
@@ -869,10 +884,8 @@ public componentDidUpdate(prevProps){
     //Then update the quickFields
 
     // console.log('HERE IS Current QuickFields:', quickFields );
+    this.updateQuickFieldsInState( quickFields , this.state.quickCommands, this.state.showNewItem );
 
-    this.setState({
-      quickFields: quickFields,
-    });
   }
 
 /***
@@ -949,10 +962,9 @@ public componentDidUpdate(prevProps){
     } else {
       alert('Your Action News item was just saved!');
       quickFields = getNewActionQuickFields( this.makeDefaultTextField('Title', this.state.newsService.pageTitle) , this.makeDefaultTextField('Comments', this.props.comments)  ) ;
-      this.setState({
-        showNewItem: false,
-        quickFields: quickFields,
-      });
+      
+      this.updateQuickFieldsInState( quickFields , this.state.quickCommands, false );
+
       this.getAllItemsCall();
 
     }
