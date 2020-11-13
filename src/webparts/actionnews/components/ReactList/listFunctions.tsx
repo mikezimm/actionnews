@@ -9,6 +9,9 @@ import { getHelpfullError } from '../../../../services/ErrorHandler';
 
 import { removeItemFromArrayOnce, removeItemFromArrayAll, addItemToArrayIfItDoesNotExist } from '../../../../services/arrayServices';
 
+import { ensureUserHere } from '../../../../services/userServices';
+
+
 import { IActionItem } from '../IActionnewsState';
 
  /***

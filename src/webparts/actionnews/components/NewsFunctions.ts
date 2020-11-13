@@ -6,17 +6,21 @@ import { makeSmallTimeObject, makeTheTimeObject,ITheTime, getAge, getBestTimeDel
 
 import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist, sortKeysByOtherKey } from '../../../services/arrayServices';
 
+import { ensureUserHere } from '../../../services/userServices';
+
 import { getHelpfullError } from '../../../services/ErrorHandler';
 
 import { getExpandColumns, getKeysLike, getSelectColumns } from '../../../services/getFunctions';
 
 import { IActionnewsState, ActionStatus, IActionItem, IActionStatus, IPlannerTask, ActionSearchCols, INewsService,  } from './IActionnewsState';
 
+import { IUser } from './IReUsableInterfaces';
+
 
 const allColumns = ['Title','Id','Created','Modified','Author/Title','Author/ID','Author/Name','Editor/Title','Editor/ID','Editor/Name',
     'Primary/Title', 'Primary/ID', 'Secondary/Title', 'Secondary/ID'];
 
-export async function allAvailableActions(   newsService: INewsService, addTheseItemsToState: any  ): Promise<IActionItem[]>{
+export async function allAvailableActions(  newsService: INewsService, addTheseItemsToState: any, recentUsers: IUser[]  ): Promise<IActionItem[]>{
 
     let expColumns = getExpandColumns(allColumns);
     let selColumns = getSelectColumns(allColumns);
@@ -41,7 +45,7 @@ export async function allAvailableActions(   newsService: INewsService, addThese
      * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
      */
 
-     try {
+    try {
         let restFilter = null;
 
         if ( restFilter !== null ) {
@@ -49,6 +53,22 @@ export async function allAvailableActions(   newsService: INewsService, addThese
         } else {
             allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(500).get();
         }
+    } catch (e) {
+        errMessage = getHelpfullError(e, true, true);
+
+    }
+
+    /**
+     * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
+     */
+
+    try {
+
+        let thisUser : any = await ensureUserHere( newsService.contextUserInfo.LoginName , newsService.listWeb );
+        console.log('sourceWebUserInfo:', thisUser.data );
+        recentUsers.push( thisUser.data );
+        newsService.sourceUserInfo = thisUser.data;
+
     } catch (e) {
         errMessage = getHelpfullError(e, true, true);
 
@@ -78,13 +98,15 @@ export async function allAvailableActions(   newsService: INewsService, addThese
 
     }
 
-    allItems = processAllItems( allItems, errMessage, newsService, addTheseItemsToState );
+
+
+    allItems = processAllItems( allItems, errMessage, newsService, addTheseItemsToState, recentUsers );
 
     return allItems;
 
 }
 
-export function processAllItems( allItems : IActionItem[], errMessage: string, newsService: INewsService, addTheseItemsToState: any ){
+export function processAllItems( allItems : IActionItem[], errMessage: string, newsService: INewsService, addTheseItemsToState: any, recentUsers: IUser[] ){
 
     let thisIsNow = new Date().toLocaleString();
 
@@ -93,7 +115,7 @@ export function processAllItems( allItems : IActionItem[], errMessage: string, n
 
     }
 
-    addTheseItemsToState( newsService, allItems, errMessage );
+    addTheseItemsToState( newsService, allItems, errMessage, recentUsers );
     return allItems;
 
 }

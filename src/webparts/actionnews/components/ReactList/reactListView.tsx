@@ -5,7 +5,7 @@ import { Icon  } from 'office-ui-fabric-react/lib/Icon';
 import { Web, IList, IItem, } from "@pnp/sp/presets/all";
 import { Link, ILinkProps } from 'office-ui-fabric-react';
 
-import { IMyProgress, IQuickButton, IQuickCommands, IUser } from '../IReUsableInterfaces';
+import { IMyProgress, IQuickButton, IQuickCommands, IUser, IQuickField } from '../IReUsableInterfaces';
 
 import { IActionItem } from '../IActionnewsState';
 
@@ -76,6 +76,9 @@ export interface IReactListItemsProps {
     highlightedFields?: string[];
 
     quickCommands?: IQuickCommands;
+
+    updateParentComponentEditPane?: any;
+    showPanel: boolean;
 
 }
 
@@ -347,7 +350,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
             if ( this.state.showPanel === true ) {
                 buttons = createPanelButtons( this.props.quickCommands, this.state.panelItem, this._panelButtonClicked.bind(this), this.props.sourceUserInfo ) ;
                 toggles = <div style={{ float: 'right' }}> { makeToggles(this.getPageToggles( this.state.panelWidth )) } </div>;
-                fields = null;
+
             }
 
             let fullPanel = !this.state.showPanel ? null : 
@@ -500,6 +503,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
  *                                                                                                       
  *                                                                                                       
  */
+
 
  //private async ensureTrackTimeList(myListName: string, myListDesc: string, ProjectOrTime: string): Promise<boolean> {
      
@@ -669,7 +673,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
                 let showFullPanel = canShowAPanel === true && clickedAttach !== true ? true : false;
                 // 2020-10-13:  The last check in this row just didn't seem right... was && this.props.includeListLink === true ? true : false; 
                 let showAttachPanel = canShowAPanel === true && clickedAttach === true && this.props.includeAttach === true ? true : false; 
-    
+
                 this.setState({ 
                     showPanel: showFullPanel,
                     showAttach: showAttachPanel , 

@@ -560,11 +560,11 @@ public componentDidUpdate(prevProps){
 
   private getAllItemsCall() {
 
-    let result : any = allAvailableActions( this.state.newsService, this.addTheseItemsToState.bind(this) );
+    let result : any = allAvailableActions( this.state.newsService, this.addTheseItemsToState.bind(this), this.state.recentUsers );
 
   }
 
-  private addTheseItemsToState( newsService: INewsService, allItems , errMessage : string ) {
+  private addTheseItemsToState( newsService: INewsService, allItems , errMessage : string, recentUsers: IUser[] ) {
 
     let quickFields : IQuickField[][] = getNewActionQuickFields( this.makeDefaultTextField('Title', newsService.pageTitle), this.makeDefaultTextField('Comments', this.props.comments),  ) ;
 
@@ -583,6 +583,7 @@ public componentDidUpdate(prevProps){
         errMessage: errMessage,
         quickFields: quickFields,
         quickCommands: quickCommands,
+        recentUsers: recentUsers,
     });
 
     return true;
