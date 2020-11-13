@@ -449,6 +449,9 @@ public componentDidUpdate(prevProps){
           includeListLink = { true }
           quickCommands={ this.state.quickCommands }
 
+          updateParentComponentEditPane= { this._onShowPanelEditItem.bind(this) }
+          showPanel= { false }
+
           //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
           WebpartHeight={ this.props.WebpartElement.getBoundingClientRect().height }
           WebpartWidth={ this.props.WebpartElement.getBoundingClientRect().width - 50 }
@@ -704,6 +707,20 @@ public componentDidUpdate(prevProps){
           showNewItem: false,
       });
   }
+
+
+  public _onShowPanelEditItem = ( item: any ): void => {
+    let quickFields : IQuickField[][] = JSON.parse(JSON.stringify( this.state.quickCommands.quickFields ));
+
+    quickFields.map( fieldRow => {
+      fieldRow.map( thisFieldObject => {
+            thisFieldObject.value = item[thisFieldObject.name];
+      });
+    }) ;
+
+    this.updateQuickFieldsInState( quickFields , this.state.quickCommands, true );
+  } //End toggleNewItem 
+
 
   public _onShowPanelNewItem = ( item: any ): void => {
   // public async _onShowPanelNewItem ( item: any ) {

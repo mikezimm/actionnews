@@ -412,7 +412,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
                 viewFields={ viewFields }
                 compact={true}
                 selectionMode={ this.props.includeDetails ? SelectionMode.single : SelectionMode.none }
-                selection={this._onShowPanel.bind(this)}
+                selection={ this.props.updateParentComponentEditPane ? this.props.updateParentComponentEditPane : this._onShowPanel.bind(this) }
                 showFilter={false}
                 //defaultFilter="John"
                 filterPlaceHolder="Search..."
