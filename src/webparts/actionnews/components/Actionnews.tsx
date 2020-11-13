@@ -714,7 +714,7 @@ public componentDidUpdate(prevProps){
 
     quickFields.map( fieldRow => {
       fieldRow.map( thisFieldObject => {
-            thisFieldObject.value = item[thisFieldObject.name];
+            thisFieldObject.value = item[0][thisFieldObject.name];
       });
     }) ;
 
