@@ -396,11 +396,10 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
 
            //Only get buttons if panelItem is selected
 
-            let buttons, fields, toggles = null;
-            let panelHeaderText = this.getPanelHeaderText();
+            let buttons, fields, toggles, panelHeaderText = null;
 
             if ( this.state.showPanel === true ) {
-
+                panelHeaderText = this.getPanelHeaderText();
                 buttons = createPanelButtons( this.props.quickCommands, this.state.panelItem, this._panelButtonClicked.bind(this), this.props.sourceUserInfo ) ;
                 toggles = <div style={{ float: 'right' }}> { makeToggles(this.getPageToggles( this.state.panelWidth )) } </div>;
                 
@@ -429,7 +428,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
                 <Panel
                     isOpen={this.state.showPanel}
                     type={ this.state.panelWidth }
-                    onDismiss={this._onClosePanel}
+                    onDismiss={this._onClosePanel.bind(this) }
                     headerText={ panelHeaderText }
                     closeButtonAriaLabel="Close"
                     onRenderFooterContent={this._onRenderFooterContent}
@@ -448,7 +447,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
             <Panel
                 isOpen={this.state.showAttach}
                 type={ this.state.panelWidth }
-                onDismiss={this._onClosePanel}
+                onDismiss={this._onClosePanel.bind(this)}
                 headerText={ this.state.panelId.toString() }
                 closeButtonAriaLabel="Close"
                 onRenderFooterContent={this._onRenderFooterContent}
@@ -491,7 +490,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
                     viewFields={ viewFields }
                     compact={true}
                     selectionMode={ this.props.includeDetails ? SelectionMode.single : SelectionMode.none }
-                    selection={ this._onShowPanelEditItem.bind(this) }
+                    selection={ this._onShowPanel.bind(this) }
                     showFilter={false}
                     //defaultFilter="John"
                     filterPlaceHolder="Search..."
@@ -1020,6 +1019,11 @@ private _addUserToField = (prop: string, valueX: any ): void => {
     } //End toggleNewItem  
 
     public _onShowPanelEditItem = ( item: any ): void => {
+
+        if ( item && item.length === 0 ) {
+            console.log('_onShowPanelEditItem was run with no items');
+            return null;
+        }
         let quickFields : IQuickField[][] = JSON.parse(JSON.stringify( this.props.quickFields ));
 
         quickFields.map( fieldRow => {
@@ -1028,7 +1032,15 @@ private _addUserToField = (prop: string, valueX: any ): void => {
             });
         }) ;
 
-        this.setState({ quickFields: quickFields, showNewPanel: false, showEditPanel: true, showPanel: true, panelMode: 'Edit' });
+        this.setState({ 
+            quickFields: quickFields, 
+            panelId: item[0].Id,
+            panelItem: item[0],
+            showNewPanel: false, 
+            showEditPanel: true, 
+            showPanel: true, 
+            panelMode: 'Edit'
+         });
     } //End toggleNewItem 
 
     private _onShowPanel = (item): void => {
