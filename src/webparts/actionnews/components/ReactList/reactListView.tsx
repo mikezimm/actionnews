@@ -396,14 +396,24 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
 
            //Only get buttons if panelItem is selected
 
-            let buttons, fields, toggles, panelHeaderText = null;
+            let buttons, fields, toggles, panelHeaderText, detailList, fullPanel = null;
+
+            let panelMode = this.state.panelMode;
 
             if ( this.state.showPanel === true ) {
                 panelHeaderText = this.getPanelHeaderText();
-                buttons = createPanelButtons( this.props.quickCommands, this.state.panelItem, this._panelButtonClicked.bind(this), this.props.sourceUserInfo ) ;
-                toggles = <div style={{ float: 'right' }}> { makeToggles(this.getPageToggles( this.state.panelWidth )) } </div>;
-                
-                fields = this.state.panelMode !== 'New' ? null : 
+
+                let showButtons = panelMode === 'Edit' || panelMode === 'View' ? true : false;
+                if ( showButtons === true ) { 
+                    createPanelButtons( this.props.quickCommands, this.state.panelItem, this._panelButtonClicked.bind(this), this.props.sourceUserInfo )  ;
+                    detailList = autoDetailsList(this.state.panelItem, ["Title","refiners"],["search","meta","searchString"],true);
+                }
+
+                let showPanelWidth = this.state.panelMode === 'View' ? true : false;
+                if ( showPanelWidth === true ) { toggles = <div style={{ float: 'right' }}> { makeToggles(this.getPageToggles( this.state.panelWidth )) } </div>; }
+
+                let showFields = this.state.panelMode === 'New' || this.state.panelMode === 'Edit' || this.state.panelMode === 'View' ? true : false;
+                fields = showFields !== true ? null : 
                 <ThisEditPane 
                     wpContext={ this.props.wpContext }
                     webAbsoluteUrl={ this.props.webURL }
@@ -419,35 +429,36 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
                     _cancelItem= { this._onClosePanel.bind(this) }
                     allowSplit= { this.state.allowSplit }
                     _getTitleValue = { null /*this.updatePageTitleInStateTest.bind(this)  null */  }
-                    readOnlyMode = { false }
+                    readOnlyMode = { this.state.panelMode === 'View' ? true : false }
                 ></ThisEditPane>;
-            }
 
-
-            let fullPanel = !this.state.showPanel ? null : 
+                fullPanel = !this.state.showPanel ? null : 
                 <Panel
                     isOpen={this.state.showPanel}
                     type={ this.state.panelWidth }
-                    onDismiss={this._onClosePanel.bind(this) }
+                    onDismiss={this._onClosePanel }
                     headerText={ panelHeaderText }
                     closeButtonAriaLabel="Close"
-                    onRenderFooterContent={this._onRenderFooterContent}
+                    onRenderFooterContent={this._onRenderFooterContent }
                     onRenderHeader={ this.props.allowSplit ? this._onRenderHeader : null }
                     isLightDismiss={ true }
                     isFooterAtBottom={ true }
                 >
-                    { toggles }
+
                     { attachments }
                     { buttons }
                     { fields }
-                    { autoDetailsList(this.state.panelItem, ["Title","refiners"],["search","meta","searchString"],true) }
+                    { toggles }
+                    { detailList }
                 </Panel>;
+
+            }
 
             let attachPanel = !this.state.showAttach ? null : 
             <Panel
                 isOpen={this.state.showAttach}
                 type={ this.state.panelWidth }
-                onDismiss={this._onClosePanel.bind(this)}
+                onDismiss={this._onClosePanel }
                 headerText={ this.state.panelId.toString() }
                 closeButtonAriaLabel="Close"
                 onRenderFooterContent={this._onRenderFooterContent}
@@ -510,9 +521,9 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
 
             let webTitle = null;
 
-            let listLink = !this.props.includeListLink ? null : <div className={ stylesInfo.infoHeading } onClick={ this._onGoToList.bind(this) } 
+            let listLink = !this.props.includeListLink ? null : <div className={ stylesInfo.infoHeading }
                 style={{ paddingRight: 20, whiteSpace: 'nowrap', float: 'right', paddingTop: 0, cursor: 'pointer', fontSize: 'smaller',background: 'transparent' }}>
-                    <span style={{ background: 'transparent' }} className={ stylesInfo.listLink }>Go to list</span>
+                    <span  onClick={ this._onGoToList.bind(this) } style={{ background: 'transparent' }} className={ stylesInfo.listLink }>Go to list</span>
                     <span style={{marginLeft: 20, float: 'right' }}> { toggleNewItemPane } </span>
                     </div>;
 
@@ -1018,24 +1029,10 @@ private _addUserToField = (prop: string, valueX: any ): void => {
   
     } //End toggleNewItem  
 
-    public _onShowPanelEditItem = ( item: any ): void => {
-
-        if ( item && item.length === 0 ) {
-            console.log('_onShowPanelEditItem was run with no items');
-            return null;
-        }
-        let quickFields : IQuickField[][] = JSON.parse(JSON.stringify( this.props.quickFields ));
-
-        quickFields.map( fieldRow => {
-            fieldRow.map( thisFieldObject => {
-                thisFieldObject.value = item[0][thisFieldObject.name];
-            });
-        }) ;
+    private _onShowPanelEditItem = ( item: any ): void => {
 
         this.setState({ 
-            quickFields: quickFields, 
-            panelId: item[0].Id,
-            panelItem: item[0],
+
             showNewPanel: false, 
             showEditPanel: true, 
             showPanel: true, 
@@ -1048,6 +1045,11 @@ private _addUserToField = (prop: string, valueX: any ): void => {
         let e: any = event;
         console.log('_onShowPanel: e',e);
         console.log('_onShowPanel item clicked:',item);
+
+        if ( item.length === 0) { 
+            console.log('_onShowPanel was triggered with no items selected');
+            return null ;
+        }
 
         let isLink = e.srcElement && e.srcElement.href && e.srcElement.href.length > 0 ? true : false;
 
@@ -1069,6 +1071,20 @@ private _addUserToField = (prop: string, valueX: any ): void => {
                 if ( e.srcElement.dataset && e.srcElement.dataset.iconName === 'Attach' ) {
                     clickedAttach = true;
                 }
+
+                let quickFields : IQuickField[][] = this.state.quickFields;
+                if ( clickedAttach !== true ) {
+
+                    quickFields = JSON.parse(JSON.stringify( this.props.quickFields ));
+
+                    quickFields.map( fieldRow => {
+                        fieldRow.map( thisFieldObject => {
+                            thisFieldObject.value = item[0][thisFieldObject.name];
+                        });
+                    }) ;
+
+
+                }
     
                 this.createPanelAttachments(thisID, panelItem );
     
@@ -1081,7 +1097,10 @@ private _addUserToField = (prop: string, valueX: any ): void => {
                     showPanel: showFullPanel,
                     showAttach: showAttachPanel , 
                     clickedAttach: clickedAttach,
+
                     showEditPanel: true,
+                    panelMode: 'View',
+                    quickFields: quickFields,
                     showNewPanel: false,
                     panelId: thisID,
                     panelItem: panelItem,
@@ -1150,14 +1169,25 @@ private _addUserToField = (prop: string, valueX: any ): void => {
     private _onRenderHeader = (): JSX.Element => {
 
         let defStyles = { root: { width: 160, } };
-  
-        let thisToggle = <Toggle label={ 'Split Notifications' } 
+        let thisButton = null;
+
+        if ( this.state.panelMode === 'View' ) {
+            let myIconStyles = JSON.parse(JSON.stringify( defCommandIconStyles ));
+            myIconStyles.icon.fontSize = 24;
+            myIconStyles.icon.fontWeight = "900";
+
+            thisButton = <div style={{ marginRight: 100 }} > { createIconButton('Edit','Edit Item', this._onShowPanelEditItem , null, myIconStyles ) } </div>;
+
+        } else {
+            thisButton = <Toggle label={ 'Split Notifications' } 
             onText={ 'On' } 
             offText={ 'Off' } 
             onChange={ this._toggleSplit.bind(this) } 
             checked={ this.state.allowSplit }
             styles={ defStyles }
         />;
+        }
+
         
         const stackTokens: IStackTokens = { childrenGap: 20 };
         let headerText = this.getPanelHeaderText();
@@ -1165,7 +1195,7 @@ private _addUserToField = (prop: string, valueX: any ): void => {
         <div>
           <Stack horizontal={ true } horizontalAlign= { 'space-between' } tokens={stackTokens}>
             <span style={{ marginLeft: 35, fontSize: 28, marginTop: 5 }}> { headerText } </span>
-            { thisToggle }
+            { thisButton }
           </Stack>
   
         </div>

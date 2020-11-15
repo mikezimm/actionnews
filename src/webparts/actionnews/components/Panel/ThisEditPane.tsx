@@ -142,16 +142,19 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
  *                                                                 
  *                                                                 
  */
-
-    let iconSave = { iconName: 'Save' };
-    let saveButton = <div id={ 'SaveButton' } title={ 'Save' } ><PrimaryButton text={ 'Save' } iconProps= { iconSave } onClick={ this.props._saveItem } disabled={this.checkForSaveDisabled()} checked={ null } /></div>;
-
-    let iconCancel = { iconName: 'Cancel' };
-    let cancelButton = <div id={ 'CancelButton' } title={ 'Cancel' } ><PrimaryButton text={ 'Cancel' } iconProps= { iconCancel } onClick={ this.props._cancelItem } disabled={false} checked={ null } /></div>;
-
-    let panelButtons = <Stack horizontal={ true } tokens={stackTokens}>
-        { saveButton } { cancelButton }
-    </Stack>;
+    let panelButtons = null;
+    if ( this.props.readOnlyMode !== true ) {
+      let iconSave = { iconName: 'Save' };
+      let saveButton = <div id={ 'SaveButton' } title={ 'Save' } ><PrimaryButton text={ 'Save' } iconProps= { iconSave } onClick={ this.props._saveItem } disabled={this.checkForSaveDisabled()} checked={ null } /></div>;
+  
+      let iconCancel = { iconName: 'Cancel' };
+      let cancelButton = <div id={ 'CancelButton' } title={ 'Cancel' } ><PrimaryButton text={ 'Cancel' } iconProps= { iconCancel } onClick={ this.props._cancelItem } disabled={false} checked={ null } /></div>;
+  
+      panelButtons = <Stack horizontal={ true } tokens={stackTokens}>
+          { saveButton } { cancelButton }
+      </Stack>;
+  
+    }
 
 /***
  *    d8888b. d88888b d888888b db    db d8888b. d8b   db 
