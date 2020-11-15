@@ -815,6 +815,9 @@ private _addUserToField = (prop: string, valueX: any ): void => {
 
           //Based on https://www.sitepoint.com/community/t/how-do-i-add-one-week-to-a-date/47817/2
           let start = field.value ? field.value: new Date();
+          console.log('typeOf start:', typeof start ) ;
+          if ( typeof start === 'string' ) { start = new Date(start) ; }
+          console.log('typeOf start:', typeof start ) ;
 
           field.value = new Date( start.getTime() + msPerDay * value );
         }
