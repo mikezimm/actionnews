@@ -1023,7 +1023,6 @@ private _addUserToField = (prop: string, valueX: any ): void => {
 
     let results : any = null;
 
-
     if ( failSafeRequired === false ) {
         let errMessage = 'Missing following values:\n\n' + requiredError.join('\n');
         alert(errMessage);

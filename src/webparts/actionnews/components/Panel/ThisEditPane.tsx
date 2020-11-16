@@ -79,6 +79,29 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
     };
   }
 
+  
+
+/***
+ *         d8888b. d888888b d8888b.      db    db d8888b. d8888b.  .d8b.  d888888b d88888b 
+ *         88  `8D   `88'   88  `8D      88    88 88  `8D 88  `8D d8' `8b `~~88~~' 88'     
+ *         88   88    88    88   88      88    88 88oodD' 88   88 88ooo88    88    88ooooo 
+ *         88   88    88    88   88      88    88 88~~~   88   88 88~~~88    88    88~~~~~ 
+ *         88  .8D   .88.   88  .8D      88b  d88 88      88  .8D 88   88    88    88.     
+ *         Y8888D' Y888888P Y8888D'      ~Y8888P' 88      Y8888D' YP   YP    YP    Y88888P 
+ *                                                                                         
+ *                                                                                         
+ */
+
+public componentDidUpdate(prevProps: IEditPaneProps): void {
+  let redraw = false;
+
+  if ( prevProps.fields !== this.props.fields ) { redraw = true; }
+  if ( redraw === true ) {
+      this._updateStateOnPropsChange();
+  }
+
+}
+
 /***
  *    d8888b. d88888b d8b   db d8888b. d88888b d8888b. 
  *    88  `8D 88'     888o  88 88  `8D 88'     88  `8D 
@@ -179,7 +202,14 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
       myIconStyles.icon.fontSize = 24;
       //myIconStyles.icon.fontWeight = "900";
       
-      let cancelEditButton = <div style={{ right: 100, position: 'absolute' }} > { createIconButton('Uneditable','Cancel Editing', this.props._setReadOnly , null, myIconStyles ) } </div>;
+      let cancelDiv: any = { };
+      cancelDiv.position = 'absolute'; //DOES NOT Work... it sticks to right but does not move when scrolling
+
+      if ( this.props.quickNewButton !== null ) {   }
+//      let cancelEditButton = <div style={{ position: 'relative' }}><div style={ cancelDiv } > { createIconButton('Uneditable','Cancel Editing', this.props._setReadOnly , null, myIconStyles ) } </div></div>;
+
+      let cancelEditButton = <div style={{ marginLeft: this.props.quickNewButton === null ? 100 : null }}> { createIconButton('Uneditable','Cancel Editing', this.props._setReadOnly , null, myIconStyles ) } </div>;
+      
 
 
       panelButtons = 
@@ -227,10 +257,18 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
     this.props.fields.map( fieldRow => {
       fieldRow.map( thisFieldObject => {
         if ( thisFieldObject.required && thisFieldObject.value === null ) { disableSave = true; }
+        else if ( thisFieldObject.required && thisFieldObject.value === undefined ) { disableSave = true; }
+        else if ( thisFieldObject.required && thisFieldObject.value === '' ) { disableSave = true; }
       });
     }) ;
 
     return disableSave;
+  }
+
+  
+  private _updateStateOnPropsChange(): void {
+    this.setState({
+      });
   }
 
 }

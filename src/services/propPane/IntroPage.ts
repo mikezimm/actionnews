@@ -109,11 +109,10 @@ export class IntroPage {
         groupFields: [
 
           PropertyPaneTextField('quickNewButton', {
-            label: 'Command Button in New Item pane',
-            description: 'Create easy button to pre-populate new items.  Limit ONE per webpart',
+            label: 'Command Button in New/Edit Item pane',
+            description: 'Create easy button to pre-populate fields.  Limit ONE per webpart',
             multiline: true,
           }),
-
 
         ]}, // this group
 
