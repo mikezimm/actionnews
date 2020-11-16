@@ -14,9 +14,9 @@ import { Dropdown, DropdownMenuItemType, IDropdownStyles, IDropdownOption } from
 
 import stylesContents from './Contents/contents.module.scss';
 
-import { IActionnewsProps } from './IActionnewsProps';
+import { IActionnewsProps, INewsScope } from './IActionnewsProps';
 
-import { IActionnewsState, ActionStatus, IActionItem, IActionStatus, IPlannerTask, ActionSearchCols, INewsService,  } from './IActionnewsState';
+import { IActionnewsState, ActionStatus, IActionItem, IActionStatus, IPlannerTask, ActionSearchCols, INewsService,   } from './IActionnewsState';
 
 import { IQuickCommands, ICustViewDef, IQuickField, IUser } from './IReUsableInterfaces';
 
@@ -89,6 +89,7 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
         webServerRelativeUrl: this.props.webServerRelativeUrl,
         pageTitle: pageID === "-1" ? 'Workbench' : null,
 
+        collectionURL: this.props.collectionURL,
         pageLibraryServerRelativeUrl: this.props.pageLibraryServerRelativeUrl ,
         pageLibraryTitle: this.props.pageLibraryTitle ,
         pageLibraryId: this.props.pageLibraryId ,
@@ -280,7 +281,7 @@ private makeStaticFields ( ) {
 
 public componentDidMount() {
   // this.udpatePageTitle(this.state.newsService);
-  this._updateStateOnPropsChange();
+  this._updateStateOnPropsChange( this.props.scope );
 //  console.log('Mounted!');
 }
 
@@ -301,15 +302,18 @@ public componentDidUpdate(prevProps){
 
   let rebuildPart = false;
 
-  if ( prevProps.listName !== this.props.listName ) {
+  if ( prevProps.scope !== this.props.scope ) {
+    rebuildPart = true ;
+  }
 
+  if ( prevProps.quickNewButton !== this.props.quickNewButton ) {
     rebuildPart = true ;
   }
 
   //console.log('componentDidUpdate: Actionnews.tsx');
 
   if (rebuildPart === true) {
-    this._updateStateOnPropsChange();
+    this._updateStateOnPropsChange( this.props.scope );
   }
 }
 
@@ -517,9 +521,9 @@ public componentDidUpdate(prevProps){
 
   }
 
-  private getAllItemsCall() {
+  private getAllItemsCall( scope: INewsScope) {
 
-    let result : any = allAvailableActions( this.state.newsService, this.addTheseItemsToState.bind(this), this.state.recentUsers );
+    let result : any = allAvailableActions( this.state.newsService, this.addTheseItemsToState.bind(this), this.state.recentUsers, scope );
 
   }
 
@@ -561,7 +565,7 @@ public componentDidUpdate(prevProps){
     this.setState({
         bannerMessage: message,
     });
-    this.getAllItemsCall();
+    this.getAllItemsCall( this.props.scope );
 
     let delay = hasError === true ? 10000 : this.state.quickCommands.successBanner;
 
@@ -571,8 +575,8 @@ public componentDidUpdate(prevProps){
 
   }
 
-  private _updateStateOnPropsChange(): void {
-    this.getAllItemsCall();
+  private _updateStateOnPropsChange( scope : INewsScope ): void {
+    this.getAllItemsCall( this.props.scope );
   }
 
 /***

@@ -14,13 +14,15 @@ import { getExpandColumns, getKeysLike, getSelectColumns } from '../../../servic
 
 import { IActionnewsState, ActionStatus, IActionItem, IActionStatus, IPlannerTask, ActionSearchCols, INewsService,  } from './IActionnewsState';
 
+import { INewsScope } from './IActionnewsProps';
+
 import { IUser } from './IReUsableInterfaces';
 
 
 const allColumns = ['Title','Id','Created','Modified','Author/Title','Author/ID','Author/Name','Editor/Title','Editor/ID','Editor/Name',
     'Primary/Title', 'Primary/ID', 'Secondary/Title', 'Secondary/ID'];
 
-export async function allAvailableActions(  newsService: INewsService, addTheseItemsToState: any, recentUsers: IUser[]  ): Promise<IActionItem[]>{
+export async function allAvailableActions(  newsService: INewsService, addTheseItemsToState: any, recentUsers: IUser[], scope: INewsScope  ): Promise<IActionItem[]>{
 
     let expColumns = getExpandColumns(allColumns);
     let selColumns = getSelectColumns(allColumns);
@@ -34,12 +36,30 @@ export async function allAvailableActions(  newsService: INewsService, addTheseI
     let getThisWeb = newsService.listWeb;
     if ( getThisWeb.indexOf(newsService.tenant) < 0 ) {getThisWeb = newsService.tenant + newsService.listWeb; }
     let thisListWeb = Web( getThisWeb );
-    let scope = newsService.scope;
     let errMessage = '';
     
     let thisListObject = thisListWeb.lists.getByTitle(newsService.listName);
     let expandThese = expColumns.join(',');
     let selectCols = '*,' + selColumns.join(',');
+
+        
+    /**
+     * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
+     */
+
+    if ( newsService.sourceUserInfo === null ) {
+        try {
+
+            let thisUser : any = await ensureUserHere( newsService.contextUserInfo.LoginName , newsService.listWeb, true );
+            console.log('sourceWebUserInfo:', thisUser.data );
+            recentUsers.push( thisUser.data );
+            newsService.sourceUserInfo = thisUser.data;
+
+        } catch (e) {
+            errMessage = getHelpfullError(e, true, true);
+
+        }
+    }
 
     /**
      * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
@@ -48,31 +68,27 @@ export async function allAvailableActions(  newsService: INewsService, addTheseI
     try {
         let restFilter = null;
 
+        if ( scope === 'site' ) {
+            restFilter = 'CollectionURL eq \'' + newsService.collectionURL + '\'';
+        } else if ( scope === 'web' ) {
+            restFilter = 'WebURL eq \'' + newsService.webServerRelativeUrl + '\'';
+        } else if ( scope === 'page' ) {
+            restFilter = 'WebURL eq \'' + newsService.webServerRelativeUrl + '\' and LibraryName eq \'' + newsService.pageLibraryTitle + '\' and PageID eq \'' + newsService.pageID + '\'';
+        } else if ( scope === 'user' ) {
+            restFilter = 'Primary eq ' + newsService.sourceUserInfo.Id + ' or ' + 'Secondary eq ' + newsService.sourceUserInfo.Id ;
+        }
+
         if ( restFilter !== null ) {
             allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(500).filter(restFilter).get();
         } else {
             allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(500).get();
         }
-    } catch (e) {
-        errMessage = getHelpfullError(e, true, true);
-
-    }
-
-    /**
-     * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
-     */
-
-    try {
-
-        let thisUser : any = await ensureUserHere( newsService.contextUserInfo.LoginName , newsService.listWeb );
-        console.log('sourceWebUserInfo:', thisUser.data );
-        recentUsers.push( thisUser.data );
-        newsService.sourceUserInfo = thisUser.data;
 
     } catch (e) {
         errMessage = getHelpfullError(e, true, true);
 
     }
+
 
     /**
      * Get page title here

@@ -107,7 +107,9 @@ export class IntroPage {
         { groupName: 'Quick New Command',
         isCollapsed: true ,
         groupFields: [
-
+  
+          JSON_Edit_Link,
+          
           PropertyPaneTextField('quickNewButton', {
             label: 'Command Button in New/Edit Item pane',
             description: 'Create easy button to pre-populate fields.  Limit ONE per webpart',

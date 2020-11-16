@@ -1,5 +1,5 @@
 
-export type INewsScope = 'User' | 'Page' | 'Site';
+export type INewsScope = 'User' | 'Page' | 'Site' | 'Web' | 'user' | 'page' | 'site' | 'web';
 
 import { makeTheTimeObject, ITheTime } from '../../../services/dateServices';
 

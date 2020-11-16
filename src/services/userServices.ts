@@ -105,7 +105,7 @@ return results;
  *                                                                                                                                 
  */
 
-export async function ensureUserHere( loginName: string, webUrl: string ) {
+export async function ensureUserHere( loginName: string, webUrl: string, supressSaveConflict: boolean ) {
     
     let thisListWeb = Web(webUrl);
 
@@ -123,7 +123,12 @@ export async function ensureUserHere( loginName: string, webUrl: string ) {
         errMessage = getHelpfullError(e, true, true);
         let saveMessage =  'Ensure Failed!\n' + loginName + "\n" + webUrl + "\n" + errMessage;
 
-        alert( saveMessage );
+        if ( supressSaveConflict === true && errMessage.indexOf('Save Conflict') === 0 ) {
+          //Do nothting
+        } else {
+          alert( saveMessage );
+        }
+
         console.log( saveMessage );
     }
 
@@ -176,7 +181,7 @@ export async function ensureTheseUsers ( theseUsers: IUser[], checkTheseUsers: I
 
     if ( ensureLogin.length > 0 ) {
       for (let i = 0; i < ensureLogin.length; i++) {
-        let user = await ensureUserHere( ensureLogin[i].loginName, webUrl );
+        let user = await ensureUserHere( ensureLogin[i].loginName, webUrl, false );
         let localId = ensureLogin[i].id ? ensureLogin[i].id : ensureLogin[i].Id;
         recentUsers.push({
           id: localId,
