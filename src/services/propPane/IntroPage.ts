@@ -104,6 +104,20 @@ export class IntroPage {
           }),
 
         ]}, // this group
+        { groupName: 'Quick New Command',
+        isCollapsed: true ,
+        groupFields: [
+
+          PropertyPaneTextField('quickNewButton', {
+            label: 'Command Button in New Item pane',
+            description: 'Create easy button to pre-populate new items.  Limit ONE per webpart',
+            multiline: true,
+          }),
+
+
+        ]}, // this group
+
+        
 
         ]}; // Groups
   } // getPropertyPanePage()

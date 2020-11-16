@@ -151,93 +151,11 @@ export async function updateReactListItem( webUrl: string, listName: string, Id:
     //lists.getById(listGUID).webs.orderBy("Title", true).get().then(function(result) {
     //let allItems : IActionItem[] = await sp.web.webs.get();
 
-    let currentTime = new Date().toLocaleString();
-
-    let results : any[] = [];
-
     let thisListWeb = Web(webUrl);
 
     let errMessage = null;
 
-    let newUpdateItem = JSON.stringify(thisButtonObject.updateItem);
-
-    //Replace [Today] with currect time
-    newUpdateItem = newUpdateItem.replace(/\B\[Today\]\B/gi, currentTime);
-
-    //Regex looks for anything matching [Today-+xxx] and replaces with date string
-    var newUpdateItem2 = newUpdateItem.replace(/\[Today(.*?)\]/gi, (match =>  {
-        let numb = parseInt(match.toLowerCase().substring(6).replace("]",""),10);
-        var today = new Date();
-        var newdate = new Date();
-        newdate.setDate(today.getDate()+numb);
-        let newDateString = newdate.toLocaleString();
-        return newDateString;
-    }) );
-
-    // Replace [MyName] with userId.Title
-    newUpdateItem2 = newUpdateItem2.replace(/\[MyName\]/gi, sourceUserInfo.Title );
-
-    let newUpdateItemObj = JSON.parse(newUpdateItem2);
-
-    //Replace [Me]
-    Object.keys(newUpdateItemObj).map( k => {
-        let thisColumn: any = newUpdateItemObj[k];
-        if ( typeof thisColumn === 'string' ) { 
-
-            //Single value set to current user
-            if ( thisColumn.toLowerCase() === '[me]' ) {
-                thisColumn = sourceUserInfo.Id; 
-                console.log('thisColumn is: ', thisColumn ) ;
-
-            //Single value only remove you
-            } else if ( thisColumn.toLowerCase() === '[-me]' ) {
-                thisColumn = panelItem[k] === sourceUserInfo.Id ? null : panelItem[k]; 
-
-            //Multi value set to current user
-            } else if ( thisColumn.toLowerCase() === '{me}' ) { 
-                thisColumn = { results: [ sourceUserInfo.Id ]}; 
-
-            //Multi value add current user
-            } else if ( thisColumn.toLowerCase() === '{+me}' ) { 
-
-                if ( panelItem[k] ) {
-                    try {
-                        //thisColumn = panelItem[k].results.push( sourceUserInfo.Id ); //Errored out
-                        thisColumn = panelItem[k];
-                        if ( thisColumn.indexOf( sourceUserInfo.Id ) < 0 )  { thisColumn.push( sourceUserInfo.Id ); }
-                        thisColumn = { results: thisColumn };
-
-                    } catch (e) {
-                        let err = getHelpfullError(e);
-                        alert( `Error updating item Column ${k} : \n\n${err}` );
-                        console.log( `Error updating item Column ${k} :`, err );
-                    }
-                } else { 
-                    thisColumn = { results: [ sourceUserInfo.Id ]} ;
-                }
-
-            //Multi value remove current user
-            } else if ( thisColumn.toLowerCase() === '{-me}' ) { 
-
-                if ( panelItem[k] ) {
-                    try {
-                        thisColumn = panelItem[k];
-                        thisColumn = removeItemFromArrayAll(thisColumn, sourceUserInfo.Id);
-                        thisColumn = { results: thisColumn };
-
-                    } catch (e) {
-                        let err = getHelpfullError(e);
-                        alert( `Error updating item Column ${k} : \n\n${err}` );
-                        console.log( `Error updating item Column ${k} :`, err );
-                    }
-                } { console.log( `Did not find Column ${k} and could not remove you from it.`, panelItem );
-                    console.log( `Here's the full panelItem:`, panelItem );
-                }
-            } 
-
-            newUpdateItemObj[k] = thisColumn;
-        } // END This key value is string
-    });
+    let newUpdateItemObj = getUpdateObjectFromString( thisButtonObject, sourceUserInfo, panelItem );
 
     try {
         let thisListObject = await thisListWeb.lists.getByTitle(listName);
@@ -256,5 +174,111 @@ export async function updateReactListItem( webUrl: string, listName: string, Id:
     }
 
     return errMessage;
+
+}
+
+/***
+ *     d888b  d88888b d888888b       .d88b.  db    db d888888b  .o88b. db   dD        db    db d8888b. d8888b.  .d8b.  d888888b d88888b       .d88b.  d8888b.    d88b d88888b  .o88b. d888888b 
+ *    88' Y8b 88'     `~~88~~'      .8P  Y8. 88    88   `88'   d8P  Y8 88 ,8P'        88    88 88  `8D 88  `8D d8' `8b `~~88~~' 88'          .8P  Y8. 88  `8D    `8P' 88'     d8P  Y8 `~~88~~' 
+ *    88      88ooooo    88         88    88 88    88    88    8P      88,8P          88    88 88oodD' 88   88 88ooo88    88    88ooooo      88    88 88oooY'     88  88ooooo 8P         88    
+ *    88  ooo 88~~~~~    88         88    88 88    88    88    8b      88`8b   C8888D 88    88 88~~~   88   88 88~~~88    88    88~~~~~      88    88 88~~~b.     88  88~~~~~ 8b         88    
+ *    88. ~8~ 88.        88         `8P  d8' 88b  d88   .88.   Y8b  d8 88 `88.        88b  d88 88      88  .8D 88   88    88    88.          `8b  d8' 88   8D db. 88  88.     Y8b  d8    88    
+ *     Y888P  Y88888P    YP          `Y88'Y8 ~Y8888P' Y888888P  `Y88P' YP   YD        ~Y8888P' 88      Y8888D' YP   YP    YP    Y88888P       `Y88P'  Y8888P' Y8888P  Y88888P  `Y88P'    YP    
+ *                                                                                                                                                                                             
+ *                                                                                                                                                                                             
+ */
+
+export function getUpdateObjectFromString( thisButtonObject : IQuickButton, sourceUserInfo: IUser, panelItem: IActionItem ) {
+
+    let currentTime = new Date().toLocaleString();
+    
+    if ( thisButtonObject.updateItem === null || thisButtonObject.updateItem === undefined ) { 
+        return null ; 
+
+    } else {
+
+        let newUpdateItem = JSON.stringify(thisButtonObject.updateItem);
+
+        //Replace [Today] with currect time
+        newUpdateItem = newUpdateItem.replace(/\B\[Today\]\B/gi, currentTime);
+    
+        //Regex looks for anything matching [Today-+xxx] and replaces with date string
+        var newUpdateItem2 = newUpdateItem.replace(/\[Today(.*?)\]/gi, (match =>  {
+            let numb = parseInt(match.toLowerCase().substring(6).replace("]",""),10);
+            var today = new Date();
+            var newdate = new Date();
+            newdate.setDate(today.getDate()+numb);
+            let newDateString = newdate.toLocaleString();
+            return newDateString;
+        }) );
+    
+        // Replace [MyName] with userId.Title
+        newUpdateItem2 = newUpdateItem2.replace(/\[MyName\]/gi, sourceUserInfo.Title );
+    
+        let newUpdateItemObj = JSON.parse(newUpdateItem2);
+    
+        //Replace [Me]
+        Object.keys(newUpdateItemObj).map( k => {
+            let thisColumn: any = newUpdateItemObj[k];
+            if ( typeof thisColumn === 'string' ) { 
+    
+                //Single value set to current user
+                if ( thisColumn.toLowerCase() === '[me]' ) {
+                    thisColumn = sourceUserInfo.Id; 
+                    console.log('thisColumn is: ', thisColumn ) ;
+    
+                //Single value only remove you
+                } else if ( thisColumn.toLowerCase() === '[-me]' ) {
+                    thisColumn = panelItem[k] === sourceUserInfo.Id ? null : panelItem[k]; 
+    
+                //Multi value set to current user
+                } else if ( thisColumn.toLowerCase() === '{me}' ) { 
+                    thisColumn = { results: [ sourceUserInfo.Id ]}; 
+    
+                //Multi value add current user
+                } else if ( thisColumn.toLowerCase() === '{+me}' ) { 
+    
+                    if ( panelItem[k] ) {
+                        try {
+                            //thisColumn = panelItem[k].results.push( sourceUserInfo.Id ); //Errored out
+                            thisColumn = panelItem[k];
+                            if ( thisColumn.indexOf( sourceUserInfo.Id ) < 0 )  { thisColumn.push( sourceUserInfo.Id ); }
+                            thisColumn = { results: thisColumn };
+    
+                        } catch (e) {
+                            let err = getHelpfullError(e);
+                            alert( `Error updating item Column ${k} : \n\n${err}` );
+                            console.log( `Error updating item Column ${k} :`, err );
+                        }
+                    } else { 
+                        thisColumn = { results: [ sourceUserInfo.Id ]} ;
+                    }
+    
+                //Multi value remove current user
+                } else if ( thisColumn.toLowerCase() === '{-me}' ) { 
+    
+                    if ( panelItem[k] ) {
+                        try {
+                            thisColumn = panelItem[k];
+                            thisColumn = removeItemFromArrayAll(thisColumn, sourceUserInfo.Id);
+                            thisColumn = { results: thisColumn };
+    
+                        } catch (e) {
+                            let err = getHelpfullError(e);
+                            alert( `Error updating item Column ${k} : \n\n${err}` );
+                            console.log( `Error updating item Column ${k} :`, err );
+                        }
+                    } { console.log( `Did not find Column ${k} and could not remove you from it.`, panelItem );
+                        console.log( `Here's the full panelItem:`, panelItem );
+                    }
+                } 
+    
+                newUpdateItemObj[k] = thisColumn;
+            } // END This key value is string
+        });
+    
+        return newUpdateItemObj;
+
+    }
 
 }

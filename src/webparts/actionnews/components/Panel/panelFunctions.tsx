@@ -79,13 +79,10 @@ export function createPanelButtons ( quickCommands: IQuickCommands, item: IActio
                                 //build all the buttons
                             } else { buildThisButton = false; }
                         }
+
                         if ( buildThisButton === true ) {
-                            let icon = b.icon ? { iconName: b.icon } : null;
                             let buttonID = ['ButtonID', r, i , item.Id].join(ButtonIdDelim);
-                            let buttonTitle = b.label;
-                            let thisButton = b.primary === true ?
-                                <div id={ buttonID } title={ buttonTitle } ><PrimaryButton text={b.label} iconProps= { icon } onClick={ _panelButtonClicked } disabled={b.disabled} checked={b.checked} /></div>:
-                                <div id={ buttonID } title={ buttonTitle } ><DefaultButton text={b.label} iconProps= { icon } onClick={ _panelButtonClicked } disabled={b.disabled} checked={b.checked} /></div>;
+                            let thisButton = buildSingleQuickButton( b, buttonID, _panelButtonClicked );
                             buttons.push( thisButton );
                         }
 
@@ -118,4 +115,15 @@ export function createPanelButtons ( quickCommands: IQuickCommands, item: IActio
     }
 
     return allButtonRows;
+}
+
+export function buildSingleQuickButton ( b: IQuickButton, buttonID: string, onClick: any ) {
+
+    let icon = b.icon ? { iconName: b.icon } : null;
+    let buttonTitle = b.label;
+    let thisButton = b.primary === true ?
+        <div id={ buttonID } title={ buttonTitle } ><PrimaryButton text={b.label} iconProps= { icon } onClick={ onClick } disabled={b.disabled} checked={b.checked} /></div>:
+        <div id={ buttonID } title={ buttonTitle } ><DefaultButton text={b.label} iconProps= { icon } onClick={ onClick } disabled={b.disabled} checked={b.checked} /></div>;
+
+    return thisButton;
 }

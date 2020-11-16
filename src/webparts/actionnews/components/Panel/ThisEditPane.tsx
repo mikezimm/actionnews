@@ -4,11 +4,15 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 import styles from '../createButtons/CreateButtons.module.scss';
 
+import stylesC from '../CommonStyles.module.scss';
+
 import epStyles from './EditPaneStyles.module.scss';
 
-import { IQuickCommands, ICustViewDef,IQuickField, IUser } from '../IReUsableInterfaces';
+import { IQuickCommands, ICustViewDef,IQuickField, IUser, IQuickButton } from '../IReUsableInterfaces';
 
 import { MyDivider , MyText , IMyTextElementTypes, MyImage } from '../../../../services/basicElements';
+
+import { defCommandIconStyles, createIconButton } from '../createButtons/IconButton';
 
 import { ISingleButtonProps } from '../createButtons/ICreateButtons';
 
@@ -25,6 +29,9 @@ import { createLink } from '../HelpInfo/AllLinks';
 export interface IEditPaneProps {
   // These are set based on the toggles shown above the s (not needed in real code)
   fields: IQuickField[][];
+  quickNewButton: Element;
+
+  //staticFields: IQuickField[][];
   contextUserInfo: IUser;  //For site you are on ( aka current page context )
   sourceUserInfo: IUser;   //For site where the list is stored
   onChange: any; //Callback to update the parent data
@@ -34,6 +41,7 @@ export interface IEditPaneProps {
   _updateDropdown: any;
   _saveItem: any;
   _cancelItem: any;
+  _setReadOnly: any;
   _getTitleValue: any;
   wpContext: WebPartContext;
   webAbsoluteUrl: string;
@@ -84,8 +92,12 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
 
   public render(): React.ReactElement<IEditPaneProps> {
 
-    let fields = this.props.fields.map( fieldRow => {
+    let fieldsBeforeSave = [];
+    let fieldsAfterSave = [];
+    let beforeOrAfter : 'before' | 'after' = 'before';
 
+    this.props.fields.map( fieldRow => {
+      let isButtonRow: any = false;
       let rowFields = fieldRow.length;
       let fieldWidth = ( 500 / rowFields ) - ( fieldRow.length - 1 ) * 10 ; //Accounts for 30 padding between cells on same row
       let thisRow: any[] = fieldRow.map( thisFieldObject => {
@@ -93,7 +105,12 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
         let thisField: any = <div> { thisFieldObject.name } - { thisFieldObject.value }</div>;
         let thisType : string | IMyTextElementTypes = thisFieldObject.type ? thisFieldObject.type.toLowerCase() : '';
         let readOnlyMode = this.props.readOnlyMode === true ? this.props.readOnlyMode : false;
-        if ( thisFieldObject.title === 'Title' ) {
+        
+        if ( thisType.indexOf('button') > -1 ) { //Treat this entire row as a button row and do not build it
+          beforeOrAfter = 'after';
+          isButtonRow = true;
+          thisField = null;
+        } else if ( thisFieldObject.title === 'Title' ) {
           thisField = createTextField( thisFieldObject, 'EditFieldID', this.props.onChange, this.props._getTitleValue, null, fieldWidth, readOnlyMode );
         } else if ( thisType === 'text' || thisType === 'multiline') {
           thisField = createTextField( thisFieldObject, 'EditfieldID', this.props.onChange, null, null, fieldWidth, readOnlyMode );
@@ -124,11 +141,19 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
         return thisField;
       });
 
-      return  <div style={{  }}>
+      let thisFieldRow =  <div style={{  }}>
         <Stack horizontal={ true } tokens={stackTokens}>
               { thisRow }
           </Stack>
         </div>;
+
+      if ( isButtonRow === true ) {
+        //Do nothing with this row... insert buttons later
+      } else if ( beforeOrAfter === 'before' ) {
+        fieldsBeforeSave.push( thisFieldRow );
+      } else {
+        fieldsAfterSave.push( thisFieldRow );
+      }
 
     }) ;
 
@@ -148,12 +173,19 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
       let saveButton = <div id={ 'SaveButton' } title={ 'Save' } ><PrimaryButton text={ 'Save' } iconProps= { iconSave } onClick={ this.props._saveItem } disabled={this.checkForSaveDisabled()} checked={ null } /></div>;
   
       let iconCancel = { iconName: 'Cancel' };
-      let cancelButton = <div id={ 'CancelButton' } title={ 'Cancel' } ><PrimaryButton text={ 'Cancel' } iconProps= { iconCancel } onClick={ this.props._cancelItem } disabled={false} checked={ null } /></div>;
+      let cancelButton = <div id={ 'CancelButton' } title={ 'Cancel' } ><DefaultButton text={ 'Cancel' } iconProps= { iconCancel } onClick={ this.props._cancelItem } disabled={false} checked={ null } /></div>;
   
-      panelButtons = <Stack horizontal={ true } tokens={stackTokens}>
-          { saveButton } { cancelButton }
-      </Stack>;
-  
+      let myIconStyles = JSON.parse(JSON.stringify( defCommandIconStyles ));
+      myIconStyles.icon.fontSize = 24;
+      //myIconStyles.icon.fontWeight = "900";
+      
+      let cancelEditButton = <div style={{ right: 100, position: 'absolute' }} > { createIconButton('Uneditable','Cancel Editing', this.props._setReadOnly , null, myIconStyles ) } </div>;
+
+
+      panelButtons = 
+        <Stack horizontal={ true } tokens={stackTokens} style={{ marginTop: 35, marginBottom: 15, padding: 20, background: 'lightgray' }}>
+            { saveButton } { cancelButton } { this.props.quickNewButton } { cancelEditButton }
+        </Stack>;
     }
 
 /***
@@ -170,8 +202,9 @@ export default class ThisEditPane extends React.Component<IEditPaneProps, IEditP
     return (
     <div className={[styles.floatRight, epStyles.commonStyles ].join(' ')}>
         <Stack horizontal={ false } tokens={stackTokens}>
-            { fields }
+            { fieldsBeforeSave }
             { panelButtons }
+            { fieldsAfterSave }
         </Stack>
     </div>
     );

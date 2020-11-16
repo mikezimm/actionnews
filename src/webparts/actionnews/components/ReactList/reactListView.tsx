@@ -32,16 +32,15 @@ import { Fabric, Stack, IStackTokens, initializeIcons } from 'office-ui-fabric-r
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 
-
 import { Dialog, DialogType, DialogFooter, IDialogProps } 	from 'office-ui-fabric-react/lib/Dialog';
 import { Button, ButtonType, } 			from 'office-ui-fabric-react/lib/Button';
 import { Label } 			from 'office-ui-fabric-react/lib/Label';
 
-import { updateReactListItem } from './listFunctions';
+import { updateReactListItem, getUpdateObjectFromString } from './listFunctions';
 
 import { createIconButton , defCommandIconStyles} from "../createButtons/IconButton";
 
-import { createPanelButtons, ButtonIdDelim } from '../Panel/panelFunctions';
+import { createPanelButtons, ButtonIdDelim, buildSingleQuickButton } from '../Panel/panelFunctions';
 
 import { getEmailFromLoginName, checkForLoginName, ensureUserHere, ensureTheseUsers } from '../../../../services/userServices';
 
@@ -98,6 +97,7 @@ export interface IReactListItemsProps {
     quickCommands?: IQuickCommands;
     quickFields: IQuickField[][];
     staticFields: IQuickField[][];
+    quickNewButton: IQuickButton;
 
     allowSplit: boolean;
 
@@ -412,21 +412,29 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
                 let showPanelWidth = this.state.panelMode === 'View' ? true : false;
                 if ( showPanelWidth === true ) { toggles = <div style={{ float: 'right' }}> { makeToggles(this.getPageToggles( this.state.panelWidth )) } </div>; }
 
+                let quickNewButton = null;
+                if ( this.props.quickNewButton ) { quickNewButton = buildSingleQuickButton( this.props.quickNewButton, 'quickNewButton', this._updateEditItemValues.bind(this) ); }
                 let showFields = this.state.panelMode === 'New' || this.state.panelMode === 'Edit' || this.state.panelMode === 'View' ? true : false;
                 fields = showFields !== true ? null : 
                 <ThisEditPane 
                     wpContext={ this.props.wpContext }
                     webAbsoluteUrl={ this.props.webURL }
                     fields = { this.state.quickFields }
+                    quickNewButton = { quickNewButton }
+
                     contextUserInfo = { this.props.contextUserInfo }
                     sourceUserInfo = { this.props.sourceUserInfo }
                     onChange = { this._editFieldUpdate.bind(this) }
+
                     _clearDateField = { this._clearDateField.bind(this) }
                     _addYouToField = { this._addUserToField.bind(this) }
                     _addWeekToDate = { this._addWeekToDate.bind(this) }
                     _updateDropdown = { this._updateDropdown.bind(this) }
+
                     _saveItem= { this._saveItem.bind(this) }
                     _cancelItem= { this._onClosePanel.bind(this) }
+                    _setReadOnly = { this._onShowPanelViewItem.bind(this)}
+
                     allowSplit= { this.state.allowSplit }
                     _getTitleValue = { null /*this.updatePageTitleInStateTest.bind(this)  null */  }
                     readOnlyMode = { this.state.panelMode === 'View' ? true : false }
@@ -561,7 +569,7 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
 
 
 
-    /***
+/***
  *         db    db d8888b. d8888b.  .d8b.  d888888b d88888b      .d8888. d888888b  .d8b.  d888888b d88888b 
  *         88    88 88  `8D 88  `8D d8' `8b `~~88~~' 88'          88'  YP `~~88~~' d8' `8b `~~88~~' 88'     
  *         88    88 88oodD' 88   88 88ooo88    88    88ooooo      `8bo.      88    88ooo88    88    88ooooo 
@@ -741,8 +749,67 @@ export default class ReactListItems extends React.Component<IReactListItemsProps
 
 
 
+/**
+ * This function updates the edit property pane values to those in the updateItem prop of the this.props.quickNewButton
+ */
+private _updateEditItemValues = (): void => {
+
+    let quickNewButton = this.props.quickNewButton;
+    let updateProps = quickNewButton && quickNewButton.updateItem ? quickNewButton.updateItem : null ;
+
+    let newUpdateItemObj : any = getUpdateObjectFromString( quickNewButton, this.props.sourceUserInfo, this.state.panelItem );
+
+    if ( newUpdateItemObj !== null ) {
+
+        let quickFields = this.state.quickFields;
+
+        let updateColumns = Object.keys( newUpdateItemObj );
+
+        if ( updateColumns && updateColumns.length > 0 ) {
+
+            //Search through each row and field for name:
+            quickFields.map( fieldRow => {
+                fieldRow.map ( field => {
+
+                    let doThisProp = updateColumns.indexOf(field.name) > -1 || updateColumns.indexOf(field.column) > -1 ? true : false ;
+                    if ( doThisProp ) {
+                        let updateThisProp = updateColumns.indexOf(field.column) > -1 ? field.column: field.name;
+
+                        let presetValue = newUpdateItemObj[ updateThisProp ];
+                        let doThisUpdate = true;
+                        let errMessage = null;
+                        if ( field.type.toLowerCase() === 'choice' ) {
+                            let choices = field.choices ? field.choices : null;
+                            if ( choices !== null && choices.indexOf( presetValue ) > -1 ) {
+                                
+                            } else {
+                                doThisUpdate = false;
+                                errMessage = 'Preset button setting is not a valid choice: \n\n\"' + newUpdateItemObj[ updateThisProp ] + '\"\n\n does not exist in the ' + updateThisProp + ' choices:\n\n' + choices.join('\n');
+                            }
+                        }
+
+                        if ( doThisUpdate === true ) {
+                            field.value = presetValue;
+                        } else {
+                            alert( errMessage );
+                        }
 
 
+                    }
+
+                });
+            });
+        }
+
+        //Then update the quickFields
+    
+        this.setState({ quickFields: quickFields, });
+
+
+    }
+
+
+}
 
 
 
@@ -932,66 +999,90 @@ private _addUserToField = (prop: string, valueX: any ): void => {
     //Get array of split users
     let quickFields = this.state.quickFields;
     
+    let failSafeRequired : any = true;
+    let requiredError = [];
     //Search through each row and field for name:
     quickFields.map( fieldRow => {
       fieldRow.map ( field => {
-        if ( field.type.toLowerCase().indexOf('split') > -1 ) { 
+
+        if ( field.required === true ) {
+            if ( field.value === null ) { failSafeRequired = false; requiredError.push(field.name) ; }
+            if ( field.value === undefined ) { failSafeRequired = false; requiredError.push(field.name) ; }
+            if ( field.value === '' ) { failSafeRequired = false; requiredError.push(field.name) ; }
+        }
+
+        if ( failSafeRequired === true && field.type.toLowerCase().indexOf('split') > -1 ) { 
           splitUsers = JSON.parse( JSON.stringify( field.value ));
           splitField = field.name;
           splitCount = field.value ? field.value.length : 0;
         }
+
+
       });
     });
 
     let results : any = null;
-    if ( splitCount === 1 ) {
-      let recentUsers = JSON.parse(JSON.stringify( this.state.recentUsers )); // Needed to prevent it from getting over-written in this function somewhere
-      results = await _saveEditPaneItem( this.props.webURL, this.props.listName, this.state.quickFields, this.props.staticFields, recentUsers );
-  
+
+
+    if ( failSafeRequired === false ) {
+        let errMessage = 'Missing following values:\n\n' + requiredError.join('\n');
+        alert(errMessage);
+
     } else {
 
-      //Save each item individually - unless allowSplit !== true, then just set to first item in array
-      if ( splitCount > 1 && this.state.allowSplit !== true ) { splitCount = 1; }
-      for (let i = 0; i < splitCount; i++) {
 
-        quickFields.map( fieldRow => {
-          fieldRow.map ( field => {
-            if ( field.name === splitField ) { 
-              field.value = [ splitUsers[i] ];
+        if ( splitCount === 1 ) {
+            let recentUsers = JSON.parse(JSON.stringify( this.state.recentUsers )); // Needed to prevent it from getting over-written in this function somewhere
+            results = await _saveEditPaneItem( this.props.webURL, this.props.listName, this.state.quickFields, this.props.staticFields, recentUsers );
+        
+        } else {
+    
+            //Save each item individually - unless allowSplit !== true, then just set to first item in array
+            if ( splitCount > 1 && this.state.allowSplit !== true ) { splitCount = 1; }
+            for (let i = 0; i < splitCount; i++) {
+    
+            quickFields.map( fieldRow => {
+                fieldRow.map ( field => {
+                if ( field.name === splitField ) { 
+                    field.value = [ splitUsers[i] ];
+                }
+                });
+            });
+    
+            let recentUsers = JSON.parse(JSON.stringify( this.state.recentUsers )); // Needed to prevent it from getting over-written in this function somewhere
+            results = await _saveEditPaneItem( this.props.webURL, this.props.listName, quickFields, this.props.staticFields, recentUsers );
+    
             }
-          });
-        });
-
-        let recentUsers = JSON.parse(JSON.stringify( this.state.recentUsers )); // Needed to prevent it from getting over-written in this function somewhere
-        results = await _saveEditPaneItem( this.props.webURL, this.props.listName, quickFields, this.props.staticFields, recentUsers );
-
-      }
-
-    }
-
-    let passed = results && results.data ? true : false;
-
-    if ( passed !== true ) {
-      //The save did not happend
-      console.log('was NOT ABLE TO SAVE ITEM');
-      
-      //Put back original splitUsers array - NOT needed if I clear this field after save.
-      quickFields.map( fieldRow => {
-        fieldRow.map ( field => {
-          if ( field.name === splitField ) { 
-            field.value = splitUsers;
-          }
-        });
-      });
-
-     alert('Your item was not saved...\nPossibly because you have a splitPersonField type with no value.');
-
-    } else {
-      alert('Your Action News item was just saved!');
-
-      this.props.reloadAllItems();
+    
+        }
+    
+        let passed = results && results.data ? true : false;
+    
+        if ( passed !== true ) {
+            //The save did not happend
+            console.log('was NOT ABLE TO SAVE ITEM');
+            
+            //Put back original splitUsers array - NOT needed if I clear this field after save.
+            quickFields.map( fieldRow => {
+            fieldRow.map ( field => {
+                if ( field.name === splitField ) { 
+                field.value = splitUsers;
+                }
+            });
+            });
+    
+        alert('Your item was not saved...\nPossibly because you have a splitPersonField type with no value.');
+    
+        } else {
+            alert('Your Action News item was just saved!');
+    
+            this.props.reloadAllItems();
+    
+        }
 
     }
+
+
     return null;
 
   }
@@ -1043,6 +1134,18 @@ private _addUserToField = (prop: string, valueX: any ): void => {
          });
     } //End toggleNewItem 
 
+    
+    private _onShowPanelViewItem  = ( item: any ): void => {
+
+        this.setState({ 
+
+            showNewPanel: false, 
+            showEditPanel: true, 
+            showPanel: true, 
+            panelMode: 'View'
+         });
+    } //End toggleNewItem 
+
     private _onShowPanel = (item): void => {
   
         let e: any = event;
@@ -1082,7 +1185,22 @@ private _addUserToField = (prop: string, valueX: any ): void => {
 
                     quickFields.map( fieldRow => {
                         fieldRow.map( thisFieldObject => {
-                            thisFieldObject.value = item[0][thisFieldObject.name];
+
+                            /**
+                             * This section checks to make sure only certain field values are reset... the ones for actual fields and not html elements.
+                             */
+                            let resetField: boolean = true;
+                            let fieldType = thisFieldObject.type .toLowerCase();
+                            if ( fieldType === 'image' ) { resetField = false; }
+                            if ( fieldType === 'divider' ) { resetField = false; }
+                            if ( fieldType === 'link' ) { resetField = false; }
+                            if ( fieldType === 'h1' || fieldType === 'h2' || fieldType === 'h3' ) { resetField = false; }
+                            if ( fieldType === 'span' || fieldType === 'p' ) { resetField = false; }
+
+                            if ( resetField === true ) {
+                                thisFieldObject.value = item[0][thisFieldObject.name];
+                            }
+
                         });
                     }) ;
 

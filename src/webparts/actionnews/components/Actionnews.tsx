@@ -405,11 +405,12 @@ public componentDidUpdate(prevProps){
 
           quickFields = { this.state.quickFields }
           staticFields = { this.state.staticFields }
+          quickNewButton = { this.props.quickNewButton }
 
           //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
           WebpartHeight={ this.props.WebpartElement.getBoundingClientRect().height }
           WebpartWidth={ this.props.WebpartElement.getBoundingClientRect().width - 50 }
-      
+
 
           allowSplit={ this.state.allowSplit }
 

@@ -5,6 +5,7 @@ import { makeTheTimeObject, ITheTime } from '../../../services/dateServices';
 
 import { PageContext } from '@microsoft/sp-page-context';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { IQuickButton } from './IReUsableInterfaces';
 
 export interface IActionnewsProps {
   description: string;
@@ -27,6 +28,7 @@ export interface IActionnewsProps {
 
   titleAddendum: string;
   comments: string;
+  quickNewButton: IQuickButton;
 
   pageLibraryServerRelativeUrl: string;
   pageLibraryTitle: string;

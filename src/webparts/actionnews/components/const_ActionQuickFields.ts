@@ -26,6 +26,20 @@ export function MakeQuickDivider( title: string, styles: any ) {
 
 }
 
+export function MakeSaveButtons( styles: any = null ) {
+
+  let quickDivider : IQuickField = {
+    // column: string;
+    required: false,
+    type: 'Buttons',
+    styles: styles,
+
+  };
+
+  return quickDivider;
+
+}
+
 export const ActionSearchCols = [
 
   'Title',
@@ -104,6 +118,8 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
 
   let NotifyDivider : IQuickField = MakeQuickDivider('<Above>Notifications', {} );
 
+  let SaveButtons : IQuickField = MakeSaveButtons();
+
   let testSpan : IQuickField = {
     required: false,
     title: 'Hellow TestSpan',
@@ -135,6 +151,7 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
     [ FollowupComments ], //Row 3 fields
     [ FollowupDate ], //Row 4 fields
     [ Status ],
+    [ SaveButtons ],
     [ NotifyDivider ],
     [ testSpan , testLink ],
     [ testImage ],
