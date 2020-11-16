@@ -23,7 +23,7 @@ export const dropdownDivider = '-Divider-';
  *                                                                                                                                                                                 
  */
 
-export function _createDropdownField(field: IQuickField, _onChange: any, pageIDPref: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth) {
+export function _createDropdownField(field: IQuickField, _onChange: any, pageIDPref: string, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth, disabled: boolean = false) {
 
   let choices : string[] = field.choices && field.choices.length > 0 ? field.choices : [];
 
@@ -51,6 +51,7 @@ export function _createDropdownField(field: IQuickField, _onChange: any, pageIDP
             key: getChoiceKey(val),
             text: val,
             itemType: itemType,
+            disabled: disabled === true ? disabled : null,
         };
     });
 

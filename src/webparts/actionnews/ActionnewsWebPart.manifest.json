@@ -26,7 +26,8 @@
       "allowCopy": true,
       "scope": "User",
       "titleAddendum": "<PageTitle> - Followup requested!" ,
-      "comments": "Add comments here :)"
+      "comments": "Add comments here :)",
+      "quickNewButton":"{\"label\": \"ParkMe\",\"primary\": true,\"icon\": \"Car\",\"updateItem\": {\"Status\": \"8. Park\"},\"showWhenEvalTrue\": \"item.Status !== '8. Park'\"}"
     }
   }]
 }

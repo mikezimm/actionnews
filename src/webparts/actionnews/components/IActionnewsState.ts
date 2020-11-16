@@ -52,6 +52,7 @@ export interface INewsService {
 
     currentUser?: IUser;  //Current user information on save location
 
+    collectionURL: string; //Collection URL for the current page
     webServerRelativeUrl: string;
     pageID: string;
 

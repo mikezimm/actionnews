@@ -11,6 +11,8 @@ import { Dialog, DialogType, DialogFooter, IDialogProps } 	from 'office-ui-fabri
 import { Button, ButtonType, } 			from 'office-ui-fabric-react/lib/Button';
 import { Label } 			from 'office-ui-fabric-react/lib/Label';
 
+import { getHelpfullError } from '../../../../services/ErrorHandler';
+
 import { IMyProgress, IQuickButton, IQuickCommands, IUser } from '../IReUsableInterfaces';
 
 import { IActionItem } from '../IActionnewsState';
@@ -64,18 +66,23 @@ export function createPanelButtons ( quickCommands: IQuickCommands, item: IActio
                          */
 
                         if ( b.showWhenEvalTrue && b.showWhenEvalTrue.length > 0 ) {
-                            let buildButtonTest = eval( b.showWhenEvalTrue );
+
+                            let buildButtonTest = false;
+                            try {
+                                buildButtonTest = eval( b.showWhenEvalTrue );
+                            } catch (e) {
+                                let errMessage = getHelpfullError(e, true, true);
+                                alert('panelFunctions.tsx Error creating button: \n' + b.showWhenEvalTrue + '\n\n' + errMessage );
+                            }
+                            
                             if ( buildButtonTest === true ) {
                                 //build all the buttons
                             } else { buildThisButton = false; }
                         }
+
                         if ( buildThisButton === true ) {
-                            let icon = b.icon ? { iconName: b.icon } : null;
                             let buttonID = ['ButtonID', r, i , item.Id].join(ButtonIdDelim);
-                            let buttonTitle = b.label;
-                            let thisButton = b.primary === true ?
-                                <div id={ buttonID } title={ buttonTitle } ><PrimaryButton text={b.label} iconProps= { icon } onClick={ _panelButtonClicked } disabled={b.disabled} checked={b.checked} /></div>:
-                                <div id={ buttonID } title={ buttonTitle } ><DefaultButton text={b.label} iconProps= { icon } onClick={ _panelButtonClicked } disabled={b.disabled} checked={b.checked} /></div>;
+                            let thisButton = buildSingleQuickButton( b, buttonID, _panelButtonClicked );
                             buttons.push( thisButton );
                         }
 
@@ -108,4 +115,15 @@ export function createPanelButtons ( quickCommands: IQuickCommands, item: IActio
     }
 
     return allButtonRows;
+}
+
+export function buildSingleQuickButton ( b: IQuickButton, buttonID: string, onClick: any ) {
+
+    let icon = b.icon ? { iconName: b.icon } : null;
+    let buttonTitle = b.label;
+    let thisButton = b.primary === true ?
+        <div id={ buttonID } title={ buttonTitle } ><PrimaryButton text={b.label} iconProps= { icon } onClick={ onClick } disabled={b.disabled} checked={b.checked} /></div>:
+        <div id={ buttonID } title={ buttonTitle } ><DefaultButton text={b.label} iconProps= { icon } onClick={ onClick } disabled={b.disabled} checked={b.checked} /></div>;
+
+    return thisButton;
 }

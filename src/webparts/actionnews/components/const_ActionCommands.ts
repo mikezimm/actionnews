@@ -5,7 +5,6 @@ export const ActionQuickCommands: IQuickCommands = {
     callBack: null,
     successBanner: 3.5,
 
-    fields: [],
     buttons: [
       [
         {

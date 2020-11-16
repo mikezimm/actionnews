@@ -19,6 +19,9 @@ import Actionnews from './components/Actionnews';
 import { IActionnewsProps, INewsScope } from './components/IActionnewsProps';
 
 import { makeTheTimeObject } from '../../services/dateServices';
+import { IQuickButton } from './components/IReUsableInterfaces';
+
+import { getHelpfullError } from '../../services/ErrorHandler';
 
 export interface IActionnewsWebPartProps {
   description: string;
@@ -35,6 +38,8 @@ export interface IActionnewsWebPartProps {
 
   titleAddendum: string;
   comments: string;
+
+  quickNewButton: string;
 
 }
 
@@ -97,6 +102,17 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
 
     let scope : INewsScope = this.properties.scope ? this.properties.scope : 'Site';
 
+    let quickNewButtonObj : IQuickButton = null;
+    if ( this.properties.quickNewButton && this.properties.quickNewButton.length > 0 ) {
+      try { 
+        quickNewButtonObj = JSON.parse( this.properties.quickNewButton );
+      } catch (e) {
+        let errMess = getHelpfullError( e );
+        alert('Your Quick New Button property is not a valid JSON object... please fix!\n\n'+ errMess );
+      }
+
+    }
+
 
     //It's best to add Tenant to URUL here
     let listWeb = this.properties.listWeb ? this.properties.listWeb : tenant + '/sites/ActionNewsSourceTTP/';
@@ -142,6 +158,8 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
 
         titleAddendum: this.properties.titleAddendum ,
         comments: this.properties.comments ,
+
+        quickNewButton: quickNewButtonObj,
       
       }
     );
@@ -162,4 +180,22 @@ export default class ActionnewsWebPart extends BaseClientSideWebPart<IActionnews
       this.properties,
       );
   }
+
+  protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any) {
+        /**
+         * This section is used to determine when to refresh the pane options
+         */
+        let updateOnThese = [
+          'scope','listWeb','listName','allowSplit','allowCopy','otherTab',
+          'titleAddendum','comments','quickNewButton'
+        ];
+
+        //alert('props updated');
+        console.log('onPropertyPaneFieldChanged:', propertyPath, oldValue, newValue);
+        if (updateOnThese.indexOf(propertyPath) > -1 ) {
+          this.properties[propertyPath] = newValue;
+          this.context.propertyPane.refresh();
+        }
+        this.render();
+      }
 }

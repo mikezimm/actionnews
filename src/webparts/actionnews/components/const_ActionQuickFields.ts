@@ -26,6 +26,20 @@ export function MakeQuickDivider( title: string, styles: any ) {
 
 }
 
+export function MakeSaveButtons( styles: any = null ) {
+
+  let quickDivider : IQuickField = {
+    // column: string;
+    required: false,
+    type: 'Buttons',
+    styles: styles,
+
+  };
+
+  return quickDivider;
+
+}
+
 export const ActionSearchCols = [
 
   'Title',
@@ -58,6 +72,7 @@ export function makeIQuickField ( name: string, title: string, column: string, t
   }
   if ( disabled === true ) { newField.disabled = true ; }
   if ( required === true ) { newField.required = true ; }
+  if ( type.toLowerCase() === 'splituser') { newField.required = true ; } //2020-11-12:  Added to avoid save issues
   if ( defValue ) { newField.value = defValue ; }
 
   return newField ;
@@ -75,7 +90,7 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
   let TitleField : IQuickField = makeIQuickField("Title", "Title", "Title", "Text", false, null, false, true, setTitleDefault  );
   let FollowupDate : IQuickField = makeIQuickField("FollowupDate","FollowupDate", "FollowupDate", "Time", false, null, false, false, getTodayPlus7Days() ); //true
 
-  let Primary : IQuickField = makeIQuickField("Primary","Primary", "Primary","SplitUser", false, null, false, false ); //true
+  let Primary : IQuickField = makeIQuickField("Primary","Primary", "Primary","SplitUser", false, null, false, true ); //2020-11-12:  Set from required = falst to true for split code
   let Secondary : IQuickField = makeIQuickField("Secondary","Secondary", "Secondary","MultiUser", false, null, false, false );
 
   let FollowupComments : IQuickField = makeIQuickField("FollowupComments", "FollowupComments", "FollowupComments", "MultiLine", false, null, false, false, setCommentsDefault ); //true
@@ -103,6 +118,8 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
 
   let NotifyDivider : IQuickField = MakeQuickDivider('<Above>Notifications', {} );
 
+  let SaveButtons : IQuickField = MakeSaveButtons();
+
   let testSpan : IQuickField = {
     required: false,
     title: 'Hellow TestSpan',
@@ -117,7 +134,6 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
     value: 'https://www.google.com',
     styles: { fontSize: '20px' }  ,
   };
-
 
   let testImage : IQuickField = {
     required: false,
@@ -135,6 +151,7 @@ export function getNewActionQuickFields( setTitleDefault : string, setCommentsDe
     [ FollowupComments ], //Row 3 fields
     [ FollowupDate ], //Row 4 fields
     [ Status ],
+    [ SaveButtons ],
     [ NotifyDivider ],
     [ testSpan , testLink ],
     [ testImage ],

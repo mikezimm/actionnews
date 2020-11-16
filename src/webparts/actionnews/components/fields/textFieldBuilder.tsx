@@ -26,7 +26,7 @@ const emptyString = (value: string | Date) : string => { return "";};
  *                                                                                                                                           
  */
 
-export function createTextField(field: IQuickField, pageIDPref: string, _onChange: any, _setValue: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth: number) {
+export function createTextField(field: IQuickField, pageIDPref: string, _onChange: any, _setValue: any, getStyles : IStyleFunctionOrObject<ITextFieldStyleProps, ITextFieldStyles>, fieldWidth: number, disabled: boolean = false) {
     let defaultValue = field.value ? field.value : null ;
 
 //    let fieldWidth = field.width ? field.width : 200;
@@ -67,7 +67,7 @@ export function createTextField(field: IQuickField, pageIDPref: string, _onChang
             label={ field.title }
             required={ isRequired }
             autoComplete='off'
-            disabled={field.disabled}
+            disabled={ disabled === true ? disabled : field.disabled}
             onChanged={(value: string) => {
                 _onChange(field.column, value);
             }}
