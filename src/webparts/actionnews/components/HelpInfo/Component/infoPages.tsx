@@ -1,12 +1,8 @@
 import * as React from 'react';
 
-import * as links from '../AllLinks';
-
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import { IActionnewsProps } from '../../IActionnewsProps';
-import { IActionnewsState } from '../../IActionnewsState';
 import styles from './InfoPane.module.scss';
 
 import * as choiceBuilders from '../../fields/choiceFieldBuilder';
@@ -28,8 +24,7 @@ import { basicsContent } from '../Content/Basics';
 export interface IInfoPagesProps {
     showInfo: boolean;
     allLoaded: boolean;
-    parentProps: IActionnewsProps;
-    parentState: IActionnewsState;
+    gitHubRepo: any; // replace with IRepoLinks from npmFunctions v0.1.0.3
     //toggleDebug: any;
 
 }
@@ -137,8 +132,6 @@ public constructor(props:IInfoPagesProps){
             let pageChoices = choiceBuilders.creatInfoChoices(this.state.selectedChoice, this.options, this._updateChoice.bind(this)); 
 
             thisPage = <InfoPage 
-                parentProps={  this.props.parentProps }
-                parentState={  this.props.parentState }
                 allLoaded={ this.props.allLoaded }
                 showInfo={ this.props.showInfo }
                 content= { content }

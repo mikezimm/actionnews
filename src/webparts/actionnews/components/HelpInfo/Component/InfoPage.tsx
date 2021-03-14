@@ -1,20 +1,18 @@
 import * as React from 'react';
 
-import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
-
-import { IActionnewsProps } from '../../IActionnewsProps';
-import { IActionnewsState } from '../../IActionnewsState';
-
 import styles from '../InfoPane.module.scss';
 
+//Moved these to npmFunctions 
 export type IHelpTableRow = any[];
 
+//Moved these to npmFunctions 
 export interface IHelpTable {
     heading?: any;
     headers: any[];
     rows: IHelpTableRow[];
 }
 
+//Moved these to npmFunctions 
 export interface IPageContent {
     header?: any;
     html1?: any;
@@ -24,13 +22,9 @@ export interface IPageContent {
 }
 
 export interface IInfoPageProps {
-
     showInfo: boolean;
     allLoaded: boolean;
-    parentProps: IActionnewsProps;
-    parentState: IActionnewsState;
     content: IPageContent;
-
 }
 
 export interface IInfoPageState {
@@ -54,18 +48,10 @@ public constructor(props:IInfoPageProps){
     super(props);
     this.state = { 
     };
-
-    // because our event handler needs access to the component, bind 
-    //  the component to the function so it can get access to the
-    //  components properties (this.props)... otherwise "this" is undefined
-    // this.onLinkClick = this.onLinkClick.bind(this);
-
-    
   }
 
 
   public componentDidMount() {
-    
   }
 
 
@@ -106,11 +92,9 @@ public constructor(props:IInfoPageProps){
  *                 88    88~~~88    88      `Y8b.      88~~~   88~~~88 88  ooo 88~~~~~ 
  *                 88    88   88   .88.   db   8D      88      88   88 88. ~8~ 88.     
  *                 YP    YP   YP Y888888P `8888Y'      88      YP   YP  Y888P  Y88888P 
- *                                                                                     
- *                                                                                     
+ *
+ *
  */
-            
-            const stackTokensBody: IStackTokens = { childrenGap: 20 };
 
             let thisTable = null;
             let propsTable = this.props.content.table;
@@ -146,8 +130,8 @@ public constructor(props:IInfoPageProps){
  *              88`8b   88~~~~~    88    88    88 88`8b   88 V8o88 
  *              88 `88. 88.        88    88b  d88 88 `88. 88  V888 
  *              88   YD Y88888P    YP    ~Y8888P' 88   YD VP   V8P 
- *                                                                 
- *                                                                 
+ *
+ *
  */
 
             return (

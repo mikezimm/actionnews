@@ -355,8 +355,7 @@ public componentDidUpdate(prevProps){
       <InfoPages 
         allLoaded={ true }
         showInfo={ true }
-        parentProps= { this.props }
-        parentState= { this.state }
+        gitHubRepo={ links.gitRepoActionNews }
       ></InfoPages>
     </div>;
 
