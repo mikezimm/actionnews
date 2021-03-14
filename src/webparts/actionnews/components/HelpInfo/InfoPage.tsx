@@ -1,30 +1,44 @@
 import * as React from 'react';
 
+import * as links from './AllLinks';
+
 import { Link, ILinkProps } from 'office-ui-fabric-react';
-
-import * as links from './AllLinks';   //              { links.gitRepoTrackMyTime.issues }
-
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
 import { IActionnewsProps } from '../IActionnewsProps';
 import { IActionnewsState } from '../IActionnewsState';
+
+import WebPartLinks from './WebPartLinks';
+import { IWebPartLinksProps, IWebPartLinksState } from './WebPartLinks';
+
 import styles from './InfoPane.module.scss';
 
-export interface IAdvancedProps {
+
+export type IHelpTableRow = any[];
+
+export interface IHelpTable {
+    heading?: any;
+    headers: any[];
+    rows: IHelpTableRow[];
+}
+
+export interface IInfoPageProps {
+
     showInfo: boolean;
     allLoaded: boolean;
     parentProps: IActionnewsProps;
     parentState: IActionnewsState;
 
+    table: IHelpTable;
+
+
 }
 
-export interface IAdvancedState {
-    selectedChoice: string;
-    lastChoice: string;
+export interface IInfoPageState {
 }
 
-export default class Advanced extends React.Component<IAdvancedProps, IAdvancedState> {
+export default class InfoPage extends React.Component<IInfoPageProps, IInfoPageState> {
 
 
 /***
@@ -38,12 +52,9 @@ export default class Advanced extends React.Component<IAdvancedProps, IAdvancedS
  *                                                                                                       
  */
 
-public constructor(props:IAdvancedProps){
+public constructor(props:IInfoPageProps){
     super(props);
     this.state = { 
-        selectedChoice: 'snapShot',
-        lastChoice: '',
-
     };
 
     // because our event handler needs access to the component, bind 
@@ -72,14 +83,6 @@ public constructor(props:IAdvancedProps){
  */
 
   public componentDidUpdate(prevProps){
-
-    let rebuildTiles = false;
-    /*
-    if (rebuildTiles === true) {
-      this._updateStateOnPropsChange({});
-    }
-    */
-
   }
 
 /***
@@ -93,10 +96,10 @@ public constructor(props:IAdvancedProps){
  *                                                          
  */
 
-    public render(): React.ReactElement<IAdvancedProps> {
+    public render(): React.ReactElement<IInfoPageProps> {
 
         if ( this.props.allLoaded && this.props.showInfo ) {
-            console.log('infoPages.tsx', this.props, this.state);
+            console.log('InfoPage.tsx', this.props, this.state);
 
 /***
  *              d888888b db   db d888888b .d8888.      d8888b.  .d8b.   d888b  d88888b 
@@ -108,51 +111,35 @@ public constructor(props:IAdvancedProps){
  *                                                                                     
  *                                                                                     
  */
+            
+            const stackTokensBody: IStackTokens = { childrenGap: 20 };
 
-            let thisPage = null;
-            let rows: Element[] = [];
+            let thisTable = null;
+            let propsTable = this.props.table;
+            if ( propsTable && propsTable.rows.length > 0 ) {
 
-/**
- * 
-        'parseBySemiColons' | 'parseByCommas' | 'groupBy10s' |  'groupBy100s' |  'groupBy1000s' |  'groupByMillions' | 
-        'isDate' | 'groupByDays' | 'groupByWeeks' |  'groupByMonths' |  'groupByYears' | 'groupByDayOfWeek' |  'groupByDateBuckets' |
-        'groupByUsers' | 'invalidRules' | '
- */
+                let heading = propsTable.heading ? <h2> { propsTable.heading } </h2> : null;
 
-            let row00 = <tr><td>Refiner Rules</td><td></td><td></td></tr>;
-            let row01 = <tr><td>Parse text</td><td>parseBySemiColons, parseByCommas</td><td></td></tr>;
-            let row03 = <tr><td>Group Numbers</td><td>groupBy10s, groupBy100s, groupBy1000s, groupByMillions</td><td></td></tr>;
+                let tableHeaders = propsTable.headers.map( header => {
+                    return <th>{ header }</th>;
+                });
 
+                let tableRows = propsTable.rows.map( row => {
+                    let cells = row.map( cell => {
+                        return <td>{ cell } </td>;
+                    });
+                    return <tr>{ cells }</tr>;
+                });
 
-            let row07 = <tr><td>Dates        </td><td>isDate, groupByDays, groupByWeeks, groupByMonths, groupByYears</td><td></td></tr>;
-            let row08 = <tr><td>             </td><td>groupByDayOfWeek, groupByMonthsMMM, groupByDayOfWeek, </td><td></td></tr>;
-            let row09 = <tr><td>             </td><td>groupByDateBuckets</td><td></td></tr>;
-            let row10 = <tr><td>Summary Stats</td><td></td><td></td></tr>;
-            let row11 = <tr><td>             </td><td> </td><td></td></tr>;
-            let row12 = <tr><td>             </td><td> </td><td></td></tr>;
-            let row13 = <tr><td>             </td><td> </td><td></td></tr>;
+                thisTable = <div>
+                    { heading }
+                    <table className={styles.infoTable}>
+                        { tableHeaders }
+                        { tableRows }
+                    </table>
+                </div>;
 
-            thisPage = <div>
-                <h2></h2>
-                <table className={styles.infoTable}>
-                    <tr><th>Info</th><th>Example</th><th>Details</th></tr>
-                    { row00 }
-                    { row01 }
-                    {  }
-                    { row03 }
-                    {  }
-                    {  }
-                    {  }
-
-                    { row07 }
-                    { row08 }
-                    { row09 }
-                    { row10 }
-                    { row11 }
-                    { row12 }
-                    { row13 }
-                </table>
-            </div>;
+            }
 
 /***
  *              d8888b. d88888b d888888b db    db d8888b. d8b   db 
@@ -167,17 +154,12 @@ public constructor(props:IAdvancedProps){
 
             return (
                 <div className={ styles.infoPane }>
-                    { thisPage }
+                    { thisTable }
                 </div>
-            );
-            
+            ); 
         } else {
             console.log('infoPages.tsx return null');
             return ( null );
         }
-
     }   //End Public Render
-
-
-
 }

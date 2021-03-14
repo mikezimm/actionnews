@@ -23,7 +23,11 @@ import GettingStarted from './GettingStarted';
 import FuturePlans from './FuturePlans';
 import About from './About';
 
-export interface IInfoPageProps {
+import InfoPage from './InfoPage';
+import { buildAboutTable } from './AboutPage';
+
+
+export interface IInfoPagesProps {
     showInfo: boolean;
     allLoaded: boolean;
     parentProps: IActionnewsProps;
@@ -32,13 +36,13 @@ export interface IInfoPageProps {
 
 }
 
-export interface IInfoPageState {
+export interface IInfoPagesState {
     selectedChoice: string;
     lastChoice: string;
 
 }
 
-export default class InfoPage extends React.Component<IInfoPageProps, IInfoPageState> {
+export default class InfoPages extends React.Component<IInfoPagesProps, IInfoPagesState> {
 
 
 /***
@@ -52,7 +56,7 @@ export default class InfoPage extends React.Component<IInfoPageProps, IInfoPageS
  *                                                                                                       
  */
 
-public constructor(props:IInfoPageProps){
+public constructor(props:IInfoPagesProps){
     super(props);
     this.state = { 
         selectedChoice: 'gettingStarted',
@@ -107,10 +111,10 @@ public constructor(props:IInfoPageProps){
  *                                                          
  */
 
-    public render(): React.ReactElement<IInfoPageProps> {
+    public render(): React.ReactElement<IInfoPagesProps> {
 
         if ( this.props.allLoaded && this.props.showInfo ) {
-            //console.log('infoPages.tsx', this.props, this.state);
+            //console.log('InfoPagess.tsx', this.props, this.state);
 
             let pageChoices = choiceBuilders.creatInfoChoices(this.state.selectedChoice, this._updateChoice.bind(this));
             let thisPage = null;
@@ -158,12 +162,22 @@ public constructor(props:IInfoPageProps){
                     showInfo={ this.props.showInfo }
                 ></Errors>;
             } else if ( this.state.selectedChoice === 'about' ) {
+                thisPage = <InfoPage 
+
+                    parentProps={  this.props.parentProps }
+                    parentState={  this.props.parentState }
+                    allLoaded={ this.props.allLoaded }
+                    showInfo={ this.props.showInfo }
+                    table= { buildAboutTable() }
+                ></InfoPage>;
+                /*
                 thisPage = <About 
                     parentProps={  this.props.parentProps }
                     parentState={  this.props.parentState }
                     allLoaded={ this.props.allLoaded }
                     showInfo={ this.props.showInfo }
                 ></About>;
+                */
             }
 
             const stackButtonTokensBody: IStackTokens = { childrenGap: 40 };
@@ -182,7 +196,7 @@ public constructor(props:IInfoPageProps){
             );
             
         } else {
-            //console.log('infoPages.tsx return null');
+            //console.log('InfoPagess.tsx return null');
             return ( null );
         }
 

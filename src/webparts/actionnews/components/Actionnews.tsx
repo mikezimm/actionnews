@@ -22,7 +22,7 @@ import { IQuickCommands, ICustViewDef, IQuickField, IUser } from './IReUsableInt
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
-import InfoPage from './HelpInfo/infoPages';
+import InfoPages from './HelpInfo/infoPages';
 
 import { allAvailableActions, getPageTitleTest, allAvailableActionsTitle } from './NewsFunctions';
 
@@ -352,12 +352,12 @@ public componentDidUpdate(prevProps){
     */
 
     const infoPage = <div>
-      <InfoPage 
+      <InfoPages 
         allLoaded={ true }
         showInfo={ true }
         parentProps= { this.props }
         parentState= { this.state }
-      ></InfoPage>
+      ></InfoPages>
     </div>;
 
     /***
