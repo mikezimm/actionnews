@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { IHelpTable } from './InfoPage';
+import { IHelpTable } from '../Component/InfoPage';
 
-export function buildAboutTable() {
+export function aboutTable() {
 
     let table : IHelpTable  = {
         heading: 'Version History',
@@ -23,6 +23,6 @@ export function buildAboutTable() {
     table.rows.push( ['2020-09-15', '1.0.1.0',    'Add React based list',                                                                     'With sorting, columnwidths, grouping and details button'] );
     table.rows.push( ['2020-09-14', '1.0.0.1',    'Baseline Drilldown from Generic Project',                                                  'With basic Pivot and Command bar options'] );
     
-    return table;
+    return { table: table };
 
 }

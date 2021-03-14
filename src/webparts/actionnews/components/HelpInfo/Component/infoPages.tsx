@@ -1,30 +1,28 @@
 import * as React from 'react';
 
-import * as links from './AllLinks';
+import * as links from '../AllLinks';
 
-import { ChartControl, ChartType } from '@pnp/spfx-controls-react/lib/ChartControl';
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import { IActionnewsProps } from '../IActionnewsProps';
-import { IActionnewsState } from '../IActionnewsState';
+import { IActionnewsProps } from '../../IActionnewsProps';
+import { IActionnewsState } from '../../IActionnewsState';
 import styles from './InfoPane.module.scss';
 
-import * as choiceBuilders from '../fields/choiceFieldBuilder';
+import * as choiceBuilders from '../../fields/choiceFieldBuilder';
 
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import Errors from './Errors';
-import Basics from './Basics';
-import Advanced from './Advanced';
-
-import InfoDevelopers from './Developers';
-import GettingStarted from './GettingStarted';
-import FuturePlans from './FuturePlans';
-import About from './About';
-
 import InfoPage from './InfoPage';
-import { buildAboutTable } from './AboutPage';
+import { aboutTable } from '../Content/About';
+import { devTable } from '../Content/Developer';
+import { gettingStartedContent } from '../Content/GettingStarted';
+
+import { errorsContent } from '../Content/Errors';
+import { advancedContent } from '../Content/Advanced';
+import { futureContent } from '../Content/FuturePlans';
+
+import { basicsContent } from '../Content/Basics';
 
 
 export interface IInfoPagesProps {
@@ -44,6 +42,15 @@ export interface IInfoPagesState {
 
 export default class InfoPages extends React.Component<IInfoPagesProps, IInfoPagesState> {
 
+    private gettingStarted= gettingStartedContent();
+    private basics= basicsContent();
+    private advanced= advancedContent();
+    private futurePlans= futureContent();
+    private dev= devTable();
+    private errors= errorsContent();
+    private about= aboutTable();
+
+    private options : IChoiceGroupOption[] = [];
 
 /***
  *          .o88b.  .d88b.  d8b   db .d8888. d888888b d8888b. db    db  .o88b. d888888b  .d88b.  d8888b. 
@@ -58,23 +65,24 @@ export default class InfoPages extends React.Component<IInfoPagesProps, IInfoPag
 
 public constructor(props:IInfoPagesProps){
     super(props);
+
+    if ( this.gettingStarted != null )   { this.options.push(  {key: 'gettingStarted', text: 'Getting started' }); }
+    if ( this.basics != null )           { this.options.push(  {key: 'basics', text: 'Basics' }); }
+    if ( this.advanced != null )         { this.options.push(  {key: 'advanced', text: 'Advanced' }); }
+    if ( this.errors != null )           { this.options.push(  {key: 'errors', text: 'Errors'  }); }
+    if ( this.futurePlans != null )      { this.options.push(  {key: 'futurePlans', text: 'Future Plans'  }); }
+    if ( this.dev != null )              { this.options.push(  {key: 'dev', text: 'Developers'  }); }
+    if ( this.about != null )            { this.options.push(  {key: 'about', text: 'About'  }); }
+
     this.state = { 
         selectedChoice: 'gettingStarted',
         lastChoice: '',
 
     };
-
-    // because our event handler needs access to the component, bind 
-    //  the component to the function so it can get access to the
-    //  components properties (this.props)... otherwise "this" is undefined
-    // this.onLinkClick = this.onLinkClick.bind(this);
-
-    
   }
 
-
   public componentDidMount() {
-    
+
   }
 
 
@@ -90,14 +98,6 @@ public constructor(props:IInfoPagesProps){
  */
 
   public componentDidUpdate(prevProps){
-
-    let rebuildTiles = false;
-    /*
-    if (rebuildTiles === true) {
-      this._updateStateOnPropsChange({});
-    }
-    */
-
   }
 
 /***
@@ -116,85 +116,47 @@ public constructor(props:IInfoPagesProps){
         if ( this.props.allLoaded && this.props.showInfo ) {
             //console.log('InfoPagess.tsx', this.props, this.state);
 
-            let pageChoices = choiceBuilders.creatInfoChoices(this.state.selectedChoice, this._updateChoice.bind(this));
             let thisPage = null;
-
+            let content = null;
             if ( this.state.selectedChoice === 'gettingStarted' ) {
-                thisPage = <GettingStarted 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
-                    allLoaded={ this.props.allLoaded }
-                    showInfo={ this.props.showInfo }
-                ></GettingStarted>;
+                content = this.gettingStarted;
             } else if ( this.state.selectedChoice === 'basics' ) {
-                thisPage = <Basics 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
-                    allLoaded={ this.props.allLoaded }
-                    showInfo={ this.props.showInfo }
-                ></Basics>;
+                content= this.basics;
             } else if ( this.state.selectedChoice === 'advanced' ) {
-                thisPage = <Advanced 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
-                    allLoaded={ this.props.allLoaded }
-                    showInfo={ this.props.showInfo }
-                ></Advanced>;
+                content=  this.advanced;
             } else if ( this.state.selectedChoice === 'futurePlans' ) {
-                thisPage = <FuturePlans 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
-                    allLoaded={ this.props.allLoaded }
-                    showInfo={ this.props.showInfo }
-                ></FuturePlans>;
+                content=  this.futurePlans;
             } else if ( this.state.selectedChoice === 'dev' ) {
-                thisPage = <InfoDevelopers 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
-                    allLoaded={ this.props.allLoaded }
-                    showInfo={ this.props.showInfo }
-                ></InfoDevelopers>;
+                content=  this.dev;
             } else if ( this.state.selectedChoice === 'errors' ) {
-                thisPage = <Errors 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
-                    allLoaded={ this.props.allLoaded }
-                    showInfo={ this.props.showInfo }
-                ></Errors>;
+                content=  this.errors;
             } else if ( this.state.selectedChoice === 'about' ) {
-                thisPage = <InfoPage 
-
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
-                    allLoaded={ this.props.allLoaded }
-                    showInfo={ this.props.showInfo }
-                    table= { buildAboutTable() }
-                ></InfoPage>;
-                /*
-                thisPage = <About 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
-                    allLoaded={ this.props.allLoaded }
-                    showInfo={ this.props.showInfo }
-                ></About>;
-                */
+                content= this.about;
             }
+
+            let pageChoices = choiceBuilders.creatInfoChoices(this.state.selectedChoice, this.options, this._updateChoice.bind(this)); 
+
+            thisPage = <InfoPage 
+                parentProps={  this.props.parentProps }
+                parentState={  this.props.parentState }
+                allLoaded={ this.props.allLoaded }
+                showInfo={ this.props.showInfo }
+                content= { content }
+            ></InfoPage>;
 
             const stackButtonTokensBody: IStackTokens = { childrenGap: 40 };
 
             const ColoredLine = ({ color }) => ( <hr style={{ color: color, backgroundColor: color, height: 1 }}/> );
 
             return (
-                <div className={ styles.infoPane }>
-                    <Stack padding={20} horizontal={true} horizontalAlign={"space-between"} tokens={stackButtonTokensBody}> {/* Stack for Projects and body */}
+                <div className={ styles.infoPane } style={{paddingBottom: '30px', paddingLeft: '20px' }}>
+                    <Stack horizontal={true} horizontalAlign={"space-between"} tokens={stackButtonTokensBody}> {/* Stack for Projects and body */}
                         { pageChoices }
-
                     </Stack>
                     { thisPage }
                     <ColoredLine color="gray" />
                 </div>
             );
-            
         } else {
             //console.log('InfoPagess.tsx return null');
             return ( null );

@@ -1,33 +1,42 @@
 import * as React from 'react';
 
-import { Link, ILinkProps } from 'office-ui-fabric-react';
-
-import * as links from './AllLinks';
-
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
-import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import { IActionnewsState } from '../IActionnewsState';
-import { IActionnewsProps } from '../IActionnewsProps';
+import { IActionnewsProps } from '../../IActionnewsProps';
+import { IActionnewsState } from '../../IActionnewsState';
 
-import WebPartLinks from './WebPartLinks';
+import styles from '../InfoPane.module.scss';
 
-import styles from './InfoPane.module.scss';
+export type IHelpTableRow = any[];
 
-export interface IGettingStartedProps {
+export interface IHelpTable {
+    heading?: any;
+    headers: any[];
+    rows: IHelpTableRow[];
+}
+
+export interface IPageContent {
+    header?: any;
+    html1?: any;
+    table?: IHelpTable;
+    html2?: any;
+    footer?: any;
+}
+
+export interface IInfoPageProps {
+
     showInfo: boolean;
     allLoaded: boolean;
     parentProps: IActionnewsProps;
     parentState: IActionnewsState;
+    content: IPageContent;
 
 }
 
-export interface IGettingStartedState {
-    selectedChoice: string;
-    lastChoice: string;
+export interface IInfoPageState {
 }
 
-export default class GettingStarted extends React.Component<IGettingStartedProps, IGettingStartedState> {
+export default class InfoPage extends React.Component<IInfoPageProps, IInfoPageState> {
 
 
 /***
@@ -41,12 +50,9 @@ export default class GettingStarted extends React.Component<IGettingStartedProps
  *                                                                                                       
  */
 
-public constructor(props:IGettingStartedProps){
+public constructor(props:IInfoPageProps){
     super(props);
     this.state = { 
-        selectedChoice: 'parentList',
-        lastChoice: '',
-
     };
 
     // because our event handler needs access to the component, bind 
@@ -75,14 +81,6 @@ public constructor(props:IGettingStartedProps){
  */
 
   public componentDidUpdate(prevProps){
-
-    let rebuildTiles = false;
-    /*
-    if (rebuildTiles === true) {
-      this._updateStateOnPropsChange({});
-    }
-    */
-
   }
 
 /***
@@ -96,10 +94,10 @@ public constructor(props:IGettingStartedProps){
  *                                                          
  */
 
-    public render(): React.ReactElement<IGettingStartedProps> {
+    public render(): React.ReactElement<IInfoPageProps> {
 
         if ( this.props.allLoaded && this.props.showInfo ) {
-            //console.log('infoPages.tsx', this.props, this.state);
+            console.log('InfoPage.tsx', this.props, this.state);
 
 /***
  *              d888888b db   db d888888b .d8888.      d8888b.  .d8b.   d888b  d88888b 
@@ -111,29 +109,35 @@ public constructor(props:IGettingStartedProps){
  *                                                                                     
  *                                                                                     
  */
+            
+            const stackTokensBody: IStackTokens = { childrenGap: 20 };
 
-            let thisPage = null;
-            thisPage =     <div className={styles.infoPane}>
+            let thisTable = null;
+            let propsTable = this.props.content.table;
+            if ( propsTable && propsTable.rows.length > 0 ) {
 
-            <h3>Please submit any issues or suggestions on github (requires free account)</h3>
+                let heading = propsTable.heading ? <h2> { propsTable.heading } </h2> : null;
 
-            <h2>First:  Create a Parent List or Library in your site</h2>
-                <ol>
-                    <li>Go to <b>WebPart Properties</b> - Edit Page, Edit Webpart.</li>
-                    <li>Expand <b>Create-Verify Lists</b> section.</li>
-                    <li>Press <b>Create-Verify List</b> button.</li>
-                    <li>Fill in your Refiner Fields</li>
-                    <li>Fill in your Rules - optional settings telling us how to handle certain field types</li>
-                    <li>Choose your refiner style</li>
+                let tableHeaders = propsTable.headers.map( header => {
+                    return <th>{ header }</th>;
+                });
 
-                    <li>Exit <b>WebPart Properties</b></li>
-                    <li><b>Save</b> this page.</li>
-                    <li><b>Refresh</b> this page.</li>
-                </ol>
+                let tableRows = propsTable.rows.map( row => {
+                    let cells = row.map( cell => {
+                        return <td>{ cell } </td>;
+                    });
+                    return <tr>{ cells }</tr>;
+                });
 
+                thisTable = <div>
+                    { heading }
+                    <table className={styles.infoTable}>
+                        { tableHeaders }
+                        { tableRows }
+                    </table>
+                </div>;
 
-          </div>;
-
+            }
 
 /***
  *              d8888b. d88888b d888888b db    db d8888b. d8b   db 
@@ -147,18 +151,17 @@ public constructor(props:IGettingStartedProps){
  */
 
             return (
-                <div className={ styles.infoPane }>
-                    { thisPage }
+                <div className={ styles.infoPane } style={{ paddingTop: '10px'}}>
+                    { this.props.content.header }
+                    { this.props.content.html1 }
+                    { thisTable }
+                    { this.props.content.html2 }
+                    { this.props.content.footer }
                 </div>
-            );
-            
+            ); 
         } else {
             console.log('infoPages.tsx return null');
             return ( null );
         }
-
     }   //End Public Render
-
-
-
 }

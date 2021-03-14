@@ -22,7 +22,7 @@ import { IQuickCommands, ICustViewDef, IQuickField, IUser } from './IReUsableInt
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
-import InfoPages from './HelpInfo/infoPages';
+import InfoPages from './HelpInfo/Component/infoPages';
 
 import { allAvailableActions, getPageTitleTest, allAvailableActionsTitle } from './NewsFunctions';
 
