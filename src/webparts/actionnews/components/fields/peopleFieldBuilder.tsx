@@ -16,7 +16,6 @@ import { getEmailFromLoginName, checkForLoginName } from '@mikezimm/npmfunctions
 import { IQuickField } from '../IReUsableInterfaces';
 import { IUser,  } from '@mikezimm/npmfunctions/dist/Users/IUserInterfaces';
 
-
 import { createIconButton } from '../createButtons/IconButton';
 
 import stylesF from './StylesField.module.scss';
