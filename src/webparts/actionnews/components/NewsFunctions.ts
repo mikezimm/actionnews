@@ -8,7 +8,7 @@ import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist, sortKeysByOther
 
 import { ensureUserHere } from '../../../services/userServices';
 
-import { getHelpfullError } from '../../../services/ErrorHandler';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
 import { getExpandColumns, getKeysLike, getSelectColumns } from '../../../services/getFunctions';
 

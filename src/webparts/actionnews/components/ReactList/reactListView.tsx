@@ -20,7 +20,7 @@ import { doesObjectExistInArray,  } from '../../../../services/arrayServices';
 
 import { findParentElementPropLikeThis } from '../../../../services/basicElements';
 
-import { getHelpfullError } from '../../../../services/ErrorHandler';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
 import { buildConfirmDialog, IMyDialogProps } from '../../../../services/dialogBoxService'; 
 

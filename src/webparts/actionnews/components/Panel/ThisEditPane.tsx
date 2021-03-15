@@ -24,7 +24,7 @@ import { createDateField } from '../fields/dateFieldBuilder';
 
 import { createPeopleField } from '../fields/peopleFieldBuilder';
 
-import { createLink } from '../HelpInfo/AllLinks';
+import { createLink } from '@mikezimm/npmfunctions/dist/HelpInfo/Links/AllLinks';
 
 export interface IEditPaneProps {
   // These are set based on the toggles shown above the s (not needed in real code)

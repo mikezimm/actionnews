@@ -1,10 +1,9 @@
 import * as React from 'react';
 
-import * as links from '../AllLinks';
-
 import styles from '../Component/InfoPane.module.scss';
 
-import { IHelpTable } from '../Component/InfoPage';
+import { IHelpTableRow, IHelpTable, IPageContent, ISinglePageProps } from '@mikezimm/npmfunctions/dist/HelpInfo/Component/ISinglePageProps';
+
 
 export function advancedContent() {
 

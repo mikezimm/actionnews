@@ -4,7 +4,7 @@ import { sp } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/site-users/web";
 
-import { getHelpfullError } from './ErrorHandler';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
 import { Web, IList, IItem, IItemAddResult, } from "@pnp/sp/presets/all";
 

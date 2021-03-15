@@ -12,7 +12,7 @@ import { makeSmallTimeObject, makeTheTimeObject,ITheTime, getAge, getBestTimeDel
 
 import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist } from '../../services/arrayServices';
 
-import { getHelpfullError } from '../../services/ErrorHandler';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
 import { mergeAriaAttributeValues } from "office-ui-fabric-react";
 import { cleanURL } from '../stringServices';

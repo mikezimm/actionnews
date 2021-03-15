@@ -6,7 +6,7 @@ import { Link, ILinkProps } from 'office-ui-fabric-react';
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import WebPartLinks from './WebPartLinks';
+import WebPartLinks from './Component/WebPartLinks';
 
 import { createIconButton , defCommandIconStyles} from "../createButtons/IconButton";
 

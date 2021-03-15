@@ -22,17 +22,15 @@ import { IQuickCommands, ICustViewDef, IQuickField, IUser } from './IReUsableInt
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
-import InfoPages from './HelpInfo/Component/infoPages';
-
 import { allAvailableActions, getPageTitleTest, allAvailableActionsTitle } from './NewsFunctions';
 
-import * as links from './HelpInfo/AllLinks';
+import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';
 
 import { getExpandColumns, getKeysLike, getSelectColumns } from '../../../services/getFunctions';
 
 import ReactListItems from './ReactList/reactListView';
 
-import { getHelpfullError, } from '../../../services/ErrorHandler';
+import { getHelpfullError, } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 import { createIconButton , defCommandIconStyles} from "./createButtons/IconButton";
 
 import  EarlyAccess from './HelpInfo/EarlyAccess';
@@ -44,6 +42,8 @@ import { ActionQuickCommands } from './const_ActionCommands';
 import { ActionNewsViewDefs } from './const_ActionViewDefs';
 
 import { getNewActionQuickFields } from './const_ActionQuickFields';
+
+import InfoPages from './HelpInfo/Component/InfoPages';
 
 import { findParentElementPropLikeThis } from '../../../services/basicElements';
 
@@ -78,7 +78,7 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
 
         scope: this.props.scope,
         listWeb: this.props.listWeb,
-        listName: this.props.listName,             
+        listName: this.props.listName,
         listTitle: null,
         listGuid: null,
 
@@ -355,6 +355,12 @@ public componentDidUpdate(prevProps){
       <InfoPages 
         allLoaded={ true }
         showInfo={ true }
+
+        parentListURL={ this.state.newsService.listWeb + '/lists/' + this.state.newsService.listName }
+        childListURL={ null }
+        parentListName={ this.state.newsService.listName }
+        childListName={ null }
+
         gitHubRepo={ links.gitRepoActionNews }
       ></InfoPages>
     </div>;

@@ -13,18 +13,16 @@ import {
   PropertyPaneSlider,
 } from '@microsoft/sp-property-pane';
 
-import { JSON_Edit_Link } from './zReusablePropPane';
-
 import { PropertyFieldMultiSelect } from '@pnp/spfx-property-controls/lib/PropertyFieldMultiSelect';
 
 import * as strings from 'ActionnewsWebPartStrings';
 import { pivotOptionsGroup} from './index';
 
-import * as links from '../../webparts/actionnews/components/HelpInfo/AllLinks';   //              { links.gitRepoActionNews.issues }
+import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';
+
+import { JSON_Edit_Link, WebPartInfoGroup } from '@mikezimm/npmfunctions/dist/PropPane/zReusablePropPane';
 
 import { IActionnewsWebPartProps } from '../../webparts/actionnews/ActionnewsWebPart';
-
-import { refinerRuleItems } from '../../webparts/actionnews/components/IReUsableInterfaces';
 
 const scopeChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
   {   index: 0,   key: 'site', text: 'Site'  },
@@ -42,28 +40,9 @@ export class IntroPage {
       },
       displayGroupsAsAccordion: true,
       groups: [
-        { groupName: 'Web Part Info',
-          isCollapsed: true ,
-          groupFields: [
-            PropertyPaneLabel('About Text', {
-              text: 'This webpart gets helps track your time using SharePoint :).'
-            }),
-
-            PropertyPaneLink('About Link' , {
-              text: 'Github Repo:  ' + links.gitRepoActionNews.desc ,
-              href: links.gitRepoActionNews.href,
-              target: links.gitRepoActionNews.target,
-            }),
-          ]
-        },
-
-                  // 9 - Other web part options
-      //  scope: INewsScope;
-      //  listWeb: string;
-      //  listName: string;
-      
-      //  allowSplit: boolean;
-      //  allowCopy: boolean;
+        WebPartInfoGroup( links.gitRepoActionNews,
+          `<h4>This webpart looks at data in a whole new way.</h4>
+          <p>Use it to show data in a fun animated way allowing drill down and smooth animation.</p>`),
 
       { groupName: 'Toggles',
         isCollapsed: true ,

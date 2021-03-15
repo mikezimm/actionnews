@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IHelpTable } from '../Component/InfoPage';
+import { IHelpTableRow, IHelpTable, IPageContent, ISinglePageProps } from '@mikezimm/npmfunctions/dist/HelpInfo/Component/ISinglePageProps';
 
 export function aboutTable() {
 
@@ -10,7 +10,7 @@ export function aboutTable() {
         rows: [],
     };
 
-    table.rows.push( ['2021-03-14', '1.0.0.2',    <span>Update HelpInfo content to standard method</span>,                                                   ''] );
+    table.rows.push( ['2021-03-14', '1.0.0.2',    <span>Update HelpInfo content to standard method</span>,                ''] );
     table.rows.push( ['2020-11-12', '1.0.0.1',    <span>Testing</span>,                                                   ''] );
 
     /*

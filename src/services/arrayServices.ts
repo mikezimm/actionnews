@@ -276,7 +276,7 @@ export function convertNumberArrayToRelativePercents( arr: number[] , percentsAs
 export function sortKeysByOtherKey( obj: any, sortKey: ISeriesSort, order: ISeriesSort, dataType: 'number' | 'string', otherKeys: string[]) {
 
     let sortCopy : number[] | string[] = JSON.parse(JSON.stringify(obj[sortKey]));
-  
+
     let otherKeyArrays : any = {};
     otherKeys.map( m => { otherKeyArrays[m] = [] ; } );
     if ( order === 'asc' ) {
@@ -284,8 +284,8 @@ export function sortKeysByOtherKey( obj: any, sortKey: ISeriesSort, order: ISeri
     } else {
       sortCopy.sort((a, b) => { return b-a ;});
     }
-    
-    
+
+
     let x = 0;
     for ( let v of sortCopy) {
       let currentIndex = obj[sortKey].indexOf(v); //Get index of the first sortable value in original array
@@ -300,13 +300,13 @@ export function sortKeysByOtherKey( obj: any, sortKey: ISeriesSort, order: ISeri
       obj[sortKey][currentIndex] = null;
       x ++;
     }
-  
+
     otherKeys.map( key => {
 
       obj[key] = otherKeyArrays[key] ;
 
-    }); 
-  
+    });
+
     obj[sortKey] = sortCopy;
 
     return obj;

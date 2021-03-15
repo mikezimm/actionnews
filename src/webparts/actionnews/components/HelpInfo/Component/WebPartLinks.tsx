@@ -1,22 +1,17 @@
 import * as React from 'react';
 
-import * as links from './AllLinks';
+import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/AllLinks';
 
-import { Link, ILinkProps } from 'office-ui-fabric-react';
-import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
-import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
-
-import { IActionnewsProps } from '../IActionnewsProps';
-import { IActionnewsState } from '../IActionnewsState';
-import styles from './InfoPane.module.scss';
+import { Stack, IStackTokens } from 'office-ui-fabric-react';
 
 export interface IWebPartLinksProps {
-    parentListURL?: string; //Get from list item
+    parentListURL: string; //Get from list item
     childListURL?: string; //Get from list item
-  
-    parentListName?: string;  // Static Name of list (for URL) - used for links and determined by first returned item
+
+    parentListName: string;  // Static Name of list (for URL) - used for links and determined by first returned item
     childListName?: string;  // Static Name of list (for URL) - used for links and determined by first returned item
 
+    repoObject: any;  // Looking for structure from AllLinks.tsx like:  links.gitRepoTrackMyTime
 }
 
 export interface IWebPartLinksState {
@@ -26,6 +21,11 @@ export interface IWebPartLinksState {
 
 export default class WebPartLinks extends React.Component<IWebPartLinksProps, IWebPartLinksState> {
 
+    private parentListURL : any = this.props.parentListURL;
+    private parentListName : any = this.props.parentListName;
+
+    private childListURL : any = this.props.childListURL;
+    private childListName : any = this.props.childListName;
 
 /***
  *          .o88b.  .d88b.  d8b   db .d8888. d888888b d8888b. db    db  .o88b. d888888b  .d88b.  d8888b. 
@@ -40,25 +40,14 @@ export default class WebPartLinks extends React.Component<IWebPartLinksProps, IW
 
 public constructor(props:IWebPartLinksProps){
     super(props);
-    this.state = { 
+    this.state = {
         selectedChoice: 'About',
         lastChoice: '',
 
     };
-
-    // because our event handler needs access to the component, bind 
-    //  the component to the function so it can get access to the
-    //  components properties (this.props)... otherwise "this" is undefined
-    // this.onLinkClick = this.onLinkClick.bind(this);
-
-    
   }
 
-
-  public componentDidMount() {
-    
-  }
-
+  // public componentDidMount() { }
 
   /***
  *         d8888b. d888888b d8888b.      db    db d8888b. d8888b.  .d8b.  d888888b d88888b 
@@ -71,16 +60,7 @@ public constructor(props:IWebPartLinksProps){
  *                                                                                         
  */
 
-  public componentDidUpdate(prevProps){
-
-    let rebuildTiles = false;
-    /*
-    if (rebuildTiles === true) {
-      this._updateStateOnPropsChange({});
-    }
-    */
-
-  }
+ // public componentDidUpdate(prevProps : any){ }
 
 /***
  *         d8888b. d88888b d8b   db d8888b. d88888b d8888b. 
@@ -95,7 +75,6 @@ public constructor(props:IWebPartLinksProps){
 
     public render(): React.ReactElement<IWebPartLinksProps> {
 
-
 /***
  *              d888888b db   db d888888b .d8888.      d8888b.  .d8b.   d888b  d88888b 
  *              `~~88~~' 88   88   `88'   88'  YP      88  `8D d8' `8b 88' Y8b 88'     
@@ -106,24 +85,31 @@ public constructor(props:IWebPartLinksProps){
  *                                                                                     
  *                                                                                     
  */
-            
-            const stackTokensBody: IStackTokens = { childrenGap: 20 };
+        const stackTokensBody: IStackTokens = { childrenGap: 20 };
 
-            let thisPage = null;
+        let thisPage = null;
 
-            thisPage = <div>
-                <Stack horizontal={true} wrap={true} horizontalAlign={"stretch"} tokens={stackTokensBody}>
-                    <div><b>Your Lists:</b></div>
-                    { links.createLink(this.props.parentListURL,'_blank', this.props.parentListName ) }
-                    { links.createLink(this.props.childListURL,'_blank', this.props.childListName ) }
-                    <div></div>
-                    <div><b>Webpart info on Github:</b></div>
-                    { links.gitRepoActionNews.repo }
-                    { links.gitRepoActionNews.issues }
-                    { links.gitRepoActionNews.wiki }
-                </Stack>
+        let doParentList = this.parentListURL && this.parentListName && this.parentListURL.length > 0 && this.parentListName.length > 0 ? true : false;
+        let doChildList = this.childListURL && this.childListName && this.childListURL.length > 0 && this.childListName.length > 0 ? true : false;
 
-            </div>;
+        let parentListURL = doParentList ? links.createLink(this.parentListURL,'_blank', this.parentListName ) : null;
+
+        let childListURL = doChildList ? links.createLink(this.childListURL,'_blank', this.childListName ) : null;
+
+        let showLists = doParentList === true || doChildList === true ? true : false ;
+
+        thisPage = <div style={{paddingTop: '10px' , paddingBottom: '10px' }}>
+            <Stack horizontal={true} wrap={true} horizontalAlign={"stretch"} tokens={stackTokensBody}>
+                { ( showLists === true ? <div><b>Your Lists:</b></div> : null ) }
+                { ( doParentList === true ? parentListURL : null ) }
+                { ( doChildList === true ? childListURL : null ) }
+                { ( showLists === true ? <span style={{width: '30px' }}> </span> : null ) }
+                { this.props.repoObject ? <div style={{paddingLeft: doChildList === true ? '30px' : '' }}><b>Webpart info:</b></div> : null }
+                { this.props.repoObject ? this.props.repoObject.repo : null }
+                { this.props.repoObject ? this.props.repoObject.issues : null }
+                { this.props.repoObject ? this.props.repoObject.wiki : null }
+            </Stack>
+        </div>;
 
 /***
  *              d8888b. d88888b d888888b db    db d8888b. d8b   db 
@@ -136,10 +122,6 @@ public constructor(props:IWebPartLinksProps){
  *                                                                 
  */
 
-            return (
-                <div>
-                    { thisPage }
-                </div>
-            ); 
-    }   //End Public Render
+        return ( thisPage ); 
+    }
 }

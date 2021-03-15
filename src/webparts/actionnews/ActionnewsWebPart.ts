@@ -21,7 +21,7 @@ import { IActionnewsProps, INewsScope } from './components/IActionnewsProps';
 import { makeTheTimeObject } from '../../services/dateServices';
 import { IQuickButton } from './components/IReUsableInterfaces';
 
-import { getHelpfullError } from '../../services/ErrorHandler';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
 export interface IActionnewsWebPartProps {
   description: string;

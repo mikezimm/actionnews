@@ -11,7 +11,7 @@ import { Dialog, DialogType, DialogFooter, IDialogProps } 	from 'office-ui-fabri
 import { Button, ButtonType, } 			from 'office-ui-fabric-react/lib/Button';
 import { Label } 			from 'office-ui-fabric-react/lib/Label';
 
-import { getHelpfullError } from '../../../../services/ErrorHandler';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
 import { IMyProgress, IQuickButton, IQuickCommands, IUser } from '../IReUsableInterfaces';
 

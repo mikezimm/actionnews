@@ -14,7 +14,7 @@ import { DateTimePicker, DateConvention, TimeConvention, TimeDisplayControlType 
 
 import { IQuickField } from '../IReUsableInterfaces';
 
-import { getHelpfullError, } from '../../../../services/ErrorHandler';
+import { getHelpfullError, } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
 import { createIconButton , createIconButtonWithReturnVal, defCommandIconStyles} from "../createButtons/IconButton";
 

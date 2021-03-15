@@ -1,8 +1,11 @@
 import * as React from 'react';
 
-import * as links from '../AllLinks';
+import * as devLinks from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksDevDocs';
+import * as chartJSLinks from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksChartJS';
+import * as repoLinks from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';
 
-import { IHelpTable } from '../Component/InfoPage';
+//import { IHelpTableRow, IHelpTable, IPageContent, ISinglePageProps } from '../Component/ISinglePageProps';
+import { IHelpTableRow, IHelpTable, IPageContent, ISinglePageProps } from '@mikezimm/npmfunctions/dist/HelpInfo/Component/ISinglePageProps';
 
 export function devTable() {
 
@@ -12,25 +15,25 @@ export function devTable() {
         rows: [],
     };
 
-    table.rows.push( [ links.devDocsWeb, links.gitRepoSPFxContReact , 'MSFT Dev Docs for Fabric React UI Components' ] );
-    table.rows.push( [ links.devDocsPnpJSsp, links.gitRepoPnpJSsp, 'PNP JS sp:  Library for interacting with SPO' ] );
-    table.rows.push( [ links.devDocsIcon, , '' ] );
-    table.rows.push( [ links.devDocsText, , '' ] );
-    table.rows.push( [ links.devDocsDate, links.gitSampleReactDate, '' ] );
-    table.rows.push( [ links.devDocsSlider, , '' ] );
-    table.rows.push( [ links.devDocsToggle, , '' ] );
-    table.rows.push( [ links.devDocsChoice, , '' ] );
+    table.rows.push( [ devLinks.devDocsWeb, devLinks.gitRepoSPFxContReact , 'MSFT Dev Docs for Fabric React UI Components' ] );
+    table.rows.push( [ devLinks.devDocsPnpJSsp, devLinks.gitRepoPnpJSsp, 'PNP JS sp:  Library for interacting with SPO' ] );
+    table.rows.push( [ devLinks.devDocsIcon, '', '' ] );
+    table.rows.push( [ devLinks.devDocsText, '', '' ] );
+    table.rows.push( [ devLinks.devDocsDate, devLinks.gitSampleReactDate, '' ] );
+    table.rows.push( [ devLinks.devDocsSlider, '', '' ] );
+    table.rows.push( [ devLinks.devDocsToggle, '', '' ] );
+    table.rows.push( [ devLinks.devDocsChoice, '', '' ] );
     
-    table.rows.push( [ links.devDocsButton, , '' ] );
-    table.rows.push( [ links.devDocsStack, , '' ] );
-    table.rows.push( [ links.devDocsList, links.gitSampleReactList, '' ] );
+    table.rows.push( [ devLinks.devDocsButton, '', '' ] );
+    table.rows.push( [ devLinks.devDocsStack, '', '' ] );
+    table.rows.push( [ devLinks.devDocsList, devLinks.gitSampleReactList, '' ] );
 
-    table.rows.push( [ links.devDocsPivo, , '' ] );
-    table.rows.push( [ links.devDocsReGr, , '' ] );
-    table.rows.push( [ links.devDocsLink, , '' ] );
+    table.rows.push( [ devLinks.devDocsPivo, '', '' ] );
+    table.rows.push( [ devLinks.devDocsReGr, '', '' ] );
+    table.rows.push( [ devLinks.devDocsLink, '', '' ] );
 
-    table.rows.push( [ links.chartJSSamples, , '' ] );
-    table.rows.push( [ links.devDocsWebPartTitle, , 'React Webpart Title' ] );
+    table.rows.push( [ chartJSLinks.chartJSSamples, '', '' ] );
+    table.rows.push( [ '', devLinks.gitSampleWebPartTitle , 'React Webpart Title' ] );
 
     return { table: table };
 }

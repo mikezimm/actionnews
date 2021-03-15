@@ -2,35 +2,13 @@ import * as React from 'react';
 
 import styles from '../InfoPane.module.scss';
 
+import { IHelpTableRow, IHelpTable, IPageContent, ISinglePageProps } from './ISinglePageProps';
 //Moved these to npmFunctions 
-export type IHelpTableRow = any[];
 
-//Moved these to npmFunctions 
-export interface IHelpTable {
-    heading?: any;
-    headers: any[];
-    rows: IHelpTableRow[];
+export interface ISinglePageState {
 }
 
-//Moved these to npmFunctions 
-export interface IPageContent {
-    header?: any;
-    html1?: any;
-    table?: IHelpTable;
-    html2?: any;
-    footer?: any;
-}
-
-export interface IInfoPageProps {
-    showInfo: boolean;
-    allLoaded: boolean;
-    content: IPageContent;
-}
-
-export interface IInfoPageState {
-}
-
-export default class InfoPage extends React.Component<IInfoPageProps, IInfoPageState> {
+export default class SinglePage extends React.Component<ISinglePageProps, ISinglePageState> {
 
 
 /***
@@ -44,7 +22,7 @@ export default class InfoPage extends React.Component<IInfoPageProps, IInfoPageS
  *                                                                                                       
  */
 
-public constructor(props:IInfoPageProps){
+public constructor(props:ISinglePageProps){
     super(props);
     this.state = { 
     };
@@ -80,10 +58,10 @@ public constructor(props:IInfoPageProps){
  *                                                          
  */
 
-    public render(): React.ReactElement<IInfoPageProps> {
+    public render(): React.ReactElement<ISinglePageProps> {
 
         if ( this.props.allLoaded && this.props.showInfo ) {
-            console.log('InfoPage.tsx', this.props, this.state);
+            console.log('SinglePage.tsx', this.props, this.state);
 
 /***
  *              d888888b db   db d888888b .d8888.      d8888b.  .d8b.   d888b  d88888b 

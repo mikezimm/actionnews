@@ -1,15 +1,17 @@
 import * as React from 'react';
 
-import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
+import { Stack, IStackTokens } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
 import styles from './InfoPane.module.scss';
 
 import * as choiceBuilders from '../../fields/choiceFieldBuilder';
 
-import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+//import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import InfoPage from './InfoPage';
+import WebPartLinks from './WebPartLinks';
+
+import SinglePage from './SinglePage';
 import { aboutTable } from '../Content/About';
 import { devTable } from '../Content/Developer';
 import { gettingStartedContent } from '../Content/GettingStarted';
@@ -24,7 +26,16 @@ import { basicsContent } from '../Content/Basics';
 export interface IInfoPagesProps {
     showInfo: boolean;
     allLoaded: boolean;
+
+    parentListURL: string; //Get from list item
+    childListURL?: string; //Get from list item
+
+    parentListName: string;  // Static Name of list (for URL) - used for links and determined by first returned item
+    childListName?: string;  // Static Name of list (for URL) - used for links and determined by first returned item
+
     gitHubRepo: any; // replace with IRepoLinks from npmFunctions v0.1.0.3
+
+    hideWebPartLinks?: boolean;  //default = false... set to True if Early Access Banner is visible
     //toggleDebug: any;
 
 }
@@ -45,7 +56,7 @@ export default class InfoPages extends React.Component<IInfoPagesProps, IInfoPag
     private errors= errorsContent();
     private about= aboutTable();
 
-    private options : IChoiceGroupOption[] = [];
+    private options : IChoiceGroupOption[] = []; 
 
 /***
  *          .o88b.  .d88b.  d8b   db .d8888. d888888b d8888b. db    db  .o88b. d888888b  .d88b.  d8888b. 
@@ -108,6 +119,16 @@ public constructor(props:IInfoPagesProps){
 
     public render(): React.ReactElement<IInfoPagesProps> {
 
+        const webPartLinks = this.props.hideWebPartLinks === true ? null : <WebPartLinks 
+            parentListURL = { this.props.parentListURL } //Get from list item
+            childListURL = { this.props.childListURL } //Get from list item
+
+            parentListName = { this.props.parentListName } // Static Name of list (for URL) - used for links and determined by first returned item
+            childListName = { this.props.childListName } // Static Name of list (for URL) - used for links and determined by first returned item
+
+            repoObject = { this.props.gitHubRepo }
+        ></WebPartLinks>;
+
         if ( this.props.allLoaded && this.props.showInfo ) {
             //console.log('InfoPagess.tsx', this.props, this.state);
 
@@ -131,11 +152,11 @@ public constructor(props:IInfoPagesProps){
 
             let pageChoices = choiceBuilders.creatInfoChoices(this.state.selectedChoice, this.options, this._updateChoice.bind(this)); 
 
-            thisPage = <InfoPage 
+            thisPage = <SinglePage 
                 allLoaded={ this.props.allLoaded }
                 showInfo={ this.props.showInfo }
                 content= { content }
-            ></InfoPage>;
+            ></SinglePage>;
 
             const stackButtonTokensBody: IStackTokens = { childrenGap: 40 };
 
@@ -143,9 +164,11 @@ public constructor(props:IInfoPagesProps){
 
             return (
                 <div className={ styles.infoPane } style={{paddingBottom: '30px', paddingLeft: '20px' }}>
+                    { webPartLinks }
                     <Stack horizontal={true} horizontalAlign={"space-between"} tokens={stackButtonTokensBody}> {/* Stack for Projects and body */}
                         { pageChoices }
                     </Stack>
+
                     { thisPage }
                     <ColoredLine color="gray" />
                 </div>
