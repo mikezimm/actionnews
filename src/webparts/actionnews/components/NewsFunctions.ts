@@ -10,7 +10,7 @@ import { ensureUserHere } from '../../../services/userServices';
 
 import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
-import { getExpandColumns, getKeysLike, getSelectColumns } from '../../../services/getFunctions';
+import { getExpandColumns, getKeysLike, getSelectColumns } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 
 import { IActionnewsState, ActionStatus, IActionItem, IActionStatus, IPlannerTask, ActionSearchCols, INewsService,  } from './IActionnewsState';
 

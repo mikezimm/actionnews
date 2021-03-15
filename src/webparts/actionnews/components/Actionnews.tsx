@@ -26,7 +26,7 @@ import { allAvailableActions, getPageTitleTest, allAvailableActionsTitle } from 
 
 import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';
 
-import { getExpandColumns, getKeysLike, getSelectColumns } from '../../../services/getFunctions';
+import { getExpandColumns, getKeysLike, getSelectColumns } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 
 import ReactListItems from './ReactList/reactListView';
 
