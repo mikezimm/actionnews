@@ -15,7 +15,6 @@ import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist } from '../../se
 import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
 import { mergeAriaAttributeValues } from "office-ui-fabric-react";
-import { cleanURL } from '../stringServices';
 
 //runAsync is an idea that is not currently being used.
 export async function getAllItems( configWebURL: string, propsListName: string, thisProps: string[], restFilter: string, runAsync: boolean ): Promise<any[]>{

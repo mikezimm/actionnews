@@ -2,7 +2,8 @@ import { ListView, IViewField, SelectionMode, GroupOrder, IGrouping } from "@pnp
 
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 
-import { IUser, IQuickCommands, ICustViewDef, IQuickField } from  './IReUsableInterfaces';
+import { IQuickCommands, ICustViewDef, IQuickField } from  './IReUsableInterfaces';
+import { IUser,  } from '@mikezimm/npmfunctions/dist/Users/IUserInterfaces';
 
 import { INewsScope } from './IActionnewsProps';
 

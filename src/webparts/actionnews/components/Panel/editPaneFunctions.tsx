@@ -13,7 +13,7 @@ import { autoDetailsList } from '../../../../services/hoverCardService';
 
 import { doesObjectExistInArray,  } from '../../../../services/arrayServices';
 
-import { checkIfUserExistsInArray } from '../../../../services/userServices';
+import { checkIfUserExistsInArray } from '@mikezimm/npmfunctions/dist/Users/userServices';
 
 import { findParentElementPropLikeThis } from '../../../../services/basicElements';
 

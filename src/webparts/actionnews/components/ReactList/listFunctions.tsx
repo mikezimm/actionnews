@@ -9,7 +9,7 @@ import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandl
 
 import { removeItemFromArrayOnce, removeItemFromArrayAll, addItemToArrayIfItDoesNotExist } from '../../../../services/arrayServices';
 
-import { ensureUserHere } from '../../../../services/userServices';
+import { ensureUserHere } from '@mikezimm/npmfunctions/dist/Users/userServices';
 
 
 import { IActionItem } from '../IActionnewsState';

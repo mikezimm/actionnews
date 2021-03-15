@@ -18,7 +18,8 @@ import { IActionnewsProps, INewsScope } from './IActionnewsProps';
 
 import { IActionnewsState, ActionStatus, IActionItem, IActionStatus, IPlannerTask, ActionSearchCols, INewsService,   } from './IActionnewsState';
 
-import { IQuickCommands, ICustViewDef, IQuickField, IUser } from './IReUsableInterfaces';
+import { IQuickCommands, ICustViewDef, IQuickField } from './IReUsableInterfaces';
+import { IUser,  } from '@mikezimm/npmfunctions/dist/Users/IUserInterfaces';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
@@ -98,6 +99,7 @@ export default class Actionnews extends React.Component<IActionnewsProps, IActio
             LoginName: this.props.pageContext.user.loginName,
             Title: this.props.pageContext.user.displayName,
             email: this.props.pageContext.user.email,
+            remoteID: null,
         },
 
         sourceUserInfo: null,

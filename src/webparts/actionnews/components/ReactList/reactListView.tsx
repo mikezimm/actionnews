@@ -10,7 +10,8 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 import { PageContext } from '@microsoft/sp-page-context';
 
-import { IMyProgress, IQuickButton, IQuickCommands, IUser, IQuickField } from '../IReUsableInterfaces';
+import { IMyProgress, IQuickButton, IQuickCommands, IQuickField } from '../IReUsableInterfaces';
+import { IUser,  } from '@mikezimm/npmfunctions/dist/Users/IUserInterfaces';
 
 import { IActionItem } from '../IActionnewsState';
 
@@ -42,7 +43,7 @@ import { createIconButton , defCommandIconStyles} from "../createButtons/IconBut
 
 import { createPanelButtons, ButtonIdDelim, buildSingleQuickButton } from '../Panel/panelFunctions';
 
-import { getEmailFromLoginName, checkForLoginName, ensureUserHere, ensureTheseUsers } from '../../../../services/userServices';
+import { getEmailFromLoginName, checkForLoginName, ensureUserHere, ensureTheseUsers } from '@mikezimm/npmfunctions/dist/Users/userServices';
 
 import { msPerWk, msPerDay } from '../../../../services/dateServices';
 

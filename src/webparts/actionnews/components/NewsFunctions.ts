@@ -6,7 +6,7 @@ import { makeSmallTimeObject, makeTheTimeObject,ITheTime, getAge, getBestTimeDel
 
 import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist, sortKeysByOtherKey } from '../../../services/arrayServices';
 
-import { ensureUserHere } from '../../../services/userServices';
+import { ensureUserHere } from '@mikezimm/npmfunctions/dist/Users/userServices';
 
 import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 

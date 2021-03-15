@@ -11,9 +11,11 @@ import { PeoplePicker, PrincipalType, } from "@pnp/spfx-controls-react/lib/Peopl
 
 import { IPersonaProps, } from "office-ui-fabric-react/lib/components/Persona/Persona.types";
 
-import { getEmailFromLoginName, checkForLoginName } from '../../../../services/userServices';
+import { getEmailFromLoginName, checkForLoginName } from '@mikezimm/npmfunctions/dist/Users/userServices';
 
-import { IUser, IQuickField } from '../IReUsableInterfaces';
+import { IQuickField } from '../IReUsableInterfaces';
+import { IUser,  } from '@mikezimm/npmfunctions/dist/Users/IUserInterfaces';
+
 
 import { createIconButton } from '../createButtons/IconButton';
 
